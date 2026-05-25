@@ -1,33 +1,35 @@
 # FEATURES
 
-Current site: workflow-first operational skill spotlight with chain intelligence, protocol playbooks, recommendations, and local analytics.
+Current site: a fast Apple-style spotlight for AI skills.
 
 ## Live Features
 
 | Status | Feature |
 |---|---|
-| ✅ | Skill cards with prompt copy and search |
-| ✅ | Workflow chains with full-chain copy |
-| ✅ | Use before / use after graph pills |
-| ✅ | When-not-to-use warning blocks |
-| ✅ | Examples gallery with animated expand |
-| ✅ | AI tool compatibility matrix + best platform badge |
-| ✅ | Protocols section with expandable steps + copy |
-| ✅ | Smart recommendation engine |
-| ✅ | Advanced local analytics with sparkline |
-| ✅ | Export formats: JSON / YAML / Markdown |
+| ✅ | Search with category filtering |
+| ✅ | Cmd/Ctrl + K command palette |
+| ✅ | Skill cards with copy prompt/install + GitHub link |
+| ✅ | Pin/unpin favorites + pinned strip |
+| ✅ | Per-skill notes with localStorage persistence |
+| ✅ | Sorting: default / most used / recent |
+| ✅ | Grid/list view toggle |
+| ✅ | Share links via `#skill-id` with scroll + highlight |
+| ✅ | Custom skills (add/edit/delete) with persistence |
+| ✅ | Apple-style UI with dark mode |
 
-## Planned
+## Future Ideas
 
 | Status | Feature |
 |---|---|
-| ⏳ | Workflow versioning and diff history |
-| ⏳ | Import bundles from exported workflow files |
-| ⏳ | Team preset packs with shared protocol templates |
-| ⏳ | Confidence scoring for recommendations |
+| ⏳ | Workflow chains |
+| ⏳ | Protocol templates |
+| ⏳ | Recommendation engine |
+| ⏳ | Export formats (JSON/YAML/Markdown) |
+| ⏳ | Compatibility matrix |
+| ⏳ | Analytics dashboard |
+| ⏳ | Example galleries |
 
 ## How to add a skill manually
 
-Edit `SKILLS` in `index.html` and include:
-- `id`, `cat`, `name`, `oneliner`, `when`, `when_not`, `tags`, `level`, `prompt`
-- `use_before`, `use_after`, `examples[]`, `compatible_with`
+Edit `BASE` in `index.html` and include:
+- `id`, `cat`, `name`, `oneliner`, `tags`, `prompt`, `install`, `github`
