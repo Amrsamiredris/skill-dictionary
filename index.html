@@ -1,71 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Skill Dictionary</title>
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;background:#f5f5f7;color:#111;min-height:100vh}
-:root{--glass:rgba(255,255,255,.72);--border:rgba(0,0,0,.08);--muted:#6e6e73;--accent:#0071e3;--green:#22c55e;--blue:#3b82f6;--amber:#f59e0b;--red:#ef4444}
-.header{position:sticky;top:0;z-index:10;background:backdrop-filter:blur(20px);background:var(--glass);border-bottom:1px solid var(--border);padding:16px 20px}
-.top{display:flex;gap:12px;align-items:center}.logo{font-weight:700}.search{flex:1}.search input{width:100%;padding:10px;border:1px solid var(--border);border-radius:10px}
-.tabs{display:flex;gap:8px;margin-top:12px;overflow:auto}.tab{border:1px solid var(--border);background:#fff;padding:7px 10px;border-radius:999px;cursor:pointer}.tab.active{background:#111;color:#fff}
-.main{padding:16px 20px}.section-title{font-size:12px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin:14px 0}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
-.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:0 8px 28px rgba(0,0,0,.04);transform:translateZ(0);transition:transform .35s cubic-bezier(.2,.9,.2,1.1),opacity .35s;border-color .2s}.card:hover{transform:translateY(-2px)}
-.workflow-card{min-height:240px;background:linear-gradient(180deg,#fff,#f8fbff)}.protocol-card{background:linear-gradient(180deg,#fff,#f7faf7)}
-.meta{display:flex;gap:6px;flex-wrap:wrap}.badge{font-size:10px;border:1px solid var(--border);border-radius:999px;padding:2px 8px;color:#555}.lvl-beginner{background:#ecfdf3}.lvl-intermediate{background:#eff6ff}.lvl-advanced{background:#fef2f2}
-.title{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;font-weight:600;margin:8px 0}.desc{font-size:12px;line-height:1.45;color:#333}.when{margin-top:8px;font-size:11px;color:#555}.warn{margin-top:8px;padding:8px;border-left:3px solid var(--amber);background:#fff9ec;font-size:11px;color:#6a4b00}
-.chain{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:#666}.arrow{opacity:.6}
-.actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}button{cursor:pointer}.btn{border:1px solid var(--border);background:#fff;border-radius:10px;padding:7px 10px;font-size:11px}
-.conn{margin-top:8px;font-size:11px}.pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}.pill{border:1px solid var(--border);padding:3px 8px;border-radius:999px;font-size:10px;background:#fafafa;cursor:pointer}
-.compat{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.dot{width:7px;height:7px;border-radius:99px;display:inline-block;margin-right:4px}.cmp{font-size:10px;color:#555}
-.examples-toggle{margin-top:8px;font-size:11px;color:var(--accent);cursor:pointer}.examples{max-height:0;overflow:hidden;opacity:0;transition:max-height .45s cubic-bezier(.2,.9,.2,1),opacity .35s}.examples.open{max-height:440px;opacity:1}
-.example{border-top:1px dashed var(--border);padding-top:8px;margin-top:8px;animation:rise .35s both}.example img{width:100%;height:120px;object-fit:cover;border-radius:10px;background:#f0f0f0}
-@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.analytics{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}.metric{background:#fff;border:1px solid var(--border);padding:12px;border-radius:12px}.spark svg{width:100%;height:28px}
-@media (max-width:720px){.grid{grid-template-columns:1fr}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skill Dictionary</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f5f7;
+      --surface: rgba(255,255,255,0.86);
+      --card: #ffffff;
+      --text: #1d1d1f;
+      --muted: #6e6e73;
+      --border: rgba(0,0,0,0.12);
+      --accent: #0071e3;
+      --pill: #f2f2f4;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111214;
+        --surface: rgba(28,28,30,0.86);
+        --card: #1c1c1e;
+        --text: #f5f5f7;
+        --muted: #a1a1a6;
+        --border: rgba(255,255,255,0.16);
+        --accent: #3b82f6;
+        --pill: #2a2a2d;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px 28px; }
+    .header {
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: blur(16px);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner { max-width: 1100px; margin: 0 auto; padding: 14px 16px; display: grid; gap: 10px; }
+    .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .brand { font-weight: 700; letter-spacing: -0.02em; }
+    .search { flex: 1; min-width: 220px; }
+    input, textarea, button {
+      font: inherit; color: inherit;
+    }
+    #q, #paletteInput, .note-box {
+      width: 100%; border: 1px solid var(--border); border-radius: 12px;
+      background: var(--card); color: var(--text);
+      padding: 10px 12px;
+    }
+    .tabs { display: flex; gap: 8px; overflow: auto; padding-bottom: 2px; }
+    .tab, .chip, .btn {
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 6px 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .tab.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .main { padding-top: 16px; }
+    .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); }
+    .list { display: grid; gap: 10px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .title { font-size: 14px; font-weight: 600; margin: 6px 0; font-family: ui-monospace, Menlo, monospace; }
+    .muted { color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .meta { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pill { background: var(--pill); border-radius: 999px; font-size: 11px; padding: 3px 8px; }
+    .actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn { border-radius: 10px; font-size: 12px; padding: 7px 10px; }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .note-box { margin-top: 8px; min-height: 62px; resize: vertical; font-size: 12px; }
+    .empty { padding: 30px 12px; text-align: center; color: var(--muted); }
+    .toast {
+      position: fixed; bottom: 16px; right: 16px;
+      background: var(--text); color: var(--bg);
+      padding: 8px 12px; border-radius: 10px; font-size: 12px;
+      opacity: 0; transform: translateY(8px); transition: .2s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .palette {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+      display: none; align-items: flex-start; justify-content: center; padding-top: 12vh; z-index: 30;
+    }
+    .palette.open { display: flex; }
+    .palette-panel {
+      width: min(680px, calc(100vw - 20px)); background: var(--card);
+      border: 1px solid var(--border); border-radius: 16px; padding: 10px;
+    }
+    #paletteList { max-height: 50vh; overflow: auto; margin-top: 8px; display: grid; gap: 6px; }
+    .palette-item { border: 1px solid var(--border); border-radius: 10px; padding: 8px; cursor: pointer; }
+    @media (max-width: 720px) {
+      .header-inner { gap: 8px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-<header class="header"><div class="top"><div class="logo">skill/dict</div><div class="search"><input id="q" placeholder="Spotlight for AI workflows"/></div></div><div class="tabs" id="tabs"></div></header>
-<main class="main">
-<div class="section-title">Skills</div><div id="skills" class="grid"></div>
-<div class="section-title">Workflows</div><div id="workflows" class="grid"></div>
-<div class="section-title">Protocols</div><div id="protocols" class="grid"></div>
-<div class="section-title">Operational Analytics</div><div id="analytics" class="analytics"></div>
-</main>
-<script>
-const CATS=[{id:'all',name:'All'},{id:'visual',name:'Visual'},{id:'image',name:'Image'},{id:'frontend',name:'Frontend'},{id:'backend',name:'Backend'},{id:'context',name:'Context'},{id:'workflow',name:'Workflow'},{id:'workflows',name:'Workflows'}];
-const SKILLS=[{id:'minimalist-ui',cat:'visual',name:'minimalist-ui',oneliner:'Editorial minimalism for clean SaaS UX.',when:'First pass for product shell and hierarchy.',when_not:'Avoid if you need high-drama marketing visuals.',tags:['saas','clean','layout'],level:'beginner',use_before:['frontend-ui-engineering'],use_after:['design-taste-frontend'],prompt:'follow minimalist-ui for [task]',examples:[{title:'Admin shell revamp',prompt_used:'apply minimalist-ui to this dashboard',skills_used:['minimalist-ui'],result_description:'Calmer information hierarchy with tighter spacing rhythm.',image_url:'https://picsum.photos/600/320?random=1'}],compatible_with:{claude:'excellent',codex:'good',cursor:'good',antigravity:'best',windsurf:'partial'}},
-{id:'design-taste-frontend',cat:'visual',name:'design-taste-frontend',oneliner:'Default anti-slop premium frontend taste.',when:'Use before detailed component implementation.',when_not:'Skip when strict legacy style guide must remain unchanged.',tags:['default','premium'],level:'intermediate',use_before:['web-quality-audit'],use_after:['minimalist-ui'],prompt:'follow design-taste-frontend for [task]',examples:[{title:'SaaS onboarding polish',prompt_used:'apply design-taste-frontend to onboarding flow',skills_used:['design-taste-frontend'],result_description:'Premium UI treatment with controlled motion and hierarchy.',image_url:'https://picsum.photos/600/320?random=2'}],compatible_with:{claude:'excellent',codex:'good',cursor:'good',antigravity:'best',windsurf:'partial'}},
-{id:'frontend-ui-engineering',cat:'frontend',name:'frontend-ui-engineering',oneliner:'Architecture, components, responsive and a11y fundamentals.',when:'After visual direction is clear and before shipping.',when_not:'Not for purely backend-only tickets.',tags:['engineering','components','a11y'],level:'intermediate',use_before:['web-quality-audit'],use_after:['minimalist-ui','design-taste-frontend'],prompt:'follow frontend-ui-engineering for [task]',examples:[{title:'Component system hardening',prompt_used:'apply frontend-ui-engineering to nav+table',skills_used:['frontend-ui-engineering'],result_description:'Reusable components and state boundaries improved.',image_url:'https://picsum.photos/600/320?random=3'}],compatible_with:{claude:'good',codex:'excellent',cursor:'good',antigravity:'good',windsurf:'partial'}},
-{id:'web-quality-audit',cat:'frontend',name:'web-quality-audit',oneliner:'Final quality pass: performance, SEO, accessibility.',when:'Use as pre-ship gate.',when_not:'Not useful before UI implementation exists.',tags:['audit','perf','seo'],level:'advanced',use_before:[],use_after:['frontend-ui-engineering'],prompt:'follow web-quality-audit for [project]',examples:[{title:'Release readiness report',prompt_used:'audit this app using web-quality-audit',skills_used:['web-quality-audit'],result_description:'Found CLS issues and heading structure gaps before launch.',image_url:'https://picsum.photos/600/320?random=4'}],compatible_with:{claude:'good',codex:'excellent',cursor:'good',antigravity:'good',windsurf:'partial'}},
-{id:'high-end-visual-design',cat:'image',name:'high-end-visual-design',oneliner:'Luxury editorial references for premium launches.',when:'Need elevated visual language before coding.',when_not:'Not ideal for dense enterprise utility tools.',tags:['luxury','editorial'],level:'intermediate',use_before:['design-taste-frontend'],use_after:[],prompt:'use high-end-visual-design for [project]',examples:[{title:'Luxury hero direction',prompt_used:'generate high-end reference frames',skills_used:['high-end-visual-design'],result_description:'High-production-value visual references with premium pacing.',image_url:'https://picsum.photos/600/320?random=5'}],compatible_with:{claude:'excellent',codex:'good',cursor:'good',antigravity:'best',windsurf:'partial'}}];
-const WORKFLOWS=[{id:'build-saas',name:'Build SaaS App',description:'From baseline taste to engineering to ship audit.',best_for:'Product MVPs and internal SaaS tools.',skills:['minimalist-ui','design-taste-frontend','frontend-ui-engineering','web-quality-audit','vercel-deploy-claimable'],output:'Production-ready SaaS UI workflow prompt chain.',difficulty:'intermediate',estimated_time:'45-90m',tags:['saas','mvp']},{id:'luxury-landing',name:'Luxury Landing Page',description:'Premium marketing build chain.',best_for:'Brand launches and campaign pages.',skills:['high-end-visual-design','imagegen-frontend-web','design-taste-frontend','gpt-taste'],output:'High-end marketing page prompt chain.',difficulty:'advanced',estimated_time:'60-120m',tags:['marketing','premium']},{id:'supabase-app',name:'Supabase App',description:'Database + product frontend chain for supabase projects.',best_for:'Fullstack shipping with Supabase.',skills:['supabase','supabase-postgres-best-practices','frontend-ui-engineering','web-quality-audit'],output:'Reliable fullstack prompt chain.',difficulty:'advanced',estimated_time:'90-150m',tags:['supabase','fullstack']}];
-const PROTOCOLS=[{id:'safe-build',name:'Safe Build Protocol',steps:['Research','Questions','Architecture','Confirm','Build'],estimated_usage:'Every new build',ideal_use_cases:'Ambiguous scopes and multi-file refactors.'},{id:'performance',name:'Performance Protocol',steps:['Measure','Analyze','Optimize','Re-test'],estimated_usage:'Before release',ideal_use_cases:'Slow interactions and weak Lighthouse metrics.'},{id:'design-review',name:'Design Review Protocol',steps:['Audit','Hierarchy','Spacing','Motion','Accessibility'],estimated_usage:'After UI implementation',ideal_use_cases:'Quality uplift without redesigning from scratch.'}];
-let usage=JSON.parse(localStorage.getItem('sd_usage')||'{}'),recent=JSON.parse(localStorage.getItem('sd_recent')||'[]'),analytics=JSON.parse(localStorage.getItem('sd_analytics')||'{"workflowCopies":{},"daily":{}}');
-localStorage.setItem('sd_workflows',JSON.stringify(WORKFLOWS));localStorage.setItem('sd_protocols',JSON.stringify(PROTOCOLS));localStorage.setItem('sd_examples',JSON.stringify(SKILLS.reduce((a,s)=>{a[s.id]=s.examples;return a;},{})));localStorage.setItem('sd_recommendations',JSON.stringify({}));
-const c=(s)=>navigator.clipboard.writeText(s);
-function compColor(v){return v==='excellent'||v==='best'?"var(--green)":v==='good'?"var(--blue)":v==='partial'?"var(--amber)":"var(--red)"}
-function recommend(skill){return SKILLS.filter(s=>s.id!==skill.id).map(s=>({s,score:s.tags.filter(t=>skill.tags.includes(t)).length+(WORKFLOWS.some(w=>w.skills.includes(skill.id)&&w.skills.includes(s.id))?2:0)+(s.cat===skill.cat?1:0)+(usage[s.id]||0>1?1:0)})).sort((a,b)=>b.score-a.score).slice(0,3).map(x=>x.s)}
-function exportData(obj,type){if(type==='json')return JSON.stringify(obj,null,2);if(type==='md')return `# ${obj.name}\n\n${obj.description||obj.oneliner}\n\n- Tags: ${(obj.tags||[]).join(', ')}\n`;return `${Object.entries(obj).map(([k,v])=>`${k}: ${Array.isArray(v)?'['+v.join(', ')+']':typeof v==='object'?JSON.stringify(v):v}`).join('\n')}`}
-function copySkill(id){const s=SKILLS.find(x=>x.id===id);usage[id]=(usage[id]||0)+1;recent=[id,...recent.filter(x=>x!==id)].slice(0,12);analytics.daily[new Date().toISOString().slice(0,10)]=(analytics.daily[new Date().toISOString().slice(0,10)]||0)+1;localStorage.setItem('sd_usage',JSON.stringify(usage));localStorage.setItem('sd_recent',JSON.stringify(recent));localStorage.setItem('sd_analytics',JSON.stringify(analytics));c(s.prompt)}
-function copyWorkflow(id){const w=WORKFLOWS.find(x=>x.id===id);analytics.workflowCopies[id]=(analytics.workflowCopies[id]||0)+1;localStorage.setItem('sd_analytics',JSON.stringify(analytics));const bundle=w.skills.map((sid,i)=>`${i+1}. ${sid}\n${SKILLS.find(s=>s.id===sid)?.prompt||'follow '+sid+' for [task]'}`).join('\n\n');c(bundle)}
-function jumpSkill(id){const el=document.getElementById('skill-'+id);if(!el)return;el.scrollIntoView({behavior:'smooth',block:'center'});el.style.borderColor='#0071e3';setTimeout(()=>el.style.borderColor='var(--border)',1300)}
-function spark(values){const arr=values.length?values:[0,0,0,0,0,0,0];const max=Math.max(...arr,1);const pts=arr.map((v,i)=>`${(i/(arr.length-1))*100},${28-(v/max)*26}`).join(' ');return `<svg viewBox='0 0 100 28' preserveAspectRatio='none'><polyline points='${pts}' fill='none' stroke='#0071e3' stroke-width='1.6'/></svg>`}
-function render(){const q=(document.getElementById('q').value||'').toLowerCase(),tab=document.querySelector('.tab.active')?.dataset.tab||'all';
-const list=SKILLS.filter(s=>(tab==='all'||s.cat===tab)&&`${s.name} ${s.oneliner} ${s.tags.join(' ')}`.toLowerCase().includes(q));
-document.getElementById('skills').innerHTML=list.map(s=>`<article class='card' id='skill-${s.id}'><div class='meta'><span class='badge lvl-${s.level}'>${s.level}</span><span class='badge'>best: ${Object.entries(s.compatible_with).sort((a,b)=>String(b[1]).localeCompare(String(a[1])))[0][0]}</span></div><div class='title'>${s.name}</div><div class='desc'>${s.oneliner}</div><div class='when'><b>Use when:</b> ${s.when}</div><div class='warn'><b>When not to use:</b> ${s.when_not}</div><div class='conn'><b>Use before</b><div class='pills'>${(s.use_before||[]).map(i=>`<span class='pill' onclick="jumpSkill('${i}')">${i}</span>`).join('')||'<span class="badge">—</span>'}</div></div><div class='conn'><b>Use after</b><div class='pills'>${(s.use_after||[]).map(i=>`<span class='pill' onclick="jumpSkill('${i}')">${i}</span>`).join('')||'<span class="badge">—</span>'}</div></div><div class='compat'>${Object.entries(s.compatible_with).map(([k,v])=>`<span class='cmp' title='${v}'><span class='dot' style='background:${compColor(v)}'></span>${k}</span>`).join('')}</div><div class='actions'><button class='btn' onclick="copySkill('${s.id}')">Copy prompt</button><button class='btn' onclick="c(exportData(SKILLS.find(x=>x.id==='${s.id}'),'json'))">Export JSON</button><button class='btn' onclick="c(exportData(SKILLS.find(x=>x.id==='${s.id}'),'yaml'))">Export YAML</button><button class='btn' onclick="c(exportData(SKILLS.find(x=>x.id==='${s.id}'),'md'))">Export MD</button></div><div class='examples-toggle' onclick="this.nextElementSibling.classList.toggle('open')">Examples (${s.examples.length})</div><div class='examples'>${s.examples.map((e,i)=>`<div class='example' style='animation-delay:${i*80}ms'><img src='${e.image_url}' alt='${e.title}'/><div class='title'>${e.title}</div><div class='desc'>${e.result_description}</div></div>`).join('')}</div><div class='conn'><b>Recommended next skills</b><div class='pills'>${recommend(s).map(r=>`<span class='pill' onclick="jumpSkill('${r.id}')">${r.id}</span>`).join('')}</div></div></article>`).join('');
+  <header class="header">
+    <div class="header-inner">
+      <div class="row">
+        <div class="brand">skill/dict</div>
+        <div class="search"><input id="q" placeholder="Search skills or tags (⌘K for palette)" /></div>
+      </div>
+      <div class="row tabs" id="tabs"></div>
+      <div class="row toolbar">
+        <button id="toggleView" class="chip">Grid view</button>
+        <button id="showPinned" class="chip">Show pinned</button>
+      </div>
+    </div>
+  </header>
 
-document.getElementById('workflows').innerHTML=WORKFLOWS.map(w=>`<article class='card workflow-card'><div class='title'>${w.name}</div><div class='desc'>${w.description}</div><div class='when'><b>Best for:</b> ${w.best_for}</div><div class='chain'>${w.skills.map((s,i)=>`<span>${s}</span>${i<w.skills.length-1?'<span class="arrow">→</span>':''}`).join('')}</div><div class='meta'><span class='badge'>${w.difficulty}</span><span class='badge'>${w.estimated_time}</span></div><div class='actions'><button class='btn' onclick="copyWorkflow('${w.id}')">Copy full workflow</button><button class='btn' onclick="c(exportData(WORKFLOWS.find(x=>x.id==='${w.id}'),'json'))">Export JSON</button><button class='btn' onclick="c(exportData(WORKFLOWS.find(x=>x.id==='${w.id}'),'yaml'))">Export YAML</button><button class='btn' onclick="c(exportData(WORKFLOWS.find(x=>x.id==='${w.id}'),'md'))">Export MD</button></div></article>`).join('');
+  <main class="wrap main">
+    <div id="skills"></div>
+  </main>
 
-document.getElementById('protocols').innerHTML=PROTOCOLS.map(p=>`<article class='card protocol-card'><div class='title'>${p.name}</div><div class='desc'>${p.ideal_use_cases}</div><div class='examples-toggle' onclick="this.nextElementSibling.classList.toggle('open')">Expand protocol</div><div class='examples'><div class='chain'>${p.steps.map((s,i)=>`${s}${i<p.steps.length-1?' → ':''}`).join('')}</div><div class='when'><b>Estimated usage:</b> ${p.estimated_usage}</div><div class='actions'><button class='btn' onclick="c('${p.steps.join(' → ')}')">Copy protocol</button></div></div></article>`).join('');
-const topSkill=Object.entries(usage).sort((a,b)=>b[1]-a[1])[0];const dayKeys=Object.keys(analytics.daily).sort().slice(-7);const dayVals=dayKeys.map(k=>analytics.daily[k]);const streak=(()=>{let d=new Date(),s=0;while(true){const k=d.toISOString().slice(0,10);if(analytics.daily[k]>0){s++;d.setDate(d.getDate()-1)}else break;}return s;})();
-document.getElementById('analytics').innerHTML=`<div class='metric'><div class='desc'>Most used skill</div><div class='title'>${topSkill?topSkill[0]:'—'}</div></div><div class='metric'><div class='desc'>Most copied workflow</div><div class='title'>${Object.entries(analytics.workflowCopies).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—'}</div></div><div class='metric'><div class='desc'>Recently used</div><div class='title'>${recent.slice(0,3).join(', ')||'—'}</div></div><div class='metric'><div class='desc'>Daily streak</div><div class='title'>${streak} days</div></div><div class='metric spark'><div class='desc'>Daily usage</div>${spark(dayVals)}</div>`;
-}
-window.c=c;window.jumpSkill=jumpSkill;window.copySkill=copySkill;window.copyWorkflow=copyWorkflow;window.exportData=exportData;
-document.getElementById('tabs').innerHTML=CATS.map((c,i)=>`<button class='tab ${i===0?'active':''}' data-tab='${c.id}'>${c.name}</button>`).join('');document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');render();});document.getElementById('q').addEventListener('input',render);render();
-</script>
+  <div id="palette" class="palette" aria-hidden="true">
+    <div class="palette-panel">
+      <input id="paletteInput" placeholder="Jump to skill…" />
+      <div id="paletteList"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const STORAGE_KEY = "skill_dict_state_v2";
+    const CATS = ["all", "visual", "frontend", "image", "backend", "context"];
+    const SKILLS = [
+      {id:"minimalist-ui",cat:"visual",name:"minimalist-ui",oneliner:"Editorial minimalism for clean SaaS UX.",tags:["clean","layout"],prompt:"follow minimalist-ui for [task]",install:"codex skill install minimalist-ui"},
+      {id:"design-taste-frontend",cat:"visual",name:"design-taste-frontend",oneliner:"Default anti-slop premium frontend taste.",tags:["premium","ui"],prompt:"follow design-taste-frontend for [task]",install:"codex skill install design-taste-frontend"},
+      {id:"frontend-ui-engineering",cat:"frontend",name:"frontend-ui-engineering",oneliner:"Responsive structure and accessibility fundamentals.",tags:["components","a11y"],prompt:"follow frontend-ui-engineering for [task]",install:"codex skill install frontend-ui-engineering"},
+      {id:"web-quality-audit",cat:"frontend",name:"web-quality-audit",oneliner:"Pre-ship quality pass for performance and UX.",tags:["audit","perf"],prompt:"follow web-quality-audit for [project]",install:"codex skill install web-quality-audit"}
+    ];
+
+    const safeJSON = (text, fallback) => { try { return JSON.parse(text); } catch { return fallback; } };
+    const readState = () => {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const parsed = safeJSON(raw || "{}", {});
+      return {
+        pins: Array.isArray(parsed.pins) ? parsed.pins : [],
+        notes: parsed.notes && typeof parsed.notes === "object" ? parsed.notes : {},
+        custom: Array.isArray(parsed.custom) ? parsed.custom : [],
+        view: parsed.view === "list" ? "list" : "grid",
+        onlyPinned: !!parsed.onlyPinned
+      };
+    };
+    let state = readState();
+    const saveState = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+    const $ = (id) => document.getElementById(id);
+    const toast = (msg) => { const el = $("toast"); el.textContent = msg; el.classList.add("show"); setTimeout(() => el.classList.remove("show"), 1100); };
+    const copyText = async (text) => {
+      try { await navigator.clipboard.writeText(text); toast("Copied"); }
+      catch { const ta=document.createElement("textarea"); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); toast("Copied"); }
+    };
+
+    let activeCat = "all";
+    const allSkills = () => [...SKILLS, ...state.custom];
+
+    const renderTabs = () => {
+      $("tabs").innerHTML = CATS.map(c => `<button class="tab ${c===activeCat?"active":""}" data-cat="${c}">${c[0].toUpperCase()+c.slice(1)}</button>`).join("");
+      $("tabs").querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => { activeCat = btn.dataset.cat; render(); }));
+    };
+
+    const skillCard = (s) => {
+      const pinned = state.pins.includes(s.id);
+      const share = `${location.origin}${location.pathname}?skill=${encodeURIComponent(s.id)}`;
+      return `<article class="card" id="skill-${s.id}">
+        <div class="meta"><span class="pill">${s.cat}</span><span class="pill">${pinned ? "Pinned" : "Unpinned"}</span></div>
+        <div class="title">${s.name}</div>
+        <div class="muted">${s.oneliner}</div>
+        <div class="meta" style="margin-top:8px">${s.tags.map(t=>`<span class="pill">${t}</span>`).join("")}</div>
+        <div class="actions">
+          <button class="btn primary" data-copy-prompt="${s.id}">Copy prompt</button>
+          <button class="btn" data-copy-install="${s.id}">Copy install</button>
+          <button class="btn" data-pin="${s.id}">${pinned ? "Unpin" : "Pin"}</button>
+          <button class="btn" data-share="${s.id}" data-share-url="${share}">Copy link</button>
+        </div>
+        <textarea class="note-box" data-note="${s.id}" placeholder="Private notes for this skill...">${(state.notes[s.id] || "").replace(/</g,"&lt;")}</textarea>
+      </article>`;
+    };
+
+    const render = () => {
+      renderTabs();
+      const q = ($("q").value || "").toLowerCase().trim();
+      let list = allSkills().filter(s => activeCat === "all" || s.cat === activeCat);
+      if (state.onlyPinned) list = list.filter(s => state.pins.includes(s.id));
+      if (q) list = list.filter(s => `${s.name} ${s.oneliner} ${s.tags.join(" ")}`.toLowerCase().includes(q));
+
+      const container = $("skills");
+      container.className = state.view === "list" ? "list" : "grid";
+      container.innerHTML = list.length ? list.map(skillCard).join("") : `<div class="empty">No skills found.</div>`;
+
+      $("toggleView").textContent = state.view === "list" ? "List view" : "Grid view";
+      $("showPinned").classList.toggle("active", state.onlyPinned);
+
+      container.querySelectorAll("[data-copy-prompt]").forEach(b => b.addEventListener("click", () => {
+        const s = allSkills().find(x => x.id === b.dataset.copyPrompt); if (s) copyText(s.prompt);
+      }));
+      container.querySelectorAll("[data-copy-install]").forEach(b => b.addEventListener("click", () => {
+        const s = allSkills().find(x => x.id === b.dataset.copyInstall); if (s) copyText(s.install || `codex skill install ${s.id}`);
+      }));
+      container.querySelectorAll("[data-pin]").forEach(b => b.addEventListener("click", () => {
+        const id = b.dataset.pin;
+        state.pins = state.pins.includes(id) ? state.pins.filter(x => x !== id) : [...state.pins, id];
+        saveState(); render();
+      }));
+      container.querySelectorAll("[data-share]").forEach(b => b.addEventListener("click", () => copyText(b.dataset.shareUrl)));
+      container.querySelectorAll("[data-note]").forEach(t => t.addEventListener("input", () => {
+        state.notes[t.dataset.note] = t.value; saveState();
+      }));
+    };
+
+    const renderPalette = (query = "") => {
+      const q = query.toLowerCase().trim();
+      const list = allSkills().filter(s => !q || s.name.toLowerCase().includes(q));
+      $("paletteList").innerHTML = list.slice(0, 20).map(s => `<div class="palette-item" data-jump="${s.id}"><b>${s.name}</b><div class="muted">${s.oneliner}</div></div>`).join("");
+      $("paletteList").querySelectorAll("[data-jump]").forEach(i => i.addEventListener("click", () => {
+        const id = i.dataset.jump;
+        $("palette").classList.remove("open");
+        activeCat = "all";
+        render();
+        const node = $(`skill-${id}`);
+        if (node) node.scrollIntoView({behavior:"smooth", block:"center"});
+      }));
+    };
+
+    const addCustomFromURL = () => {
+      const params = new URLSearchParams(location.search);
+      const skillId = params.get("skill");
+      const add = params.get("add");
+      if (skillId) {
+        setTimeout(() => {
+          const el = $(`skill-${skillId}`);
+          if (el) el.scrollIntoView({behavior:"smooth", block:"center"});
+        }, 60);
+      }
+      if (add) {
+        const data = safeJSON(decodeURIComponent(add), null);
+        if (data && data.id && data.name && data.oneliner) {
+          const entry = { id: String(data.id), name: String(data.name), oneliner: String(data.oneliner), cat: CATS.includes(data.cat) ? data.cat : "context", tags: Array.isArray(data.tags) ? data.tags : ["custom"], prompt: String(data.prompt || `follow ${data.id} for [task]`), install: String(data.install || `codex skill install ${data.id}`) };
+          state.custom = [...state.custom.filter(s => s.id !== entry.id), entry];
+          saveState();
+        }
+      }
+    };
+
+    $("q").addEventListener("input", render);
+    $("toggleView").addEventListener("click", () => { state.view = state.view === "grid" ? "list" : "grid"; saveState(); render(); });
+    $("showPinned").addEventListener("click", () => { state.onlyPinned = !state.onlyPinned; saveState(); render(); });
+
+    document.addEventListener("keydown", (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        $("palette").classList.add("open");
+        $("paletteInput").value = "";
+        renderPalette("");
+        $("paletteInput").focus();
+      }
+      if (e.key === "Escape") $("palette").classList.remove("open");
+    });
+    $("palette").addEventListener("click", (e) => { if (e.target.id === "palette") $("palette").classList.remove("open"); });
+    $("paletteInput").addEventListener("input", (e) => renderPalette(e.target.value));
+
+    addCustomFromURL();
+    render();
+  </script>
 </body>
 </html>
