@@ -47,7 +47,17 @@
   .tab:hover:not(.active){color:#9999b8}
 
   /* GRID */
+  .toolbar{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;gap:12px;border-bottom:1px solid var(--border)}
+  .toolbar-left,.toolbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .mini-btn,.select{background:var(--surface);border:1px solid var(--border2);color:var(--dim);border-radius:6px;padding:7px 10px;font-size:11px;font-family:'IBM Plex Mono',monospace;cursor:pointer}
+  .mini-btn.active{color:var(--text);border-color:var(--purple)}
+  .select{cursor:pointer}
+  .pins{display:flex;gap:8px;padding:12px 24px 0;flex-wrap:wrap}
+  .pin{background:var(--surface2);border:1px solid var(--border2);color:var(--text);border-radius:999px;padding:5px 10px;font-size:11px;font-family:'IBM Plex Mono',monospace;cursor:pointer}
+  .pin .x{color:var(--muted);margin-left:6px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px;padding:18px 24px 40px}
+  .grid.list{display:block}
+  .grid.list .card{margin-bottom:8px}
 
   /* CARD */
   .card{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color .2s;display:flex;flex-direction:column}
@@ -77,7 +87,13 @@
   .btn-gh{background:none;border:1px solid var(--border);color:var(--muted);border-radius:5px;padding:7px 9px;font-size:11px;cursor:pointer;text-decoration:none;display:flex;align-items:center;transition:all .15s}
   .btn-gh:hover{border-color:var(--border2);color:var(--text)}
 
+  .note{width:100%;margin-top:8px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--dim);padding:6px;font-size:10px;font-family:'IBM Plex Mono',monospace}
   .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:60px 0;font-family:'IBM Plex Mono',monospace;font-size:12px}
+  .palette{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;padding-top:12vh;z-index:100}
+  .palette.open{display:flex}
+  .palette-box{width:min(680px,92vw);background:var(--surface);border:1px solid var(--border2);border-radius:8px;overflow:hidden}
+  .palette-box input{width:100%;padding:12px;border:0;border-bottom:1px solid var(--border2);background:var(--surface);color:var(--text);font-family:'IBM Plex Mono',monospace}
+  .palette-list{max-height:48vh;overflow:auto}.palette-item{padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--border)}.palette-item.active,.palette-item:hover{background:#1a1a26}
 </style>
 </head>
 <body>
@@ -96,7 +112,19 @@
   </div>
   <div class="tabs" id="tabs"></div>
 </div>
+<div class="toolbar">
+  <div class="toolbar-left">
+    <button class="mini-btn" id="add-skill">+ add custom skill</button>
+    <button class="mini-btn" id="view-toggle">toggle list view</button>
+  </div>
+  <div class="toolbar-right">
+    <label for="sort" class="stat">sort</label>
+    <select id="sort" class="select"><option value="default">default</option><option value="usage">most used</option><option value="recent">recent</option></select>
+  </div>
+</div>
+<div class="pins" id="pins"></div>
 <div class="grid" id="grid"></div>
+<div class="palette" id="palette"><div class="palette-box"><input id="palette-search" placeholder="type a skill and press Enter to copy"/><div class="palette-list" id="palette-list"></div></div></div>
 
 <script>
 const CATS = [
@@ -321,18 +349,29 @@ const SKILLS = [
   },
 ];
 
-let activeTab='all', q='';
+let activeTab='all', q='', sortMode='default', listView=false;
 let usage = JSON.parse(localStorage.getItem('sd_usage')||'{}');
+let recent = JSON.parse(localStorage.getItem('sd_recent')||'{}');
+let pins = JSON.parse(localStorage.getItem('sd_pins')||'[]');
+let notes = JSON.parse(localStorage.getItem('sd_notes')||'{}');
+let customSkills = JSON.parse(localStorage.getItem('sd_custom_skills')||'[]');
 
 function saveUsage(){ localStorage.setItem('sd_usage', JSON.stringify(usage)); }
+function saveRecent(){ localStorage.setItem('sd_recent', JSON.stringify(recent)); }
+function savePins(){ localStorage.setItem('sd_pins', JSON.stringify(pins)); }
+function saveNotes(){ localStorage.setItem('sd_notes', JSON.stringify(notes)); }
+function allSkills(){ return [...SKILLS,...customSkills]; }
 
 function filtered(){
   const lq = q.toLowerCase();
-  return SKILLS.filter(s=>{
+  let base = allSkills().filter(s=>{
     const catOk = activeTab==='all' || s.cat===activeTab;
     const qOk = !lq || [s.id,s.name,s.oneliner,s.when,...s.tags,s.source].join(' ').toLowerCase().includes(lq);
     return catOk && qOk;
   });
+  if(sortMode==='usage') base.sort((a,b)=>(usage[b.id]||0)-(usage[a.id]||0));
+  if(sortMode==='recent') base.sort((a,b)=>(recent[b.id]||0)-(recent[a.id]||0));
+  return base;
 }
 
 function updateStats(){
@@ -344,7 +383,8 @@ function updateStats(){
 
 function renderTabs(){
   const counts = {};
-  CATS.forEach(c=>{ counts[c.id] = c.id==='all' ? SKILLS.length : SKILLS.filter(s=>s.cat===c.id).length; });
+  const source=allSkills();
+  CATS.forEach(c=>{ counts[c.id] = c.id==='all' ? source.length : source.filter(s=>s.cat===c.id).length; });
   document.getElementById('tabs').innerHTML = CATS.map(c=>`
     <button class="tab${activeTab===c.id?' active':''}" data-cat="${c.id}">${c.label} (${counts[c.id]})</button>
   `).join('');
@@ -372,9 +412,13 @@ function renderGrid(){
         <div class="when">↳ ${s.when}</div>
         <div class="tags">${s.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
         <div class="source">${s.source}</div>
+        <textarea class="note" placeholder="private note..." onchange="setNote('${s.id}', this.value)">${notes[s.id]||''}</textarea>
       </div>
       <div class="card-foot">
         <button class="btn-copy" id="c-${s.id}" onclick="copy('${s.id}')">⌘ Copy prompt</button>
+        <button class="btn-gh" onclick="copyInstall('${s.id}')">npm</button>
+        <button class="btn-gh" onclick="shareSkill('${s.id}')">#</button>
+        <button class="btn-gh" onclick="togglePin('${s.id}')">★</button>
         <a class="btn-gh" href="${s.gh}" target="_blank">↗</a>
       </div>
     </div>`;
@@ -382,10 +426,15 @@ function renderGrid(){
   updateStats();
 }
 
+
+window.copyInstall=function(id){ navigator.clipboard.writeText(`npx skills add ${id}`).then(()=>alert('install command copied')); };
+window.shareSkill=function(id){ const url=`${location.origin}${location.pathname}#skill-${id}`; navigator.clipboard.writeText(url).then(()=>alert('link copied')); };
+window.setNote=function(id,val){ notes[id]=val; saveNotes(); };
+
 window.copy = function(id){
-  const s = SKILLS.find(x=>x.id===id);
+  const s = allSkills().find(x=>x.id===id);
   navigator.clipboard.writeText(s.prompt).then(()=>{
-    usage[id]=(usage[id]||0)+1; saveUsage();
+    usage[id]=(usage[id]||0)+1; recent[id]=Date.now(); saveUsage(); saveRecent();
     const btn=document.getElementById(`c-${id}`);
     const badge=document.getElementById(`b-${id}`);
     btn.textContent='✓ Copied'; btn.classList.add('copied');
@@ -395,8 +444,24 @@ window.copy = function(id){
   });
 };
 
+function togglePin(id){ pins = pins.includes(id) ? pins.filter(x=>x!==id) : [...pins,id]; savePins(); renderPins(); renderGrid(); }
+function renderPins(){
+  const el=document.getElementById('pins');
+  if(!pins.length){el.innerHTML=''; return;}
+  el.innerHTML = pins.map(id=>{ const s=allSkills().find(x=>x.id===id); if(!s) return ''; return `<button class="pin" onclick="copy('`+id+`')">${s.name}<span class="x" onclick="event.stopPropagation();togglePin('`+id+`')">×</span></button>`; }).join('');
+}
+function renderPalette(){ const list=allSkills().filter(s=>[s.name,...s.tags].join(' ').toLowerCase().includes(document.getElementById('palette-search').value.toLowerCase())); const el=document.getElementById('palette-list'); el.innerHTML=list.map((s,i)=>`<div class="palette-item${i===0?' active':''}" data-id="${s.id}">${s.name} <span class="muted">${s.tags.join(', ')}</span></div>`).join(''); el.querySelectorAll('.palette-item').forEach(it=>it.onclick=()=>{copy(it.dataset.id);document.getElementById('palette').classList.remove('open');}); }
+
 document.getElementById('search').addEventListener('input',e=>{q=e.target.value;renderGrid();});
+document.getElementById('sort').addEventListener('change',e=>{sortMode=e.target.value;renderGrid();});
+document.getElementById('view-toggle').addEventListener('click',()=>{listView=!listView;document.getElementById('grid').classList.toggle('list',listView);});
+document.getElementById('add-skill').addEventListener('click',()=>{const name=prompt('Skill name'); if(!name) return; const id=(prompt('Skill id (slug)')||'').trim()||name.toLowerCase().replace(/[^a-z0-9]+/g,'-'); const cat=prompt('Category: visual|image|frontend|backend|context|workflow','workflow')||'workflow'; const oneliner=prompt('One-liner','Custom skill'); const when=prompt('When to use?','Anytime'); const tags=(prompt('Tags (comma separated)','custom')||'custom').split(',').map(x=>x.trim()).filter(Boolean); const source=prompt('Source','custom'); const promptText=prompt('Activation prompt','follow this skill for: [task]'); const gh=prompt('GitHub URL (optional)','')||'#'; customSkills.push({id,cat,name,oneliner,when,tags,source,prompt:promptText,gh}); localStorage.setItem('sd_custom_skills', JSON.stringify(customSkills)); renderTabs(); renderGrid();});
+
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault(); document.getElementById('palette').classList.add('open'); document.getElementById('palette-search').value=''; renderPalette(); document.getElementById('palette-search').focus();} if(e.key==='Escape') document.getElementById('palette').classList.remove('open');});
+document.getElementById('palette-search').addEventListener('input',renderPalette);
+document.getElementById('palette-search').addEventListener('keydown',e=>{if(e.key==='Enter'){const first=document.querySelector('.palette-item'); if(first){copy(first.dataset.id); document.getElementById('palette').classList.remove('open');}}});
 renderTabs();
+renderPins();
 renderGrid();
 </script>
 </body>
