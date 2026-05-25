@@ -66,6 +66,12 @@ This site is a personal reference dictionary for installed skills, searchable by
 | `full-output-enforcement` | Forces complete, untruncated code. Kills placeholders and "...rest here" patterns. | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) |
 | `vercel-deploy-claimable` | Deploy to Vercel instantly from any AI chat. Returns preview URL + claim URL. | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) |
 
+## Features
+- Apple-inspired light theme with elevated cards and segmented category tabs.
+- Fast search + category filters for skill discovery.
+- One-click prompt copy with usage tracking and pinned skills strip.
+- Cmd/Ctrl+K shortcut support and dark mode styling.
+
 ## How to use
 1. Open the live site.
 2. Search by name, use case, or tag.
