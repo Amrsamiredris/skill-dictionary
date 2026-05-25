@@ -8,278 +8,123 @@
     :root {
       color-scheme: light dark;
       --bg: #f5f5f7;
-      --surface: rgba(255,255,255,0.86);
-      --card: #ffffff;
+      --surface: rgba(255,255,255,0.82);
+      --card: #fff;
       --text: #1d1d1f;
       --muted: #6e6e73;
       --border: rgba(0,0,0,0.12);
       --accent: #0071e3;
       --pill: #f2f2f4;
+      --ok: #2ea043;
     }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #111214;
-        --surface: rgba(28,28,30,0.86);
-        --card: #1c1c1e;
-        --text: #f5f5f7;
-        --muted: #a1a1a6;
-        --border: rgba(255,255,255,0.16);
-        --accent: #3b82f6;
-        --pill: #2a2a2d;
-      }
-    }
+    @media (prefers-color-scheme: dark) { :root { --bg:#111214; --surface:rgba(28,28,30,.86); --card:#1c1c1e; --text:#f5f5f7; --muted:#a1a1a6; --border:rgba(255,255,255,.16); --accent:#3b82f6; --pill:#2a2a2d; --ok:#3fb950; } }
     * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-    }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px 28px; }
-    .header {
-      position: sticky; top: 0; z-index: 20;
-      backdrop-filter: blur(16px);
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-    }
-    .header-inner { max-width: 1100px; margin: 0 auto; padding: 14px 16px; display: grid; gap: 10px; }
-    .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .brand { font-weight: 700; letter-spacing: -0.02em; }
-    .search { flex: 1; min-width: 220px; }
-    input, textarea, button {
-      font: inherit; color: inherit;
-    }
-    #q, #paletteInput, .note-box {
-      width: 100%; border: 1px solid var(--border); border-radius: 12px;
-      background: var(--card); color: var(--text);
-      padding: 10px 12px;
-    }
-    .tabs { display: flex; gap: 8px; overflow: auto; padding-bottom: 2px; }
-    .tab, .chip, .btn {
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 6px 12px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .tab.active { background: var(--text); color: var(--bg); border-color: var(--text); }
-    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
-    .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-    .main { padding-top: 16px; }
-    .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); }
-    .list { display: grid; gap: 10px; }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px;
-    }
-    .title { font-size: 14px; font-weight: 600; margin: 6px 0; font-family: ui-monospace, Menlo, monospace; }
-    .muted { color: var(--muted); font-size: 12px; line-height: 1.45; }
-    .meta { display: flex; gap: 6px; flex-wrap: wrap; }
-    .pill { background: var(--pill); border-radius: 999px; font-size: 11px; padding: 3px 8px; }
-    .actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
-    .btn { border-radius: 10px; font-size: 12px; padding: 7px 10px; }
-    .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-    .note-box { margin-top: 8px; min-height: 62px; resize: vertical; font-size: 12px; }
-    .empty { padding: 30px 12px; text-align: center; color: var(--muted); }
-    .toast {
-      position: fixed; bottom: 16px; right: 16px;
-      background: var(--text); color: var(--bg);
-      padding: 8px 12px; border-radius: 10px; font-size: 12px;
-      opacity: 0; transform: translateY(8px); transition: .2s;
-      pointer-events: none;
-    }
-    .toast.show { opacity: 1; transform: translateY(0); }
-    .palette {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.35);
-      display: none; align-items: flex-start; justify-content: center; padding-top: 12vh; z-index: 30;
-    }
-    .palette.open { display: flex; }
-    .palette-panel {
-      width: min(680px, calc(100vw - 20px)); background: var(--card);
-      border: 1px solid var(--border); border-radius: 16px; padding: 10px;
-    }
-    #paletteList { max-height: 50vh; overflow: auto; margin-top: 8px; display: grid; gap: 6px; }
-    .palette-item { border: 1px solid var(--border); border-radius: 10px; padding: 8px; cursor: pointer; }
-    @media (max-width: 720px) {
-      .header-inner { gap: 8px; }
-      .grid { grid-template-columns: 1fr; }
-    }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif; }
+    .header { position:sticky; top:0; z-index:10; backdrop-filter: blur(14px); background:var(--surface); border-bottom:1px solid var(--border); }
+    .inner, main { max-width:1080px; margin:0 auto; padding:12px 16px; }
+    .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .brand { font-weight:700; letter-spacing:-.02em; }
+    input, textarea, button, select { font:inherit; color:inherit; }
+    .input, .note, .form input, .form textarea, .form select { width:100%; border:1px solid var(--border); background:var(--card); border-radius:12px; padding:10px 12px; }
+    .tabs, .seg { display:flex; gap:8px; overflow:auto; padding-bottom:2px; }
+    .tab, .chip, .btn { border:1px solid var(--border); border-radius:999px; background:var(--card); padding:6px 12px; cursor:pointer; white-space:nowrap; }
+    .tab.active, .chip.active { background:var(--text); color:var(--bg); border-color:var(--text); }
+    .btn { border-radius:10px; font-size:12px; padding:7px 10px; }
+    .btn.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .btn.good { background:var(--ok); color:#fff; border-color:var(--ok); }
+    .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); }
+    .list { display:grid; gap:10px; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:14px; transition:transform .16s ease, opacity .16s ease; }
+    .card.flash { outline:2px solid var(--accent); }
+    .title { font-family:ui-monospace,Menlo,monospace; font-weight:600; margin:6px 0; }
+    .muted { color:var(--muted); font-size:12px; }
+    .meta { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px; }
+    .pill { background:var(--pill); border-radius:999px; font-size:11px; padding:3px 8px; }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .note { min-height:58px; resize:vertical; margin-top:8px; font-size:12px; }
+    .pin-strip { margin:10px 0 2px; display:flex; gap:8px; flex-wrap:wrap; }
+    .empty { color:var(--muted); padding:24px 0; text-align:center; }
+    .palette { position:fixed; inset:0; display:none; align-items:flex-start; justify-content:center; padding-top:12vh; background:rgba(0,0,0,.35); z-index:20; }
+    .palette.open { display:flex; }
+    .panel { width:min(680px, calc(100vw - 20px)); background:var(--card); border:1px solid var(--border); border-radius:16px; padding:10px; }
+    #paletteList { max-height:52vh; overflow:auto; display:grid; gap:6px; margin-top:8px; }
+    .item { border:1px solid var(--border); border-radius:10px; padding:8px; cursor:pointer; }
+    .toast { position:fixed; bottom:16px; right:16px; background:var(--text); color:var(--bg); border-radius:10px; padding:8px 12px; font-size:12px; opacity:0; transform:translateY(8px); transition:.16s ease; }
+    .toast.show { opacity:1; transform:translateY(0); }
+    .form { margin-top:14px; display:grid; gap:8px; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:12px; }
+    @media (max-width: 720px) { .grid { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-inner">
-      <div class="row">
-        <div class="brand">skill/dict</div>
-        <div class="search"><input id="q" placeholder="Search skills or tags (⌘K for palette)" /></div>
-      </div>
-      <div class="row tabs" id="tabs"></div>
-      <div class="row toolbar">
-        <button id="toggleView" class="chip">Grid view</button>
-        <button id="showPinned" class="chip">Show pinned</button>
-      </div>
-    </div>
-  </header>
-
-  <main class="wrap main">
-    <div id="skills"></div>
-  </main>
-
-  <div id="palette" class="palette" aria-hidden="true">
-    <div class="palette-panel">
-      <input id="paletteInput" placeholder="Jump to skill…" />
-      <div id="paletteList"></div>
-    </div>
+<header class="header"><div class="inner">
+  <div class="row"><div class="brand">skill/dict</div><input id="q" class="input" placeholder="Search skills (⌘K)" /></div>
+  <div id="tabs" class="tabs"></div>
+  <div class="row">
+    <div id="sortSeg" class="seg"></div>
+    <button id="view" class="chip">Grid</button>
+    <button id="onlyPinned" class="chip">Pinned only</button>
   </div>
+  <div id="pinStrip" class="pin-strip"></div>
+</div></header>
+<main>
+  <div id="skills"></div>
+  <section class="form">
+    <strong>Custom skills</strong>
+    <input id="f_id" placeholder="id (required)" />
+    <input id="f_name" placeholder="name (required)" />
+    <input id="f_cat" placeholder="category (frontend, visual, ... )" />
+    <input id="f_tags" placeholder="tags (comma separated)" />
+    <textarea id="f_oneliner" placeholder="one-line description"></textarea>
+    <textarea id="f_prompt" placeholder="prompt"></textarea>
+    <input id="f_install" placeholder="install command" />
+    <input id="f_github" placeholder="github url (optional)" />
+    <div class="row"><button id="saveCustom" class="btn primary">Save custom skill</button><button id="resetCustom" class="btn">Clear</button></div>
+  </section>
+</main>
+<div id="palette" class="palette"><div class="panel"><input id="paletteInput" class="input" placeholder="Jump to skill" /><div id="paletteList"></div></div></div>
+<div id="toast" class="toast"></div>
+<script>
+const STORAGE='skill_dict_state_v2';
+const CATS=['all','visual','frontend','image','backend','context'];
+const SORTS=['default','most-used','recent'];
+const BASE=[
+{id:'minimalist-ui',cat:'visual',name:'minimalist-ui',oneliner:'Editorial minimalism for clean SaaS UX.',tags:['clean','layout'],prompt:'follow minimalist-ui for [task]',install:'codex skill install minimalist-ui',github:'https://github.com'},
+{id:'design-taste-frontend',cat:'visual',name:'design-taste-frontend',oneliner:'Default anti-slop premium frontend taste.',tags:['premium','ui'],prompt:'follow design-taste-frontend for [task]',install:'codex skill install design-taste-frontend',github:'https://github.com'},
+{id:'frontend-ui-engineering',cat:'frontend',name:'frontend-ui-engineering',oneliner:'Responsive structure and accessibility fundamentals.',tags:['components','a11y'],prompt:'follow frontend-ui-engineering for [task]',install:'codex skill install frontend-ui-engineering',github:'https://github.com'},
+{id:'web-quality-audit',cat:'frontend',name:'web-quality-audit',oneliner:'Pre-ship quality pass for performance and UX.',tags:['audit','perf'],prompt:'follow web-quality-audit for [project]',install:'codex skill install web-quality-audit',github:'https://github.com'}
+];
+const $=id=>document.getElementById(id);
+const safe=(raw,f)=>{try{return JSON.parse(raw);}catch{return f;}};
+const normalize=s=>({id:String(s.id||'').trim(),cat:CATS.includes(s.cat)?s.cat:'context',name:String(s.name||s.id||'').trim(),oneliner:String(s.oneliner||'').trim(),tags:Array.isArray(s.tags)?s.tags:[],prompt:String(s.prompt||`follow ${s.id} for [task]`),install:String(s.install||`codex skill install ${s.id}`),github:String(s.github||'')});
+const defaults={pins:[],notes:{},custom:[],view:'grid',onlyPinned:false,sort:'default',usage:{},recent:[]};
+let state=(()=>{const p=safe(localStorage.getItem(STORAGE)||'{}',{});return {...defaults,p,pins:Array.isArray(p.pins)?p.pins:[],notes:(p.notes&&typeof p.notes==='object')?p.notes:{},custom:Array.isArray(p.custom)?p.custom:[],usage:(p.usage&&typeof p.usage==='object')?p.usage:{},recent:Array.isArray(p.recent)?p.recent:[],view:p.view==='list'?'list':'grid',sort:SORTS.includes(p.sort)?p.sort:'default'};})();
+let active='all';
+const save=()=>localStorage.setItem(STORAGE,JSON.stringify(state));
+const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1000);};
+const all=()=>[...BASE,...state.custom.map(normalize)];
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+async function copy(v){try{await navigator.clipboard.writeText(v);}catch{const ta=document.createElement('textarea');ta.value=v;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();} toast('Copied');}
+function track(id){state.usage[id]=(state.usage[id]||0)+1; state.recent=[id,...state.recent.filter(x=>x!==id)].slice(0,40); save();}
+function renderTop(){ $('tabs').innerHTML=CATS.map(c=>`<button class="tab ${c===active?'active':''}" data-c="${c}">${c}</button>`).join(''); $('sortSeg').innerHTML=SORTS.map(s=>`<button class="chip ${s===state.sort?'active':''}" data-s="${s}">${s}</button>`).join(''); $('view').textContent=state.view==='grid'?'Grid':'List'; $('onlyPinned').classList.toggle('active',state.onlyPinned);
+ const pins=all().filter(s=>state.pins.includes(s.id)); $('pinStrip').innerHTML=pins.length?pins.map(s=>`<button class="chip" data-j="${s.id}">📌 ${esc(s.name)}</button>`).join(''):'<span class="muted">No pinned skills yet.</span>'; }
+function sorted(list){if(state.sort==='most-used') return [...list].sort((a,b)=>(state.usage[b.id]||0)-(state.usage[a.id]||0)); if(state.sort==='recent'){const idx=id=>state.recent.indexOf(id); return [...list].sort((a,b)=>(idx(a.id)<0?1e6:idx(a.id))-(idx(b.id)<0?1e6:idx(b.id)));} return list;}
+function render(){renderTop(); let list=all().filter(s=>active==='all'||s.cat===active); if(state.onlyPinned) list=list.filter(s=>state.pins.includes(s.id)); const q=($('q').value||'').trim().toLowerCase(); if(q) list=list.filter(s=>`${s.id} ${s.name} ${s.oneliner} ${(s.tags||[]).join(' ')}`.toLowerCase().includes(q)); list=sorted(list);
+ const c=$('skills'); c.className=state.view==='grid'?'grid':'list'; c.innerHTML=list.length?list.map(s=>`<article class="card" id="skill-${esc(s.id)}"><div class="meta"><span class="pill">${esc(s.cat)}</span>${state.pins.includes(s.id)?'<span class="pill">Pinned</span>':''}</div><div class="title">${esc(s.name)}</div><div class="muted">${esc(s.oneliner)}</div><div class="meta">${(s.tags||[]).map(t=>`<span class="pill">${esc(t)}</span>`).join('')}</div><div class="actions"><button class="btn primary" data-cp="${esc(s.id)}">Copy prompt</button><button class="btn" data-ci="${esc(s.id)}">Copy install</button><button class="btn" data-pin="${esc(s.id)}">${state.pins.includes(s.id)?'Unpin':'Pin'}</button><a class="btn" href="${esc(s.github||'#')}" target="_blank" rel="noopener">GitHub</a><button class="btn" data-link="${esc(s.id)}">Copy link</button>${state.custom.some(x=>x.id===s.id)?`<button class="btn good" data-edit="${esc(s.id)}">Edit</button><button class="btn" data-del="${esc(s.id)}">Delete</button>`:''}</div><textarea class="note" data-note="${esc(s.id)}" placeholder="Private note...">${esc(state.notes[s.id]||'')}</textarea></article>`).join(''):'<div class="empty">No skills found.</div>';
+ const hash=(location.hash||'').replace('#',''); if(hash){const node=$(`skill-${hash}`); if(node){node.classList.add('flash'); setTimeout(()=>node.classList.remove('flash'),900);}}
+}
+function jump(id){active='all';render(); const node=$(`skill-${id}`); if(node){node.scrollIntoView({behavior:'smooth',block:'center'}); history.replaceState(null,'',`#${id}`);} }
+function fillCustom(s){$('f_id').value=s.id;$('f_name').value=s.name;$('f_cat').value=s.cat;$('f_tags').value=(s.tags||[]).join(', ');$('f_oneliner').value=s.oneliner;$('f_prompt').value=s.prompt;$('f_install').value=s.install;$('f_github').value=s.github||'';}
 
-  <div id="toast" class="toast"></div>
+document.addEventListener('click',(e)=>{const t=e.target.closest('button,.tab,.chip,.item'); if(!t) return; if(t.dataset.c){active=t.dataset.c;render();} if(t.dataset.s){state.sort=t.dataset.s;save();render();} if(t.id==='view'){state.view=state.view==='grid'?'list':'grid';save();render();} if(t.id==='onlyPinned'){state.onlyPinned=!state.onlyPinned;save();render();} if(t.dataset.j) jump(t.dataset.j); if(t.dataset.cp){const s=all().find(x=>x.id===t.dataset.cp); if(s){copy(s.prompt); track(s.id);} } if(t.dataset.ci){const s=all().find(x=>x.id===t.dataset.ci); if(s){copy(s.install); track(s.id);} } if(t.dataset.pin){const id=t.dataset.pin; state.pins=state.pins.includes(id)?state.pins.filter(x=>x!==id):[...state.pins,id]; save(); render(); } if(t.dataset.link){copy(`${location.origin}${location.pathname}#${t.dataset.link}`);} if(t.dataset.del){state.custom=state.custom.filter(x=>x.id!==t.dataset.del); delete state.notes[t.dataset.del]; state.pins=state.pins.filter(x=>x!==t.dataset.del); save(); render(); toast('Deleted');} if(t.dataset.edit){const s=state.custom.find(x=>x.id===t.dataset.edit); if(s) fillCustom(normalize(s));} if(t.dataset.jump){$('palette').classList.remove('open'); jump(t.dataset.jump);} });
 
-  <script>
-    const STORAGE_KEY = "skill_dict_state_v2";
-    const CATS = ["all", "visual", "frontend", "image", "backend", "context"];
-    const SKILLS = [
-      {id:"minimalist-ui",cat:"visual",name:"minimalist-ui",oneliner:"Editorial minimalism for clean SaaS UX.",tags:["clean","layout"],prompt:"follow minimalist-ui for [task]",install:"codex skill install minimalist-ui"},
-      {id:"design-taste-frontend",cat:"visual",name:"design-taste-frontend",oneliner:"Default anti-slop premium frontend taste.",tags:["premium","ui"],prompt:"follow design-taste-frontend for [task]",install:"codex skill install design-taste-frontend"},
-      {id:"frontend-ui-engineering",cat:"frontend",name:"frontend-ui-engineering",oneliner:"Responsive structure and accessibility fundamentals.",tags:["components","a11y"],prompt:"follow frontend-ui-engineering for [task]",install:"codex skill install frontend-ui-engineering"},
-      {id:"web-quality-audit",cat:"frontend",name:"web-quality-audit",oneliner:"Pre-ship quality pass for performance and UX.",tags:["audit","perf"],prompt:"follow web-quality-audit for [project]",install:"codex skill install web-quality-audit"}
-    ];
+document.addEventListener('input',(e)=>{if(e.target.id==='q') render(); if(e.target.matches('[data-note]')){state.notes[e.target.dataset.note]=e.target.value; save();} if(e.target.id==='paletteInput') {const q=e.target.value.toLowerCase().trim(); const list=all().filter(s=>!q||s.name.toLowerCase().includes(q)||s.id.toLowerCase().includes(q)).slice(0,20); $('paletteList').innerHTML=list.map(s=>`<div class="item" data-jump="${esc(s.id)}"><b>${esc(s.name)}</b><div class="muted">${esc(s.oneliner)}</div></div>`).join('');}});
 
-    const safeJSON = (text, fallback) => { try { return JSON.parse(text); } catch { return fallback; } };
-    const readState = () => {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      const parsed = safeJSON(raw || "{}", {});
-      return {
-        pins: Array.isArray(parsed.pins) ? parsed.pins : [],
-        notes: parsed.notes && typeof parsed.notes === "object" ? parsed.notes : {},
-        custom: Array.isArray(parsed.custom) ? parsed.custom : [],
-        view: parsed.view === "list" ? "list" : "grid",
-        onlyPinned: !!parsed.onlyPinned
-      };
-    };
-    let state = readState();
-    const saveState = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+document.addEventListener('keydown',(e)=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault(); $('palette').classList.add('open'); $('paletteInput').value=''; $('paletteInput').dispatchEvent(new Event('input')); $('paletteInput').focus();} if(e.key==='Escape') $('palette').classList.remove('open');});
+$('palette').addEventListener('click',(e)=>{if(e.target.id==='palette') $('palette').classList.remove('open');});
+$('saveCustom').addEventListener('click',()=>{const id=$('f_id').value.trim(); const name=$('f_name').value.trim(); if(!id||!name){toast('id + name required'); return;} const entry=normalize({id,name,cat:$('f_cat').value.trim().toLowerCase(),tags:$('f_tags').value.split(',').map(x=>x.trim()).filter(Boolean),oneliner:$('f_oneliner').value,prompt:$('f_prompt').value,install:$('f_install').value,github:$('f_github').value}); state.custom=[...state.custom.filter(x=>x.id!==entry.id),entry]; save(); render(); toast('Saved');});
+$('resetCustom').addEventListener('click',()=>['f_id','f_name','f_cat','f_tags','f_oneliner','f_prompt','f_install','f_github'].forEach(id=>$((id)).value=''));
 
-    const $ = (id) => document.getElementById(id);
-    const toast = (msg) => { const el = $("toast"); el.textContent = msg; el.classList.add("show"); setTimeout(() => el.classList.remove("show"), 1100); };
-    const copyText = async (text) => {
-      try { await navigator.clipboard.writeText(text); toast("Copied"); }
-      catch { const ta=document.createElement("textarea"); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); toast("Copied"); }
-    };
-
-    let activeCat = "all";
-    const allSkills = () => [...SKILLS, ...state.custom];
-
-    const renderTabs = () => {
-      $("tabs").innerHTML = CATS.map(c => `<button class="tab ${c===activeCat?"active":""}" data-cat="${c}">${c[0].toUpperCase()+c.slice(1)}</button>`).join("");
-      $("tabs").querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => { activeCat = btn.dataset.cat; render(); }));
-    };
-
-    const skillCard = (s) => {
-      const pinned = state.pins.includes(s.id);
-      const share = `${location.origin}${location.pathname}?skill=${encodeURIComponent(s.id)}`;
-      return `<article class="card" id="skill-${s.id}">
-        <div class="meta"><span class="pill">${s.cat}</span><span class="pill">${pinned ? "Pinned" : "Unpinned"}</span></div>
-        <div class="title">${s.name}</div>
-        <div class="muted">${s.oneliner}</div>
-        <div class="meta" style="margin-top:8px">${s.tags.map(t=>`<span class="pill">${t}</span>`).join("")}</div>
-        <div class="actions">
-          <button class="btn primary" data-copy-prompt="${s.id}">Copy prompt</button>
-          <button class="btn" data-copy-install="${s.id}">Copy install</button>
-          <button class="btn" data-pin="${s.id}">${pinned ? "Unpin" : "Pin"}</button>
-          <button class="btn" data-share="${s.id}" data-share-url="${share}">Copy link</button>
-        </div>
-        <textarea class="note-box" data-note="${s.id}" placeholder="Private notes for this skill...">${(state.notes[s.id] || "").replace(/</g,"&lt;")}</textarea>
-      </article>`;
-    };
-
-    const render = () => {
-      renderTabs();
-      const q = ($("q").value || "").toLowerCase().trim();
-      let list = allSkills().filter(s => activeCat === "all" || s.cat === activeCat);
-      if (state.onlyPinned) list = list.filter(s => state.pins.includes(s.id));
-      if (q) list = list.filter(s => `${s.name} ${s.oneliner} ${s.tags.join(" ")}`.toLowerCase().includes(q));
-
-      const container = $("skills");
-      container.className = state.view === "list" ? "list" : "grid";
-      container.innerHTML = list.length ? list.map(skillCard).join("") : `<div class="empty">No skills found.</div>`;
-
-      $("toggleView").textContent = state.view === "list" ? "List view" : "Grid view";
-      $("showPinned").classList.toggle("active", state.onlyPinned);
-
-      container.querySelectorAll("[data-copy-prompt]").forEach(b => b.addEventListener("click", () => {
-        const s = allSkills().find(x => x.id === b.dataset.copyPrompt); if (s) copyText(s.prompt);
-      }));
-      container.querySelectorAll("[data-copy-install]").forEach(b => b.addEventListener("click", () => {
-        const s = allSkills().find(x => x.id === b.dataset.copyInstall); if (s) copyText(s.install || `codex skill install ${s.id}`);
-      }));
-      container.querySelectorAll("[data-pin]").forEach(b => b.addEventListener("click", () => {
-        const id = b.dataset.pin;
-        state.pins = state.pins.includes(id) ? state.pins.filter(x => x !== id) : [...state.pins, id];
-        saveState(); render();
-      }));
-      container.querySelectorAll("[data-share]").forEach(b => b.addEventListener("click", () => copyText(b.dataset.shareUrl)));
-      container.querySelectorAll("[data-note]").forEach(t => t.addEventListener("input", () => {
-        state.notes[t.dataset.note] = t.value; saveState();
-      }));
-    };
-
-    const renderPalette = (query = "") => {
-      const q = query.toLowerCase().trim();
-      const list = allSkills().filter(s => !q || s.name.toLowerCase().includes(q));
-      $("paletteList").innerHTML = list.slice(0, 20).map(s => `<div class="palette-item" data-jump="${s.id}"><b>${s.name}</b><div class="muted">${s.oneliner}</div></div>`).join("");
-      $("paletteList").querySelectorAll("[data-jump]").forEach(i => i.addEventListener("click", () => {
-        const id = i.dataset.jump;
-        $("palette").classList.remove("open");
-        activeCat = "all";
-        render();
-        const node = $(`skill-${id}`);
-        if (node) node.scrollIntoView({behavior:"smooth", block:"center"});
-      }));
-    };
-
-    const addCustomFromURL = () => {
-      const params = new URLSearchParams(location.search);
-      const skillId = params.get("skill");
-      const add = params.get("add");
-      if (skillId) {
-        setTimeout(() => {
-          const el = $(`skill-${skillId}`);
-          if (el) el.scrollIntoView({behavior:"smooth", block:"center"});
-        }, 60);
-      }
-      if (add) {
-        const data = safeJSON(decodeURIComponent(add), null);
-        if (data && data.id && data.name && data.oneliner) {
-          const entry = { id: String(data.id), name: String(data.name), oneliner: String(data.oneliner), cat: CATS.includes(data.cat) ? data.cat : "context", tags: Array.isArray(data.tags) ? data.tags : ["custom"], prompt: String(data.prompt || `follow ${data.id} for [task]`), install: String(data.install || `codex skill install ${data.id}`) };
-          state.custom = [...state.custom.filter(s => s.id !== entry.id), entry];
-          saveState();
-        }
-      }
-    };
-
-    $("q").addEventListener("input", render);
-    $("toggleView").addEventListener("click", () => { state.view = state.view === "grid" ? "list" : "grid"; saveState(); render(); });
-    $("showPinned").addEventListener("click", () => { state.onlyPinned = !state.onlyPinned; saveState(); render(); });
-
-    document.addEventListener("keydown", (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        $("palette").classList.add("open");
-        $("paletteInput").value = "";
-        renderPalette("");
-        $("paletteInput").focus();
-      }
-      if (e.key === "Escape") $("palette").classList.remove("open");
-    });
-    $("palette").addEventListener("click", (e) => { if (e.target.id === "palette") $("palette").classList.remove("open"); });
-    $("paletteInput").addEventListener("input", (e) => renderPalette(e.target.value));
-
-    addCustomFromURL();
-    render();
-  </script>
+(function init(){const q=new URLSearchParams(location.search); const legacy=q.get('skill'); const h=(location.hash||'').replace('#','')||legacy; render(); if(h) setTimeout(()=>jump(h),80);})();
+</script>
 </body>
 </html>
