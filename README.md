@@ -71,6 +71,7 @@ This site is a personal reference dictionary for installed skills, searchable by
 - Fast search + category filters for skill discovery.
 - One-click prompt copy with usage tracking and pinned skills strip.
 - Cmd/Ctrl+K shortcut support and dark mode styling.
+- Vercel Web Analytics script integration for page-view tracking on deployed environments.
 
 ## How to use
 1. Open the live site.

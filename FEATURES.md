@@ -12,6 +12,7 @@ Current site: Apple-inspired single-file skill dictionary with searchable cards,
 | Pinned skills strip | ✅ | Pin frequently used skills for quick copy. |
 | Cmd/Ctrl+K quick focus | ✅ | Keyboard shortcut focuses search and gives hint feedback. |
 | Dark mode palette | ✅ | Uses `prefers-color-scheme` tokens. |
+| Vercel Web Analytics integration | ✅ | Loads `/_vercel/insights/script.js` with `window.va` initialization in `<head>`. |
 
 ## Planned
 
