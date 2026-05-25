@@ -1,31 +1,33 @@
 # FEATURES
 
-Current site: Apple-inspired single-file skill dictionary with searchable cards, category tabs, pinning, copy actions, and keyboard shortcut support.
+Current site: workflow-first operational skill spotlight with chain intelligence, protocol playbooks, recommendations, and local analytics.
 
-## Live
+## Live Features
 
-| Feature | Status | Notes |
-|---|---|---|
-| Search skills by name/use-case/tag | ✅ | Instant filtering with debounce. |
-| Category segmented tabs | ✅ | Includes active sliding pill treatment. |
-| Copy prompt action | ✅ | One-click clipboard copy with confirmation state. |
-| Pinned skills strip | ✅ | Pin frequently used skills for quick copy. |
-| Cmd/Ctrl+K quick focus | ✅ | Keyboard shortcut focuses search and gives hint feedback. |
-| Dark mode palette | ✅ | Uses `prefers-color-scheme` tokens. |
-| Vercel Web Analytics integration | ✅ | Loads `/_vercel/insights/script.js` with `window.va` initialization in `<head>`. |
+| Status | Feature |
+|---|---|
+| ✅ | Skill cards with prompt copy and search |
+| ✅ | Workflow chains with full-chain copy |
+| ✅ | Use before / use after graph pills |
+| ✅ | When-not-to-use warning blocks |
+| ✅ | Examples gallery with animated expand |
+| ✅ | AI tool compatibility matrix + best platform badge |
+| ✅ | Protocols section with expandable steps + copy |
+| ✅ | Smart recommendation engine |
+| ✅ | Advanced local analytics with sparkline |
+| ✅ | Export formats: JSON / YAML / Markdown |
 
 ## Planned
 
-| Feature | Priority | Notes |
-|---|---|---|
-| Spotlight-style command palette | High | Full overlay palette with keyboard selection and enter-to-copy. |
-| Share-link pulse highlight (`#skill-{id}`) | Medium | Scroll and pulse selected card. |
-| Custom skill modal celebration animation | Medium | Animated insert and glow when adding custom skills. |
-| Empty-state icon animation | Low | SF-style icon + text motion when no results. |
+| Status | Feature |
+|---|---|
+| ⏳ | Workflow versioning and diff history |
+| ⏳ | Import bundles from exported workflow files |
+| ⏳ | Team preset packs with shared protocol templates |
+| ⏳ | Confidence scoring for recommendations |
 
 ## How to add a skill manually
-1. Open `index.html`.
-2. Find the `SKILLS` array in the `<script>` block.
-3. Duplicate an existing skill object and update: `id`, `name`, `cat`, `oneliner`, `when`, `tags`, `source`, `prompt`, `gh`.
-4. Keep category values in: `visual`, `image`, `frontend`, `backend`, `context`, `workflow`.
-5. Save and redeploy.
+
+Edit `SKILLS` in `index.html` and include:
+- `id`, `cat`, `name`, `oneliner`, `when`, `when_not`, `tags`, `level`, `prompt`
+- `use_before`, `use_after`, `examples[]`, `compatible_with`
