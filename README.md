@@ -30,3 +30,6 @@ Stored under one key:
 Open `index.html` directly in a browser.
 
 No framework. No build step. No external JS dependencies.
+
+
+_Last updated: interface stabilization in progress._
