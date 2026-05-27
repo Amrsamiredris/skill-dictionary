@@ -6,125 +6,551 @@
   <title>Skill Dictionary</title>
   <style>
     :root {
-      color-scheme: light dark;
-      --bg: #f5f5f7;
-      --surface: rgba(255,255,255,0.82);
-      --card: #fff;
-      --text: #1d1d1f;
-      --muted: #6e6e73;
-      --border: rgba(0,0,0,0.12);
-      --accent: #0071e3;
-      --pill: #f2f2f4;
-      --ok: #2ea043;
+      color-scheme: light;
+      --bg: #f3f4f6;
+      --bg-elev: rgba(255, 255, 255, 0.86);
+      --card: #ffffff;
+      --text: #111113;
+      --muted: #6f6f75;
+      --border: rgba(0, 0, 0, 0.1);
+      --accent: #0a84ff;
+      --accent-soft: rgba(10, 132, 255, 0.14);
+      --chip: #f2f2f6;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+      --radius-xl: 18px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
     }
-    @media (prefers-color-scheme: dark) { :root { --bg:#111214; --surface:rgba(28,28,30,.86); --card:#1c1c1e; --text:#f5f5f7; --muted:#a1a1a6; --border:rgba(255,255,255,.16); --accent:#3b82f6; --pill:#2a2a2d; --ok:#3fb950; } }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: dark;
+        --bg: #0e0f12;
+        --bg-elev: rgba(26, 28, 33, 0.86);
+        --card: #17191d;
+        --text: #f5f5f7;
+        --muted: #a0a1a8;
+        --border: rgba(255, 255, 255, 0.12);
+        --accent: #4ea1ff;
+        --accent-soft: rgba(78, 161, 255, 0.18);
+        --chip: #22252b;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.38);
+      }
+    }
+
     * { box-sizing: border-box; }
-    body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif; }
-    .header { position:sticky; top:0; z-index:10; backdrop-filter: blur(14px); background:var(--surface); border-bottom:1px solid var(--border); }
-    .inner, main { max-width:1080px; margin:0 auto; padding:12px 16px; }
-    .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-    .brand { font-weight:700; letter-spacing:-.02em; }
-    input, textarea, button, select { font:inherit; color:inherit; }
-    .input, .note, .form input, .form textarea, .form select { width:100%; border:1px solid var(--border); background:var(--card); border-radius:12px; padding:10px 12px; }
-    .tabs, .seg { display:flex; gap:8px; overflow:auto; padding-bottom:2px; }
-    .tab, .chip, .btn { border:1px solid var(--border); border-radius:999px; background:var(--card); padding:6px 12px; cursor:pointer; white-space:nowrap; }
-    .tab.active, .chip.active { background:var(--text); color:var(--bg); border-color:var(--text); }
-    .btn { border-radius:10px; font-size:12px; padding:7px 10px; }
-    .btn.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
-    .btn.good { background:var(--ok); color:#fff; border-color:var(--ok); }
-    .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); }
-    .list { display:grid; gap:10px; }
-    .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:14px; transition:transform .16s ease, opacity .16s ease; }
-    .card.flash { outline:2px solid var(--accent); }
-    .title { font-family:ui-monospace,Menlo,monospace; font-weight:600; margin:6px 0; }
-    .muted { color:var(--muted); font-size:12px; }
-    .meta { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px; }
-    .pill { background:var(--pill); border-radius:999px; font-size:11px; padding:3px 8px; }
-    .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
-    .note { min-height:58px; resize:vertical; margin-top:8px; font-size:12px; }
-    .pin-strip { margin:10px 0 2px; display:flex; gap:8px; flex-wrap:wrap; }
-    .empty { color:var(--muted); padding:24px 0; text-align:center; }
-    .palette { position:fixed; inset:0; display:none; align-items:flex-start; justify-content:center; padding-top:12vh; background:rgba(0,0,0,.35); z-index:20; }
-    .palette.open { display:flex; }
-    .panel { width:min(680px, calc(100vw - 20px)); background:var(--card); border:1px solid var(--border); border-radius:16px; padding:10px; }
-    #paletteList { max-height:52vh; overflow:auto; display:grid; gap:6px; margin-top:8px; }
-    .item { border:1px solid var(--border); border-radius:10px; padding:8px; cursor:pointer; }
-    .toast { position:fixed; bottom:16px; right:16px; background:var(--text); color:var(--bg); border-radius:10px; padding:8px 12px; font-size:12px; opacity:0; transform:translateY(8px); transition:.16s ease; }
-    .toast.show { opacity:1; transform:translateY(0); }
-    .form { margin-top:14px; display:grid; gap:8px; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:12px; }
-    @media (max-width: 720px) { .grid { grid-template-columns:1fr; } }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 20% -10%, rgba(128, 170, 255, 0.1), transparent 30%), var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+    }
+    a { color: inherit; }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-elev);
+      backdrop-filter: blur(14px);
+    }
+    .inner,
+    main {
+      width: min(1080px, calc(100vw - 24px));
+      margin: 0 auto;
+    }
+    .inner { padding: 12px 0; display: grid; gap: 10px; }
+    .topline {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+    }
+    .brand { font-weight: 700; letter-spacing: -0.02em; }
+
+    input, textarea, button, select { font: inherit; color: inherit; }
+    .input,
+    .note,
+    .form input,
+    .form textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      color: inherit;
+    }
+    .input:focus,
+    .note:focus,
+    .btn:focus,
+    .chip:focus,
+    .tab:focus {
+      outline: 2px solid var(--accent-soft);
+      border-color: var(--accent);
+    }
+
+    .tabs,
+    .seg,
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      overflow: auto;
+      padding-bottom: 2px;
+      scrollbar-width: thin;
+    }
+    .tab,
+    .chip,
+    .btn {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--card);
+      padding: 6px 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .tab.active,
+    .chip.active {
+      background: var(--text);
+      border-color: var(--text);
+      color: var(--bg);
+    }
+    .btn {
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      padding: 7px 10px;
+    }
+    .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    .pin-strip {
+      margin-top: 2px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      min-height: 32px;
+      align-items: center;
+    }
+
+    main { padding: 16px 0 24px; }
+    .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+    .list { display: grid; gap: 10px; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+    .card.flash { outline: 2px solid var(--accent); }
+    .meta { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+    .pill { background: var(--chip); border-radius: 999px; font-size: 11px; padding: 3px 8px; }
+    .title { font-family: ui-monospace, Menlo, monospace; font-weight: 600; margin: 6px 0; }
+    .muted { color: var(--muted); font-size: 12px; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .note { min-height: 56px; resize: vertical; margin-top: 8px; font-size: 12px; }
+    .empty { color: var(--muted); text-align: center; padding: 36px 0; }
+
+    .form {
+      margin-top: 14px;
+      display: grid;
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .palette {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.34);
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 10vh;
+      z-index: 30;
+    }
+    .palette.open { display: flex; }
+    .panel {
+      width: min(700px, calc(100vw - 20px));
+      padding: 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+    }
+    #paletteList {
+      margin-top: 8px;
+      max-height: 54vh;
+      overflow: auto;
+      display: grid;
+      gap: 6px;
+    }
+    .item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      cursor: pointer;
+      background: var(--card);
+    }
+
+    .toast {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      background: var(--text);
+      color: var(--bg);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 12px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: 0.16s ease;
+      z-index: 40;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 780px) {
+      .topline { grid-template-columns: 1fr; }
+      .brand { font-size: 15px; }
+      .grid { grid-template-columns: 1fr; }
+      .actions .btn { flex: 1 1 calc(50% - 8px); text-align: center; }
+    }
   </style>
 </head>
 <body>
-<header class="header"><div class="inner">
-  <div class="row"><div class="brand">skill/dict</div><input id="q" class="input" placeholder="Search skills (⌘K)" /></div>
-  <div id="tabs" class="tabs"></div>
-  <div class="row">
-    <div id="sortSeg" class="seg"></div>
-    <button id="view" class="chip">Grid</button>
-    <button id="onlyPinned" class="chip">Pinned only</button>
+  <header class="header">
+    <div class="inner">
+      <div class="topline">
+        <div class="brand">skill/dict</div>
+        <input id="q" class="input" placeholder="Search skills (⌘K)" />
+      </div>
+      <div id="tabs" class="tabs"></div>
+      <div class="toolbar">
+        <div id="sortSeg" class="seg"></div>
+        <button id="view" class="chip">Grid view</button>
+        <button id="onlyPinned" class="chip">Pinned only</button>
+      </div>
+      <div id="pinStrip" class="pin-strip"></div>
+    </div>
+  </header>
+
+  <main>
+    <div id="skills"></div>
+    <section class="form">
+      <strong>Custom skills</strong>
+      <input id="f_id" placeholder="id (required)" />
+      <input id="f_name" placeholder="name (required)" />
+      <input id="f_cat" placeholder="category (frontend, visual, ...)" />
+      <input id="f_tags" placeholder="tags (comma separated)" />
+      <textarea id="f_oneliner" placeholder="one-line description"></textarea>
+      <textarea id="f_prompt" placeholder="prompt"></textarea>
+      <input id="f_install" placeholder="install command" />
+      <input id="f_github" placeholder="github url (optional)" />
+      <div class="toolbar">
+        <button id="saveCustom" class="btn primary">Save custom skill</button>
+        <button id="resetCustom" class="btn">Clear</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="palette" class="palette">
+    <div class="panel">
+      <input id="paletteInput" class="input" placeholder="Jump to skill" />
+      <div id="paletteList"></div>
+    </div>
   </div>
-  <div id="pinStrip" class="pin-strip"></div>
-</div></header>
-<main>
-  <div id="skills"></div>
-  <section class="form">
-    <strong>Custom skills</strong>
-    <input id="f_id" placeholder="id (required)" />
-    <input id="f_name" placeholder="name (required)" />
-    <input id="f_cat" placeholder="category (frontend, visual, ... )" />
-    <input id="f_tags" placeholder="tags (comma separated)" />
-    <textarea id="f_oneliner" placeholder="one-line description"></textarea>
-    <textarea id="f_prompt" placeholder="prompt"></textarea>
-    <input id="f_install" placeholder="install command" />
-    <input id="f_github" placeholder="github url (optional)" />
-    <div class="row"><button id="saveCustom" class="btn primary">Save custom skill</button><button id="resetCustom" class="btn">Clear</button></div>
-  </section>
-</main>
-<div id="palette" class="palette"><div class="panel"><input id="paletteInput" class="input" placeholder="Jump to skill" /><div id="paletteList"></div></div></div>
-<div id="toast" class="toast"></div>
-<script>
-const STORAGE='skill_dict_state_v2';
-const CATS=['all','visual','frontend','image','backend','context'];
-const SORTS=['default','most-used','recent'];
-const BASE=[
-{id:'minimalist-ui',cat:'visual',name:'minimalist-ui',oneliner:'Editorial minimalism for clean SaaS UX.',tags:['clean','layout'],prompt:'follow minimalist-ui for [task]',install:'codex skill install minimalist-ui',github:'https://github.com'},
-{id:'design-taste-frontend',cat:'visual',name:'design-taste-frontend',oneliner:'Default anti-slop premium frontend taste.',tags:['premium','ui'],prompt:'follow design-taste-frontend for [task]',install:'codex skill install design-taste-frontend',github:'https://github.com'},
-{id:'frontend-ui-engineering',cat:'frontend',name:'frontend-ui-engineering',oneliner:'Responsive structure and accessibility fundamentals.',tags:['components','a11y'],prompt:'follow frontend-ui-engineering for [task]',install:'codex skill install frontend-ui-engineering',github:'https://github.com'},
-{id:'web-quality-audit',cat:'frontend',name:'web-quality-audit',oneliner:'Pre-ship quality pass for performance and UX.',tags:['audit','perf'],prompt:'follow web-quality-audit for [project]',install:'codex skill install web-quality-audit',github:'https://github.com'}
-];
-const $=id=>document.getElementById(id);
-const safe=(raw,f)=>{try{return JSON.parse(raw);}catch{return f;}};
-const normalize=s=>({id:String(s.id||'').trim(),cat:CATS.includes(s.cat)?s.cat:'context',name:String(s.name||s.id||'').trim(),oneliner:String(s.oneliner||'').trim(),tags:Array.isArray(s.tags)?s.tags:[],prompt:String(s.prompt||`follow ${s.id} for [task]`),install:String(s.install||`codex skill install ${s.id}`),github:String(s.github||'')});
-const defaults={pins:[],notes:{},custom:[],view:'grid',onlyPinned:false,sort:'default',usage:{},recent:[]};
-let state=(()=>{const p=safe(localStorage.getItem(STORAGE)||'{}',{});return {...defaults,p,pins:Array.isArray(p.pins)?p.pins:[],notes:(p.notes&&typeof p.notes==='object')?p.notes:{},custom:Array.isArray(p.custom)?p.custom:[],usage:(p.usage&&typeof p.usage==='object')?p.usage:{},recent:Array.isArray(p.recent)?p.recent:[],view:p.view==='list'?'list':'grid',sort:SORTS.includes(p.sort)?p.sort:'default'};})();
-let active='all';
-const save=()=>localStorage.setItem(STORAGE,JSON.stringify(state));
-const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1000);};
-const all=()=>[...BASE,...state.custom.map(normalize)];
-const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-async function copy(v){try{await navigator.clipboard.writeText(v);}catch{const ta=document.createElement('textarea');ta.value=v;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();} toast('Copied');}
-function track(id){state.usage[id]=(state.usage[id]||0)+1; state.recent=[id,...state.recent.filter(x=>x!==id)].slice(0,40); save();}
-function renderTop(){ $('tabs').innerHTML=CATS.map(c=>`<button class="tab ${c===active?'active':''}" data-c="${c}">${c}</button>`).join(''); $('sortSeg').innerHTML=SORTS.map(s=>`<button class="chip ${s===state.sort?'active':''}" data-s="${s}">${s}</button>`).join(''); $('view').textContent=state.view==='grid'?'Grid':'List'; $('onlyPinned').classList.toggle('active',state.onlyPinned);
- const pins=all().filter(s=>state.pins.includes(s.id)); $('pinStrip').innerHTML=pins.length?pins.map(s=>`<button class="chip" data-j="${s.id}">📌 ${esc(s.name)}</button>`).join(''):'<span class="muted">No pinned skills yet.</span>'; }
-function sorted(list){if(state.sort==='most-used') return [...list].sort((a,b)=>(state.usage[b.id]||0)-(state.usage[a.id]||0)); if(state.sort==='recent'){const idx=id=>state.recent.indexOf(id); return [...list].sort((a,b)=>(idx(a.id)<0?1e6:idx(a.id))-(idx(b.id)<0?1e6:idx(b.id)));} return list;}
-function render(){renderTop(); let list=all().filter(s=>active==='all'||s.cat===active); if(state.onlyPinned) list=list.filter(s=>state.pins.includes(s.id)); const q=($('q').value||'').trim().toLowerCase(); if(q) list=list.filter(s=>`${s.id} ${s.name} ${s.oneliner} ${(s.tags||[]).join(' ')}`.toLowerCase().includes(q)); list=sorted(list);
- const c=$('skills'); c.className=state.view==='grid'?'grid':'list'; c.innerHTML=list.length?list.map(s=>`<article class="card" id="skill-${esc(s.id)}"><div class="meta"><span class="pill">${esc(s.cat)}</span>${state.pins.includes(s.id)?'<span class="pill">Pinned</span>':''}</div><div class="title">${esc(s.name)}</div><div class="muted">${esc(s.oneliner)}</div><div class="meta">${(s.tags||[]).map(t=>`<span class="pill">${esc(t)}</span>`).join('')}</div><div class="actions"><button class="btn primary" data-cp="${esc(s.id)}">Copy prompt</button><button class="btn" data-ci="${esc(s.id)}">Copy install</button><button class="btn" data-pin="${esc(s.id)}">${state.pins.includes(s.id)?'Unpin':'Pin'}</button><a class="btn" href="${esc(s.github||'#')}" target="_blank" rel="noopener">GitHub</a><button class="btn" data-link="${esc(s.id)}">Copy link</button>${state.custom.some(x=>x.id===s.id)?`<button class="btn good" data-edit="${esc(s.id)}">Edit</button><button class="btn" data-del="${esc(s.id)}">Delete</button>`:''}</div><textarea class="note" data-note="${esc(s.id)}" placeholder="Private note...">${esc(state.notes[s.id]||'')}</textarea></article>`).join(''):'<div class="empty">No skills found.</div>';
- const hash=(location.hash||'').replace('#',''); if(hash){const node=$(`skill-${hash}`); if(node){node.classList.add('flash'); setTimeout(()=>node.classList.remove('flash'),900);}}
-}
-function jump(id){active='all';render(); const node=$(`skill-${id}`); if(node){node.scrollIntoView({behavior:'smooth',block:'center'}); history.replaceState(null,'',`#${id}`);} }
-function fillCustom(s){$('f_id').value=s.id;$('f_name').value=s.name;$('f_cat').value=s.cat;$('f_tags').value=(s.tags||[]).join(', ');$('f_oneliner').value=s.oneliner;$('f_prompt').value=s.prompt;$('f_install').value=s.install;$('f_github').value=s.github||'';}
+  <div id="toast" class="toast"></div>
 
-document.addEventListener('click',(e)=>{const t=e.target.closest('button,.tab,.chip,.item'); if(!t) return; if(t.dataset.c){active=t.dataset.c;render();} if(t.dataset.s){state.sort=t.dataset.s;save();render();} if(t.id==='view'){state.view=state.view==='grid'?'list':'grid';save();render();} if(t.id==='onlyPinned'){state.onlyPinned=!state.onlyPinned;save();render();} if(t.dataset.j) jump(t.dataset.j); if(t.dataset.cp){const s=all().find(x=>x.id===t.dataset.cp); if(s){copy(s.prompt); track(s.id);} } if(t.dataset.ci){const s=all().find(x=>x.id===t.dataset.ci); if(s){copy(s.install); track(s.id);} } if(t.dataset.pin){const id=t.dataset.pin; state.pins=state.pins.includes(id)?state.pins.filter(x=>x!==id):[...state.pins,id]; save(); render(); } if(t.dataset.link){copy(`${location.origin}${location.pathname}#${t.dataset.link}`);} if(t.dataset.del){state.custom=state.custom.filter(x=>x.id!==t.dataset.del); delete state.notes[t.dataset.del]; state.pins=state.pins.filter(x=>x!==t.dataset.del); save(); render(); toast('Deleted');} if(t.dataset.edit){const s=state.custom.find(x=>x.id===t.dataset.edit); if(s) fillCustom(normalize(s));} if(t.dataset.jump){$('palette').classList.remove('open'); jump(t.dataset.jump);} });
+  <script>
+    const STORAGE = 'skill_dict_state_v2';
+    const CATS = ['all', 'visual', 'frontend', 'image', 'backend', 'context'];
+    const SORTS = ['default', 'most-used', 'recent'];
+    const BASE = [
+      { id: 'minimalist-ui', cat: 'visual', name: 'minimalist-ui', oneliner: 'Editorial minimalism for clean SaaS UX.', tags: ['clean', 'layout'], prompt: 'follow minimalist-ui for [task]', install: 'codex skill install minimalist-ui', github: 'https://github.com' },
+      { id: 'design-taste-frontend', cat: 'visual', name: 'design-taste-frontend', oneliner: 'Default anti-slop premium frontend taste.', tags: ['premium', 'ui'], prompt: 'follow design-taste-frontend for [task]', install: 'codex skill install design-taste-frontend', github: 'https://github.com' },
+      { id: 'frontend-ui-engineering', cat: 'frontend', name: 'frontend-ui-engineering', oneliner: 'Responsive structure and accessibility fundamentals.', tags: ['components', 'a11y'], prompt: 'follow frontend-ui-engineering for [task]', install: 'codex skill install frontend-ui-engineering', github: 'https://github.com' },
+      { id: 'web-quality-audit', cat: 'frontend', name: 'web-quality-audit', oneliner: 'Pre-ship quality pass for performance and UX.', tags: ['audit', 'perf'], prompt: 'follow web-quality-audit for [project]', install: 'codex skill install web-quality-audit', github: 'https://github.com' }
+    ];
 
-document.addEventListener('input',(e)=>{if(e.target.id==='q') render(); if(e.target.matches('[data-note]')){state.notes[e.target.dataset.note]=e.target.value; save();} if(e.target.id==='paletteInput') {const q=e.target.value.toLowerCase().trim(); const list=all().filter(s=>!q||s.name.toLowerCase().includes(q)||s.id.toLowerCase().includes(q)).slice(0,20); $('paletteList').innerHTML=list.map(s=>`<div class="item" data-jump="${esc(s.id)}"><b>${esc(s.name)}</b><div class="muted">${esc(s.oneliner)}</div></div>`).join('');}});
+    const $ = (id) => document.getElementById(id);
+    const safe = (raw, fallback) => { try { return JSON.parse(raw); } catch { return fallback; } };
+    const esc = (s) => String(s).replace(/[&<>"']/g, (m) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m]));
 
-document.addEventListener('keydown',(e)=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault(); $('palette').classList.add('open'); $('paletteInput').value=''; $('paletteInput').dispatchEvent(new Event('input')); $('paletteInput').focus();} if(e.key==='Escape') $('palette').classList.remove('open');});
-$('palette').addEventListener('click',(e)=>{if(e.target.id==='palette') $('palette').classList.remove('open');});
-$('saveCustom').addEventListener('click',()=>{const id=$('f_id').value.trim(); const name=$('f_name').value.trim(); if(!id||!name){toast('id + name required'); return;} const entry=normalize({id,name,cat:$('f_cat').value.trim().toLowerCase(),tags:$('f_tags').value.split(',').map(x=>x.trim()).filter(Boolean),oneliner:$('f_oneliner').value,prompt:$('f_prompt').value,install:$('f_install').value,github:$('f_github').value}); state.custom=[...state.custom.filter(x=>x.id!==entry.id),entry]; save(); render(); toast('Saved');});
-$('resetCustom').addEventListener('click',()=>['f_id','f_name','f_cat','f_tags','f_oneliner','f_prompt','f_install','f_github'].forEach(id=>$((id)).value=''));
+    function normalizeSkill(skill) {
+      const id = String(skill.id || '').trim();
+      const catRaw = String(skill.cat || '').trim().toLowerCase();
+      return {
+        id,
+        cat: CATS.includes(catRaw) ? catRaw : 'context',
+        name: String(skill.name || id).trim(),
+        oneliner: String(skill.oneliner || '').trim(),
+        tags: Array.isArray(skill.tags) ? skill.tags.map((t) => String(t).trim()).filter(Boolean) : [],
+        prompt: String(skill.prompt || `follow ${id} for [task]`),
+        install: String(skill.install || `codex skill install ${id}`),
+        github: String(skill.github || '')
+      };
+    }
 
-(function init(){const q=new URLSearchParams(location.search); const legacy=q.get('skill'); const h=(location.hash||'').replace('#','')||legacy; render(); if(h) setTimeout(()=>jump(h),80);})();
-</script>
+    const defaults = {
+      pins: [], notes: {}, custom: [], view: 'grid', onlyPinned: false, sort: 'default', usage: {}, recent: []
+    };
+
+    function loadState() {
+      const raw = safe(localStorage.getItem(STORAGE) || '{}', {});
+      return {
+        ...defaults,
+        ...raw,
+        pins: Array.isArray(raw.pins) ? raw.pins : [],
+        notes: raw.notes && typeof raw.notes === 'object' ? raw.notes : {},
+        custom: Array.isArray(raw.custom) ? raw.custom.map(normalizeSkill).filter((s) => s.id) : [],
+        usage: raw.usage && typeof raw.usage === 'object' ? raw.usage : {},
+        recent: Array.isArray(raw.recent) ? raw.recent : [],
+        view: raw.view === 'list' ? 'list' : 'grid',
+        sort: SORTS.includes(raw.sort) ? raw.sort : 'default',
+        onlyPinned: Boolean(raw.onlyPinned)
+      };
+    }
+
+    let state = loadState();
+    let active = 'all';
+
+    const save = () => localStorage.setItem(STORAGE, JSON.stringify(state));
+    const allSkills = () => [...BASE, ...state.custom];
+
+    function toast(message) {
+      const node = $('toast');
+      node.textContent = message;
+      node.classList.add('show');
+      setTimeout(() => node.classList.remove('show'), 1000);
+    }
+
+    async function copy(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+      }
+      toast('Copied');
+    }
+
+    function track(id) {
+      state.usage[id] = (state.usage[id] || 0) + 1;
+      state.recent = [id, ...state.recent.filter((x) => x !== id)].slice(0, 40);
+      save();
+    }
+
+    function sortSkills(list) {
+      if (state.sort === 'most-used') return [...list].sort((a, b) => (state.usage[b.id] || 0) - (state.usage[a.id] || 0));
+      if (state.sort === 'recent') {
+        const idx = (id) => {
+          const n = state.recent.indexOf(id);
+          return n < 0 ? Number.MAX_SAFE_INTEGER : n;
+        };
+        return [...list].sort((a, b) => idx(a.id) - idx(b.id));
+      }
+      return list;
+    }
+
+    function renderTop() {
+      $('tabs').innerHTML = CATS.map((cat) => `<button class="tab ${cat === active ? 'active' : ''}" data-c="${cat}">${cat}</button>`).join('');
+      $('sortSeg').innerHTML = SORTS.map((sort) => `<button class="chip ${sort === state.sort ? 'active' : ''}" data-s="${sort}">${sort}</button>`).join('');
+      $('view').textContent = state.view === 'grid' ? 'Grid view' : 'List view';
+      $('onlyPinned').classList.toggle('active', state.onlyPinned);
+
+      const pins = allSkills().filter((s) => state.pins.includes(s.id));
+      $('pinStrip').innerHTML = pins.length
+        ? pins.map((s) => `<button class="chip" data-j="${esc(s.id)}">📌 ${esc(s.name)}</button>`).join('')
+        : '<span class="muted">No pinned skills yet.</span>';
+    }
+
+    function renderSkills() {
+      let list = allSkills().filter((s) => active === 'all' || s.cat === active);
+      if (state.onlyPinned) list = list.filter((s) => state.pins.includes(s.id));
+
+      const q = $('q').value.trim().toLowerCase();
+      if (q) {
+        list = list.filter((s) => `${s.id} ${s.name} ${s.oneliner} ${s.tags.join(' ')}`.toLowerCase().includes(q));
+      }
+
+      list = sortSkills(list);
+      const container = $('skills');
+      container.className = state.view === 'grid' ? 'grid' : 'list';
+
+      container.innerHTML = list.length ? list.map((s) => `
+        <article class="card" id="skill-${esc(s.id)}">
+          <div class="meta"><span class="pill">${esc(s.cat)}</span>${state.pins.includes(s.id) ? '<span class="pill">Pinned</span>' : ''}</div>
+          <div class="title">${esc(s.name)}</div>
+          <div class="muted">${esc(s.oneliner)}</div>
+          <div class="meta">${s.tags.map((tag) => `<span class="pill">${esc(tag)}</span>`).join('')}</div>
+          <div class="actions">
+            <button class="btn primary" data-cp="${esc(s.id)}">Copy prompt</button>
+            <button class="btn" data-ci="${esc(s.id)}">Copy install</button>
+            <button class="btn" data-pin="${esc(s.id)}">${state.pins.includes(s.id) ? 'Unpin' : 'Pin'}</button>
+            <a class="btn" href="${esc(s.github || '#')}" target="_blank" rel="noopener">GitHub</a>
+            <button class="btn" data-link="${esc(s.id)}">Copy link</button>
+            ${state.custom.some((x) => x.id === s.id) ? `<button class="btn" data-edit="${esc(s.id)}">Edit</button><button class="btn" data-del="${esc(s.id)}">Delete</button>` : ''}
+          </div>
+          <textarea class="note" data-note="${esc(s.id)}" placeholder="Private note...">${esc(state.notes[s.id] || '')}</textarea>
+        </article>
+      `).join('') : '<div class="empty">No skills found.</div>';
+
+      const hash = decodeURIComponent((location.hash || '').replace('#', ''));
+      if (hash) {
+        const node = $(`skill-${hash}`);
+        if (node) {
+          node.classList.add('flash');
+          setTimeout(() => node.classList.remove('flash'), 900);
+        }
+      }
+    }
+
+    function render() { renderTop(); renderSkills(); }
+
+    function jumpToSkill(id) {
+      active = 'all';
+      render();
+      const node = $(`skill-${id}`);
+      if (node) {
+        node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        history.replaceState(null, '', `#${encodeURIComponent(id)}`);
+      }
+    }
+
+    function fillCustomForm(s) {
+      $('f_id').value = s.id;
+      $('f_name').value = s.name;
+      $('f_cat').value = s.cat;
+      $('f_tags').value = s.tags.join(', ');
+      $('f_oneliner').value = s.oneliner;
+      $('f_prompt').value = s.prompt;
+      $('f_install').value = s.install;
+      $('f_github').value = s.github || '';
+    }
+
+    document.addEventListener('click', (event) => {
+      const target = event.target.closest('button,.tab,.chip,.item');
+      if (!target) return;
+
+      if (target.dataset.c) { active = target.dataset.c; render(); return; }
+      if (target.dataset.s) { state.sort = target.dataset.s; save(); render(); return; }
+      if (target.id === 'view') { state.view = state.view === 'grid' ? 'list' : 'grid'; save(); render(); return; }
+      if (target.id === 'onlyPinned') { state.onlyPinned = !state.onlyPinned; save(); render(); return; }
+      if (target.dataset.j) { jumpToSkill(target.dataset.j); return; }
+
+      if (target.dataset.cp) {
+        const s = allSkills().find((x) => x.id === target.dataset.cp);
+        if (s) { copy(s.prompt); track(s.id); }
+        return;
+      }
+      if (target.dataset.ci) {
+        const s = allSkills().find((x) => x.id === target.dataset.ci);
+        if (s) { copy(s.install); track(s.id); }
+        return;
+      }
+      if (target.dataset.pin) {
+        const id = target.dataset.pin;
+        state.pins = state.pins.includes(id) ? state.pins.filter((x) => x !== id) : [...state.pins, id];
+        save();
+        render();
+        return;
+      }
+      if (target.dataset.link) {
+        const url = new URL(window.location.href);
+        url.hash = encodeURIComponent(target.dataset.link);
+        copy(url.toString());
+        return;
+      }
+      if (target.dataset.del) {
+        state.custom = state.custom.filter((x) => x.id !== target.dataset.del);
+        delete state.notes[target.dataset.del];
+        state.pins = state.pins.filter((x) => x !== target.dataset.del);
+        save();
+        render();
+        toast('Deleted');
+        return;
+      }
+      if (target.dataset.edit) {
+        const s = state.custom.find((x) => x.id === target.dataset.edit);
+        if (s) fillCustomForm(s);
+        return;
+      }
+      if (target.dataset.jump) {
+        $('palette').classList.remove('open');
+        jumpToSkill(target.dataset.jump);
+      }
+    });
+
+    document.addEventListener('input', (event) => {
+      if (event.target.id === 'q') { renderSkills(); return; }
+      if (event.target.matches('[data-note]')) {
+        state.notes[event.target.dataset.note] = event.target.value;
+        save();
+        return;
+      }
+      if (event.target.id === 'paletteInput') {
+        const q = event.target.value.trim().toLowerCase();
+        const items = allSkills().filter((s) => !q || s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q)).slice(0, 20);
+        $('paletteList').innerHTML = items.map((s) => `<div class="item" data-jump="${esc(s.id)}"><b>${esc(s.name)}</b><div class="muted">${esc(s.oneliner)}</div></div>`).join('');
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        $('palette').classList.add('open');
+        $('paletteInput').value = $('q').value;
+        $('paletteInput').dispatchEvent(new Event('input'));
+        $('paletteInput').focus();
+      }
+      if (event.key === 'Escape') $('palette').classList.remove('open');
+    });
+
+    $('palette').addEventListener('click', (event) => {
+      if (event.target.id === 'palette') $('palette').classList.remove('open');
+    });
+
+    $('saveCustom').addEventListener('click', () => {
+      const id = $('f_id').value.trim();
+      const name = $('f_name').value.trim();
+      if (!id || !name) { toast('id + name required'); return; }
+
+      const entry = normalizeSkill({
+        id,
+        name,
+        cat: $('f_cat').value.trim(),
+        tags: $('f_tags').value.split(',').map((x) => x.trim()).filter(Boolean),
+        oneliner: $('f_oneliner').value,
+        prompt: $('f_prompt').value,
+        install: $('f_install').value,
+        github: $('f_github').value
+      });
+
+      state.custom = [...state.custom.filter((x) => x.id !== entry.id), entry];
+      save();
+      render();
+      toast('Saved');
+    });
+
+    $('resetCustom').addEventListener('click', () => {
+      ['f_id', 'f_name', 'f_cat', 'f_tags', 'f_oneliner', 'f_prompt', 'f_install', 'f_github'].forEach((id) => { $(id).value = ''; });
+    });
+
+    (function init() {
+      const query = new URLSearchParams(location.search);
+      const legacySkill = query.get('skill');
+      const hashSkill = decodeURIComponent((location.hash || '').replace('#', '')) || legacySkill;
+      render();
+      if (hashSkill) setTimeout(() => jumpToSkill(hashSkill), 80);
+    }());
+  </script>
 </body>
 </html>

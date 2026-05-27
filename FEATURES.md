@@ -15,21 +15,22 @@ Current site: a fast Apple-style spotlight for AI skills.
 | ✅ | Grid/list view toggle |
 | ✅ | Share links via `#skill-id` with scroll + highlight |
 | ✅ | Custom skills (add/edit/delete) with persistence |
-| ✅ | Apple-style UI with dark mode |
+| ✅ | Local usage stats for sorting (most used/recent) |
+| ✅ | Apple-style UI with stable light/dark mode |
 
-## Future Ideas
+## Scope (intentionally kept minimal)
 
-| Status | Feature |
-|---|---|
-| ⏳ | Workflow chains |
-| ⏳ | Protocol templates |
-| ⏳ | Recommendation engine |
-| ⏳ | Export formats (JSON/YAML/Markdown) |
-| ⏳ | Compatibility matrix |
-| ⏳ | Analytics dashboard |
-| ⏳ | Example galleries |
+This project intentionally excludes unfinished systems and keeps a single-file, frontend-only architecture:
+- no workflow intelligence
+- no protocols layer
+- no recommendation engine
+- no export system
+- no compatibility matrix
+- no advanced analytics
+- no example galleries
+- no heavy animations
 
-## How to add a skill manually
+## How to add a base skill manually
 
 Edit `BASE` in `index.html` and include:
 - `id`, `cat`, `name`, `oneliner`, `tags`, `prompt`, `install`, `github`
