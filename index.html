@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <script>
+  (function () {
+    try {
+      var t = localStorage.getItem('theme_preference');
+      document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>skill / dict</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background-color 200ms ease, color 200ms ease;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { transition: none; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    [data-theme="dark"] {
+      --bg: #0a0a0c;
+      --surface: #111116;
+      --border: #1c1c26;
+      --text: #dddde8;
+      --muted: #55556a;
+      --accent: #6d5bff;
+      --green: #3dd68c;
+      --shadow: rgba(0, 0, 0, 0.35);
+    }
+
+    [data-theme="light"] {
+      --bg: #f5f5f7;
+      --surface: #ffffff;
+      --border: #e5e5ea;
+      --text: #1d1d1f;
+      --muted: #6e6e73;
+      --accent: #6d5bff;
+      --green: #34c759;
+      --shadow: rgba(0, 0, 0, 0.08);
+    }
+
+    :root {
+      --cat-visual: #af52de;
+      --cat-image: #ff2d55;
+      --cat-frontend: #0071e3;
+      --cat-backend: #34c759;
+      --cat-context: #ff9f0a;
+      --cat-workflow: #ff3b30;
+      --radius: 12px;
+      --font-mono: 'IBM Plex Mono', monospace;
+      --font-sans: 'IBM Plex Sans', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 16px; }
+    }
+
+    /* Header */
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .logo span { color: var(--muted); }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      justify-content: flex-end;
+      min-width: 0;
+    }
+
+    @media (max-width: 600px) {
+      .site-header { flex-direction: column; align-items: stretch; }
+      .header-actions { justify-content: stretch; }
+    }
+
+    .search-wrap { flex: 1; max-width: 400px; min-width: 0; }
+
+    @media (max-width: 600px) {
+      .search-wrap { max-width: none; }
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 16px;
+      font-family: var(--font-sans);
+      font-size: 0.9375rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      outline: none;
+      transition: border-color 200ms ease;
+    }
+
+    .search-input::placeholder { color: var(--muted); }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(109, 91, 255, 0.2);
+    }
+
+    .theme-toggle {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 200ms ease, transform 200ms ease;
+    }
+
+    .theme-toggle:hover { border-color: var(--accent); }
+    .theme-toggle:active { transform: scale(0.96); }
+    .theme-toggle:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .theme-toggle svg { width: 20px; height: 20px; }
+
+    /* Stats */
+    .stats-bar {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 24px;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      color: var(--muted);
+    }
+
+    .stats-bar strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0;
+    }
+
+    .tab {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      padding: 10px 16px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      cursor: pointer;
+      margin-bottom: -1px;
+      transition: color 200ms ease, border-color 200ms ease;
+      white-space: nowrap;
+    }
+
+    .tab:hover { color: var(--text); }
+
+    .tab[aria-selected="true"] {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    /* Grid */
+    .skill-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      margin-bottom: 64px;
+    }
+
+    @media (max-width: 375px) {
+      .skill-grid { grid-template-columns: 1fr; }
+    }
+
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 200ms ease, box-shadow 200ms ease;
+      border-left: 3px solid var(--cat-color, var(--accent));
+    }
+
+    .skill-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--shadow);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .skill-name {
+      font-family: var(--font-mono);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--cat-color, var(--accent));
+      word-break: break-word;
+    }
+
+    .usage-badge {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      color: var(--green);
+      background: rgba(61, 214, 140, 0.1);
+      padding: 2px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    [data-theme="light"] .usage-badge {
+      background: rgba(52, 199, 89, 0.12);
+    }
+
+    .skill-oneliner {
+      font-size: 0.9375rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .skill-when {
+      font-size: 0.8125rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .skill-when strong {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 4px;
+    }
+
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 200ms ease, transform 200ms ease, opacity 200ms ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .btn-copy {
+      background: var(--accent);
+      color: #ffffff;
+      flex: 1;
+    }
+
+    .btn-copy:hover { background: #5a4ae6; }
+
+    .btn-copy.copied {
+      background: var(--green);
+    }
+
+    .btn-gh {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+    }
+
+    .btn-gh:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn-gh svg { width: 16px; height: 16px; }
+
+    /* Empty state */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 64px 24px;
+      color: var(--muted);
+      font-size: 0.9375rem;
+    }
+
+    /* Scroll sentinel */
+    .scroll-sentinel {
+      height: 1px;
+      width: 100%;
+      pointer-events: none;
+    }
+
+    /* Contact */
+    .contact-section {
+      padding: 48px 0 64px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .contact-title {
+      font-family: var(--font-mono);
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 32px;
+      color: var(--text);
+    }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .contact-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+      min-width: 80px;
+    }
+
+    .contact-icon {
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+    }
+
+    .contact-link:hover .contact-icon {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      box-shadow: 0 4px 16px var(--shadow);
+    }
+
+    .contact-link:focus-visible .contact-icon {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .contact-icon svg { width: 24px; height: 24px; }
+
+    .contact-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* Scroll to top */
+    .scroll-top {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(8px);
+      transition: opacity 200ms ease, visibility 200ms ease, transform 200ms ease;
+      box-shadow: 0 4px 16px rgba(109, 91, 255, 0.4);
+    }
+
+    .scroll-top.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .scroll-top:hover { transform: scale(1.08); }
+    .scroll-top.visible:hover { transform: scale(1.08); }
+
+    .scroll-top:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+    }
+
+    .scroll-top svg { width: 20px; height: 20px; }
+
+    @media (max-width: 480px) {
+      .scroll-top {
+        width: 40px;
+        height: 40px;
+        bottom: 16px;
+        right: 16px;
+      }
+      .scroll-top svg { width: 18px; height: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="site-header">
+      <h1 class="logo">skill <span>/</span> dict</h1>
+      <div class="header-actions">
+        <div class="search-wrap">
+          <input type="search" class="search-input" id="search" placeholder="Search skills..." aria-label="Search skills">
+        </div>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Switch to light mode" aria-pressed="false">
+          <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="scroll-sentinel" id="scroll-sentinel" aria-hidden="true"></div>
+
+    <main>
+      <div class="stats-bar" id="stats-bar" aria-live="polite">
+        <span><strong id="stat-skills">20</strong> skills</span>
+        <span><strong id="stat-used">0</strong> total used</span>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Skill categories" id="tabs"></div>
+
+      <div class="skill-grid" id="skill-grid" role="list"></div>
+    </main>
+
+    <footer class="contact-section">
+      <h2 class="contact-title">Get in touch</h2>
+      <div class="contact-links">
+        <a href="https://github.com/Amrsamiredris" class="contact-link" target="_blank" rel="noopener noreferrer">
+          <span class="contact-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+          </span>
+          <span class="contact-label">GitHub</span>
+        </a>
+        <a href="https://linkedin.com/in/amrsamiredris" class="contact-link" target="_blank" rel="noopener noreferrer">
+          <span class="contact-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+          </span>
+          <span class="contact-label">LinkedIn</span>
+        </a>
+        <a href="mailto:amrsamiredris@gmail.com" class="contact-link">
+          <span class="contact-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+          </span>
+          <span class="contact-label">Email</span>
+        </a>
+      </div>
+    </footer>
+  </div>
+
+  <button class="scroll-top" id="scroll-top" aria-label="Scroll to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="18 15 12 9 6 15"/>
+    </svg>
+  </button>
+
+  <script>
+  const SKILLS = [
+    { id:'design-taste-frontend', cat:'visual', name:'design-taste-frontend',
+      oneliner:'Default anti-slop frontend. Premium layout, typography, motion, spacing.',
+      when:'Any new UI build. Use this first unless you have a specific aesthetic.',
+      tags:['all apps','greenfield','default'],
+      source:'Leonxlnx/taste-skill',
+      prompt:'follow the design-taste-frontend skill for this: [describe your UI]',
+      gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/design-taste-frontend' },
+
+    { id:'gpt-taste', cat:'visual', name:'gpt-taste',
+      oneliner:'Stricter taste variant for GPT and Codex. Stronger motion and layout variance.',
+      when:'Working in ChatGPT or Codex and output looks generic or flat.',
+      tags:['ChatGPT','Codex','motion'],
+      source:'Leonxlnx/taste-skill',
+      prompt:'follow the gpt-taste skill for this: [describe your UI]',
+      gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/gpt-taste' },
+
+    { id:'minimalist-ui', cat:'visual', name:'minimalist-ui',
+      oneliner:'Editorial minimalism — restrained color, sharp hierarchy. Notion/Linear feel.',
+      when:'Dashboard, SaaS product, or anything needing a clean focused look.',
+      tags:['all apps','minimalist','SaaS'],
+      source:'Leonxlnx/taste-skill',
+      prompt:'follow the minimalist-ui skill for this: [describe your UI]',
+      gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/minimalist-ui' },
+
+    { id:'industrial-brutalist-ui', cat:'visual', name:'industrial-brutalist-ui',
+      oneliner:'Swiss typography, raw grid structure, sharp contrast. High visual impact.',
+      when:'Bold landing page, portfolio, or anything that needs edge and presence.',
+      tags:['all apps','brutalist','bold'],
+      source:'Leonxlnx/taste-skill',
+      prompt:'follow the industrial-brutalist-ui skill for this: [describe your UI]',
+      gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/industrial-brutalist-ui' },
+
+    { id:'stitch-design-taste', cat:'visual', name:'stitch-design-taste',
+      oneliner:'Google Stitch-compatible design rules. Outputs a DESIGN.md alongside code.',
+      when:'Building inside Antigravity or Stitch and need structured design token export.',
+      tags:['Antigravity','Stitch','DESIGN.md'],
+      source:'Leonxlnx/taste-skill',
+      prompt:'follow the stitch-design-taste skill for this: [describe your UI]',
+      gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/stitch-design-taste' },
+
+    { id:'brandkit', cat:'image', name:'brandkit',
+      oneliner:'Brand boards — logo directions, color palettes, typography, identity.',
+      when:'Starting a new brand and need identity references before handing to a coder.',
+      tags:['ChatGPT Images','branding','identity'],
+      source:'Leonxlnx/taste-skill',
+      prompt:'use the brandkit skill. Generate brand identity boards for [describe brand].',
+      gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/brandkit' },
+
+    { id:'imagegen-frontend-web', cat:'image', name:'imagegen-frontend-web',
+      oneliner:'Premium web reference images — strong art direction, anti-slop.',
+      when:'Need high-quality visual comps for a website before handing to a coding agent.',
+      tags:['ChatGPT Images','web','reference'],
+      source:'Leonxlnx/taste-skill',
+      prompt:'use the imagegen-frontend-web skill. Generate website references for [describe].',
+      gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/imagegen-frontend-web' },
+
+    { id:'imagegen-frontend-mobile', cat:'image', name:'imagegen-frontend-mobile',
+      oneliner:'Premium mobile screens and flows — clean hierarchy, multi-screen consistency.',
+      when:'Need mobile app mockups or flow references before coding.',
+      tags:['ChatGPT Images','mobile','flows'],
+      source:'Leonxlnx/taste-skill',
+      prompt:'use the imagegen-frontend-mobile skill. Generate mobile screens for [describe].',
+      gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/imagegen-frontend-mobile' },
+
+    { id:'high-end-visual-design', cat:'image', name:'high-end-visual-design',
+      oneliner:'High-end editorial references — luxury, premium spacing, anti-generic.',
+      when:'Need reference frames for luxury or high-production-value visual output.',
+      tags:['ChatGPT Images','premium','editorial'],
+      source:'Leonxlnx/taste-skill',
+      prompt:'use the high-end-visual-design skill. Generate references for [describe].',
+      gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/high-end-visual-design' },
+
+    { id:'frontend-ui-engineering', cat:'frontend', name:'frontend-ui-engineering',
+      oneliner:'Component architecture, design systems, responsive, WCAG 2.1 AA.',
+      when:'Building or modifying any user-facing interface. Architecture not aesthetics.',
+      tags:['all apps','architecture','accessibility'],
+      source:'addyosmani/agent-skills',
+      prompt:'follow the frontend-ui-engineering skill for this: [describe component or feature]',
+      gh:'https://github.com/addyosmani/agent-skills' },
+
+    { id:'vercel-react-best-practices', cat:'frontend', name:'vercel-react-best-practices',
+      oneliner:'62 rules across 8 categories: bundle, SSR, re-renders, waterfall elimination.',
+      when:'Any React or Next.js project. Catches perf patterns agents typically miss.',
+      tags:['React','Next.js','performance','SSR'],
+      source:'vercel-labs/agent-skills',
+      prompt:'follow the vercel-react-best-practices skill for this: [describe feature]',
+      gh:'https://github.com/vercel-labs/agent-skills' },
+
+    { id:'web-quality-audit', cat:'frontend', name:'web-quality-audit',
+      oneliner:'100+ rules: Lighthouse, Core Web Vitals, WCAG 2.2, SEO in one pass.',
+      when:'Before shipping. Full quality check on performance, accessibility, SEO.',
+      tags:['all apps','audit','Lighthouse','SEO'],
+      source:'addyosmani/agent-skills',
+      prompt:'follow the web-quality-audit skill. Audit this project: [paste relevant files]',
+      gh:'https://github.com/addyosmani/agent-skills' },
+
+    { id:'supabase', cat:'backend', name:'supabase',
+      oneliner:'Full Supabase stack — DB, auth, storage, realtime, edge functions.',
+      when:'Any Supabase project: schema, RLS, auth flow, storage, realtime features.',
+      tags:['all apps','Supabase','Postgres','auth'],
+      source:'supabase/agent-skills',
+      prompt:'follow the supabase skill for this: [describe what you need]',
+      gh:'https://github.com/supabase/agent-skills' },
+
+    { id:'supabase-postgres-best-practices', cat:'backend',
+      name:'supabase-postgres-best-practices',
+      oneliner:'Schema design, RLS policies, indexing, query optimization.',
+      when:'Writing migrations, configuring Row Level Security, or fixing slow queries.',
+      tags:['Supabase','Postgres','RLS','migrations'],
+      source:'supabase/agent-skills',
+      prompt:'follow the supabase-postgres-best-practices skill for this: [describe issue]',
+      gh:'https://github.com/supabase/agent-skills' },
+
+    { id:'context-fundamentals', cat:'context', name:'context-fundamentals',
+      oneliner:'Treats context as a finite attention budget. Maximize signal, minimize waste.',
+      when:'Agent is losing track, repeating itself, or context window filling up.',
+      tags:['all apps','token budget','attention'],
+      source:'muratcankoylan/Agent-Skills-for-Context-Engineering',
+      prompt:'follow the context-fundamentals skill. Optimize context for: [describe task]',
+      gh:'https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering' },
+
+    { id:'context-compression', cat:'context', name:'context-compression',
+      oneliner:'Compaction, observation masking, prefix caching, strategic partitioning.',
+      when:'Session near token limit. Agent needs to compress without losing state.',
+      tags:['all apps','compression','memory'],
+      source:'muratcankoylan/Agent-Skills-for-Context-Engineering',
+      prompt:'follow the context-compression skill. Compress context while preserving: [list]',
+      gh:'https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering' },
+
+    { id:'image-to-code', cat:'workflow', name:'image-to-code',
+      oneliner:'Full pipeline: generate images → analyze → implement frontend code.',
+      when:'Starting from a visual comp or screenshot. Agent builds UI from the image.',
+      tags:['all apps','pipeline','image→code'],
+      source:'Leonxlnx/taste-skill',
+      prompt:'follow the image-to-code skill: generate images, then analyze, then code. Task: [describe]',
+      gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/image-to-code' },
+
+    { id:'redesign-existing-projects', cat:'workflow', name:'redesign-existing-projects',
+      oneliner:'Visual audit and redesign of existing codebase. Refactors not greenfield.',
+      when:'Existing UI looks bad or inconsistent. Agent reviews and rewrites styling.',
+      tags:['all apps','refactor','audit'],
+      source:'Leonxlnx/taste-skill',
+      prompt:'follow the redesign-existing-projects skill. Audit and redesign: [describe]',
+      gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/redesign-existing-projects' },
+
+    { id:'full-output-enforcement', cat:'workflow', name:'full-output-enforcement',
+      oneliner:'Forces complete untruncated code. Kills placeholders and // TODO patterns.',
+      when:'Agent keeps truncating output, writing // TODO, or stopping mid-component.',
+      tags:['all apps','no-truncation','enforcement'],
+      source:'Leonxlnx/taste-skill',
+      prompt:'follow the full-output-enforcement skill. Output the complete implementation of: [describe]',
+      gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/full-output-enforcement' },
+
+    { id:'vercel-deploy-claimable', cat:'workflow', name:'vercel-deploy-claimable',
+      oneliner:'Deploy to Vercel instantly from any AI chat. Returns preview + claim URL.',
+      when:'Ready to ship. Works from Claude Desktop, claude.ai, or any connected agent.',
+      tags:['all apps','deploy','Vercel'],
+      source:'vercel-labs/agent-skills',
+      prompt:'follow the vercel-deploy-claimable skill. Deploy this project to Vercel.',
+      gh:'https://github.com/vercel-labs/agent-skills' },
+  ];
+
+  const CATEGORIES = [
+    { id: 'all', label: 'All' },
+    { id: 'visual', label: 'Visual Style' },
+    { id: 'image', label: 'Image Gen' },
+    { id: 'frontend', label: 'Frontend' },
+    { id: 'backend', label: 'Backend' },
+    { id: 'context', label: 'Context' },
+    { id: 'workflow', label: 'Workflow' },
+  ];
+
+  const CAT_COLORS = {
+    visual: '#af52de',
+    image: '#ff2d55',
+    frontend: '#0071e3',
+    backend: '#34c759',
+    context: '#ff9f0a',
+    workflow: '#ff3b30',
+  };
+
+  let activeCategory = 'all';
+  let searchQuery = '';
+  let usage = getUsage();
+
+  function getUsage() {
+    try {
+      var raw = localStorage.getItem('sd_usage');
+      if (!raw) return {};
+      var parsed = JSON.parse(raw);
+      return typeof parsed === 'object' && parsed !== null ? parsed : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveUsage(data) {
+    try {
+      localStorage.setItem('sd_usage', JSON.stringify(data));
+    } catch (e) { /* ignore */ }
+  }
+
+  function incrementUsage(id) {
+    usage[id] = (usage[id] || 0) + 1;
+    saveUsage(usage);
+    updateStats();
+    renderGrid();
+  }
+
+  function getTotalUsed(data) {
+    var total = 0;
+    for (var key in data) {
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
+        total += data[key];
+      }
+    }
+    return total;
+  }
+
+  function getTheme() {
+    try {
+      return document.documentElement.getAttribute('data-theme') || 'dark';
+    } catch (e) {
+      return 'dark';
+    }
+  }
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    try {
+      localStorage.setItem('theme_preference', theme);
+    } catch (e) { /* ignore */ }
+    updateThemeToggle(theme);
+  }
+
+  function updateThemeToggle(theme) {
+    var btn = document.getElementById('theme-toggle');
+    var moon = document.getElementById('icon-moon');
+    var sun = document.getElementById('icon-sun');
+    if (theme === 'light') {
+      btn.setAttribute('aria-label', 'Switch to dark mode');
+      btn.setAttribute('aria-pressed', 'true');
+      moon.style.display = 'none';
+      sun.style.display = 'block';
+    } else {
+      btn.setAttribute('aria-label', 'Switch to light mode');
+      btn.setAttribute('aria-pressed', 'false');
+      moon.style.display = 'block';
+      sun.style.display = 'none';
+    }
+  }
+
+  function filterSkills() {
+    var q = searchQuery.toLowerCase().trim();
+    return SKILLS.filter(function (skill) {
+      if (activeCategory !== 'all' && skill.cat !== activeCategory) return false;
+      if (!q) return true;
+      var haystack = [
+        skill.name,
+        skill.oneliner,
+        skill.when,
+        skill.tags.join(' '),
+      ].join(' ').toLowerCase();
+      return haystack.indexOf(q) !== -1;
+    });
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderTabs() {
+    var tabsEl = document.getElementById('tabs');
+    tabsEl.innerHTML = CATEGORIES.map(function (cat, i) {
+      return '<button class="tab" role="tab" id="tab-' + cat.id + '" aria-selected="' + (activeCategory === cat.id ? 'true' : 'false') + '" aria-controls="skill-grid" tabindex="' + (activeCategory === cat.id ? '0' : '-1') + '" data-cat="' + cat.id + '">' + escapeHtml(cat.label) + '</button>';
+    }).join('');
+
+    tabsEl.querySelectorAll('.tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        activeCategory = tab.getAttribute('data-cat');
+        renderTabs();
+        renderGrid();
+      });
+      tab.addEventListener('keydown', function (e) {
+        var tabs = Array.prototype.slice.call(tabsEl.querySelectorAll('.tab'));
+        var idx = tabs.indexOf(tab);
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          tabs[(idx + 1) % tabs.length].focus();
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          tabs[(idx - 1 + tabs.length) % tabs.length].focus();
+        } else if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          activeCategory = tab.getAttribute('data-cat');
+          renderTabs();
+          renderGrid();
+        }
+      });
+    });
+  }
+
+  function renderGrid() {
+    var grid = document.getElementById('skill-grid');
+    var filtered = filterSkills();
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '<div class="empty-state" role="status">No skills match your search.</div>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(function (skill) {
+      var count = usage[skill.id] || 0;
+      var catColor = CAT_COLORS[skill.cat] || 'var(--accent)';
+      var usageHtml = count > 0
+        ? '<span class="usage-badge">used ' + count + 'x</span>'
+        : '';
+
+      var tagsHtml = skill.tags.map(function (tag) {
+        return '<span class="tag">' + escapeHtml(tag) + '</span>';
+      }).join('');
+
+      return '<article class="skill-card" role="listitem" style="--cat-color:' + catColor + '">' +
+        '<div class="card-top">' +
+          '<h2 class="skill-name">' + escapeHtml(skill.name) + '</h2>' +
+          usageHtml +
+        '</div>' +
+        '<p class="skill-oneliner">' + escapeHtml(skill.oneliner) + '</p>' +
+        '<div class="skill-when"><strong>Use when</strong>' + escapeHtml(skill.when) + '</div>' +
+        '<div class="tags">' + tagsHtml + '</div>' +
+        '<div class="card-actions">' +
+          '<button class="btn btn-copy" data-id="' + skill.id + '">Copy Prompt</button>' +
+          '<a class="btn btn-gh" href="' + escapeHtml(skill.gh) + '" target="_blank" rel="noopener noreferrer" aria-label="View ' + escapeHtml(skill.name) + ' on GitHub">' +
+            '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>' +
+          '</a>' +
+        '</div>' +
+      '</article>';
+    }).join('');
+
+    grid.querySelectorAll('.btn-copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        var prompt = SKILLS.find(function (s) { return s.id === id; }).prompt;
+        copyPrompt(btn, prompt, id);
+      });
+    });
+  }
+
+  function copyPrompt(btn, prompt, id) {
+    function onSuccess() {
+      usage[id] = (usage[id] || 0) + 1;
+      saveUsage(usage);
+      updateStats();
+      var card = btn.closest('.skill-card');
+      var badge = card.querySelector('.usage-badge');
+      if (badge) {
+        badge.textContent = 'used ' + usage[id] + 'x';
+      } else {
+        var top = card.querySelector('.card-top');
+        var span = document.createElement('span');
+        span.className = 'usage-badge';
+        span.textContent = 'used ' + usage[id] + 'x';
+        top.appendChild(span);
+      }
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(function () {
+        btn.textContent = 'Copy Prompt';
+        btn.classList.remove('copied');
+      }, 2000);
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(prompt).then(onSuccess).catch(function () {
+        fallbackCopy(prompt, onSuccess);
+      });
+    } else {
+      fallbackCopy(prompt, onSuccess);
+    }
+  }
+
+  function fallbackCopy(text, callback) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      callback();
+    } catch (e) { /* ignore */ }
+    document.body.removeChild(ta);
+  }
+
+  function updateStats() {
+    document.getElementById('stat-skills').textContent = SKILLS.length;
+    document.getElementById('stat-used').textContent = getTotalUsed(usage);
+  }
+
+  function initScrollTop() {
+    var btn = document.getElementById('scroll-top');
+    var sentinel = document.getElementById('scroll-sentinel');
+
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            btn.classList.remove('visible');
+          } else {
+            btn.classList.add('visible');
+          }
+        });
+      }, { threshold: 0, rootMargin: '-400px 0px 0px 0px' });
+      observer.observe(sentinel);
+    }
+
+    btn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  document.getElementById('search').addEventListener('input', function (e) {
+    searchQuery = e.target.value;
+    renderGrid();
+  });
+
+  document.getElementById('theme-toggle').addEventListener('click', function () {
+    var current = getTheme();
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  });
+
+  updateThemeToggle(getTheme());
+  renderTabs();
+  updateStats();
+  renderGrid();
+  initScrollTop();
+  </script>
+</body>
+</html>
