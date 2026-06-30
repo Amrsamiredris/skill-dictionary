@@ -20,52 +20,94 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+      --space-7: 48px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --font-mono: 'IBM Plex Mono', monospace;
+      --font-sans: 'IBM Plex Sans', sans-serif;
+      --green: #34c759;
+    }
+
     html {
       background-color: var(--bg);
       color: var(--text);
-      transition: background-color 200ms ease, color 200ms ease;
+    }
+
+    html.theme-transition,
+    html.theme-transition *,
+    html.theme-transition *::before,
+    html.theme-transition *::after {
+      transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease, box-shadow 250ms ease !important;
     }
 
     @media (prefers-reduced-motion: reduce) {
-      html { transition: none; }
+      html.theme-transition,
+      html.theme-transition *,
+      html.theme-transition *::before,
+      html.theme-transition *::after { transition: none !important; }
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
       }
     }
 
     [data-theme="dark"] {
-      --bg: #0a0a0c;
-      --surface: #111116;
-      --border: #1c1c26;
-      --text: #dddde8;
-      --muted: #55556a;
-      --accent: #6d5bff;
+      --bg: #0c0c10;
+      --surface: #16161c;
+      --surface2: #1d1d26;
+      --border: #26262f;
+      --border-hover: #34343f;
+      --text: #ededf2;
+      --muted: #8a8a9c;
+      --dim: #5c5c6e;
+      --accent: #7c6fff;
+      --accent-hover: #8d82ff;
+      --accent-glow: rgba(124, 111, 255, 0.15);
       --green: #3dd68c;
-      --shadow: rgba(0, 0, 0, 0.35);
+      --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.28);
+      --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.38), 0 0 0 1px rgba(255, 255, 255, 0.04);
+      --shadow-elevated: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 24px var(--accent-glow);
+      --cat-visual: #A78BFA;
+      --cat-image: #F472B6;
+      --cat-frontend: #60A5FA;
+      --cat-backend: #4ADE80;
+      --cat-context: #FBBF24;
+      --cat-workflow: #F87171;
     }
 
     [data-theme="light"] {
       --bg: #f5f5f7;
       --surface: #ffffff;
+      --surface2: #f0f0f4;
       --border: #e5e5ea;
+      --border-hover: #d1d1d6;
       --text: #1d1d1f;
       --muted: #6e6e73;
-      --accent: #6d5bff;
+      --dim: #aeaeb2;
+      --accent: #7c6fff;
+      --accent-hover: #6d5bff;
+      --accent-glow: rgba(124, 111, 255, 0.12);
       --green: #34c759;
-      --shadow: rgba(0, 0, 0, 0.08);
-    }
-
-    :root {
-      --cat-visual: #af52de;
-      --cat-image: #ff2d55;
-      --cat-frontend: #0071e3;
-      --cat-backend: #34c759;
-      --cat-context: #ff9f0a;
-      --cat-workflow: #ff3b30;
-      --radius: 12px;
-      --font-mono: 'IBM Plex Mono', monospace;
-      --font-sans: 'IBM Plex Sans', sans-serif;
+      --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.06);
+      --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.08);
+      --shadow-elevated: 0 16px 40px rgba(0, 0, 0, 0.1), 0 0 20px var(--accent-glow);
+      --cat-visual: #9333EA;
+      --cat-image: #DB2777;
+      --cat-frontend: #2563EB;
+      --cat-backend: #16A34A;
+      --cat-context: #D97706;
+      --cat-workflow: #DC2626;
     }
 
     body {
@@ -79,23 +121,29 @@
     .container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 24px;
+      padding: var(--space-5);
     }
 
     @media (max-width: 480px) {
-      .container { padding: 16px; }
+      .container { padding: var(--space-4); }
     }
 
-    /* Header */
     .site-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: var(--space-4);
       flex-wrap: wrap;
-      margin-bottom: 24px;
-      padding-bottom: 24px;
+      margin-bottom: var(--space-5);
+      padding-bottom: var(--space-5);
       border-bottom: 1px solid var(--border);
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      flex-wrap: wrap;
     }
 
     .logo {
@@ -108,10 +156,29 @@
 
     .logo span { color: var(--muted); }
 
+    .how-it-works {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-sm);
+      transition: color 200ms var(--ease-out), background-color 200ms var(--ease-out);
+    }
+
+    .how-it-works:hover { color: var(--accent); background: var(--surface2); }
+    .how-it-works:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: var(--space-3);
       flex: 1;
       justify-content: flex-end;
       min-width: 0;
@@ -130,22 +197,22 @@
 
     .search-input {
       width: 100%;
-      padding: 10px 16px;
+      padding: var(--space-3) var(--space-4);
       font-family: var(--font-sans);
       font-size: 0.9375rem;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: var(--radius-md);
       color: var(--text);
       outline: none;
-      transition: border-color 200ms ease;
+      transition: border-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
     }
 
-    .search-input::placeholder { color: var(--muted); }
+    .search-input::placeholder { color: var(--dim); }
 
     .search-input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(109, 91, 255, 0.2);
+      box-shadow: 0 0 0 3px var(--accent-glow);
     }
 
     .theme-toggle {
@@ -157,26 +224,33 @@
       justify-content: center;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: var(--radius-md);
       color: var(--text);
       cursor: pointer;
-      transition: border-color 200ms ease, transform 200ms ease;
+      transition: border-color 200ms var(--ease-out), transform 200ms var(--spring);
     }
 
-    .theme-toggle:hover { border-color: var(--accent); }
-    .theme-toggle:active { transform: scale(0.96); }
+    .theme-toggle:hover { border-color: var(--border-hover); }
+    .theme-toggle:active { transform: scale(0.94); }
     .theme-toggle:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 2px;
     }
 
+    .theme-icon-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 280ms var(--spring);
+    }
+
+    [data-theme="light"] .theme-icon-wrap { transform: rotate(180deg); }
     .theme-toggle svg { width: 20px; height: 20px; }
 
-    /* Stats */
     .stats-bar {
       display: flex;
-      gap: 24px;
-      margin-bottom: 24px;
+      gap: var(--space-5);
+      margin-bottom: var(--space-5);
       font-family: var(--font-mono);
       font-size: 0.8125rem;
       color: var(--muted);
@@ -187,49 +261,78 @@
       font-weight: 600;
     }
 
-    /* Tabs */
-    .tabs {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0;
+    .filter-section {
+      margin-bottom: var(--space-4);
     }
 
-    .tab {
+    .filter-label {
       font-family: var(--font-mono);
-      font-size: 0.8125rem;
-      padding: 10px 16px;
-      background: none;
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--dim);
+      margin-bottom: var(--space-2);
+      display: block;
+    }
+
+    .pill-bar {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-1);
+      padding: var(--space-1);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-4);
+    }
+
+    .pill-indicator {
+      position: absolute;
+      top: var(--space-1);
+      left: 0;
+      height: calc(100% - 8px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-subtle);
+      pointer-events: none;
+      transition: transform 280ms var(--spring), width 280ms var(--spring);
+      z-index: 0;
+    }
+
+    .pill {
+      position: relative;
+      z-index: 1;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: var(--space-2) var(--space-3);
+      background: transparent;
       border: none;
-      border-bottom: 2px solid transparent;
+      border-radius: var(--radius-sm);
       color: var(--muted);
       cursor: pointer;
-      margin-bottom: -1px;
-      transition: color 200ms ease, border-color 200ms ease;
       white-space: nowrap;
+      transition: color 200ms var(--ease-out);
     }
 
-    .tab:hover { color: var(--text); }
+    .pill:hover { color: var(--text); }
 
-    .tab[aria-selected="true"] {
+    .pill[aria-selected="true"] {
       color: var(--accent);
-      border-bottom-color: var(--accent);
+      font-weight: 500;
     }
 
-    .tab:focus-visible {
+    .pill:focus-visible {
       outline: 2px solid var(--accent);
-      outline-offset: 2px;
-      border-radius: 4px;
+      outline-offset: 1px;
     }
 
-    /* Grid */
     .skill-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 16px;
-      margin-bottom: 64px;
+      gap: var(--space-4);
+      margin-bottom: var(--space-7);
     }
 
     @media (max-width: 375px) {
@@ -237,34 +340,71 @@
     }
 
     .skill-card {
-      background: var(--surface);
+      background: linear-gradient(145deg, var(--surface) 0%, var(--surface2) 100%);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
+      border-radius: var(--radius-md);
+      padding: var(--space-5);
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      transition: transform 200ms ease, box-shadow 200ms ease;
-      border-left: 3px solid var(--cat-color, var(--accent));
+      gap: var(--space-3);
+      border-left: 2px solid var(--cat-color, var(--accent));
+      box-shadow: var(--shadow-subtle);
+      transition: transform 320ms var(--spring), box-shadow 320ms var(--ease-out), border-color 320ms var(--ease-out), opacity 280ms var(--ease-out);
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .skill-card.is-entering {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+
+    .skill-card.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      transition: transform 480ms var(--spring), opacity 400ms var(--ease-out), box-shadow 320ms var(--ease-out), border-color 320ms var(--ease-out);
+    }
+
+    .skill-card.is-hiding {
+      opacity: 0;
+      transform: scale(0.94);
+      pointer-events: none;
+      transition: transform 220ms var(--ease-out), opacity 220ms var(--ease-out);
     }
 
     .skill-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px var(--shadow);
+      transform: translateY(-4px) scale(1);
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-elevated);
     }
 
     .card-top {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 8px;
+      gap: var(--space-2);
+    }
+
+    .skill-name-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      min-width: 0;
+    }
+
+    .cat-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cat-color, var(--accent));
+      flex-shrink: 0;
     }
 
     .skill-name {
       font-family: var(--font-mono);
       font-size: 0.9375rem;
       font-weight: 600;
-      color: var(--cat-color, var(--accent));
+      color: var(--text);
       word-break: break-word;
     }
 
@@ -273,7 +413,7 @@
       font-size: 0.6875rem;
       color: var(--green);
       background: rgba(61, 214, 140, 0.1);
-      padding: 2px 8px;
+      padding: 2px var(--space-2);
       border-radius: 999px;
       white-space: nowrap;
       flex-shrink: 0;
@@ -301,20 +441,20 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
       display: block;
-      margin-bottom: 4px;
-      color: var(--muted);
+      margin-bottom: var(--space-1);
+      color: var(--dim);
     }
 
     .tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: var(--space-2);
     }
 
     .tag {
       font-family: var(--font-mono);
       font-size: 0.6875rem;
-      padding: 3px 10px;
+      padding: 3px var(--space-3);
       border-radius: 999px;
       background: var(--bg);
       border: 1px solid var(--border);
@@ -324,29 +464,27 @@
 
     .card-actions {
       display: flex;
-      gap: 8px;
+      gap: var(--space-2);
       margin-top: auto;
-      padding-top: 4px;
+      padding-top: var(--space-1);
     }
 
     .btn {
       font-family: var(--font-sans);
       font-size: 0.8125rem;
       font-weight: 500;
-      padding: 8px 16px;
-      border-radius: 8px;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
       border: none;
       cursor: pointer;
-      transition: background-color 200ms ease, transform 200ms ease, opacity 200ms ease;
+      transition: background-color 200ms var(--ease-out), transform 200ms var(--spring), color 200ms var(--ease-out);
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: var(--space-2);
       white-space: nowrap;
     }
-
-    .btn:active { transform: scale(0.98); }
 
     .btn:focus-visible {
       outline: 2px solid var(--accent);
@@ -359,42 +497,60 @@
       flex: 1;
     }
 
-    .btn-copy:hover { background: #5a4ae6; }
+    .btn-copy:hover { background: var(--accent-hover); }
+    .btn-copy:active { transform: scale(0.94); }
 
     .btn-copy.copied {
       background: var(--green);
+    }
+
+    .btn-copy .btn-label { display: inline; }
+    .btn-copy .btn-check {
+      display: none;
+      width: 16px;
+      height: 16px;
+    }
+
+    .btn-copy.copied .btn-label { display: none; }
+    .btn-copy.copied .btn-check { display: block; }
+
+    .btn-check-path {
+      stroke-dasharray: 22;
+      stroke-dashoffset: 22;
+      animation: draw-check 400ms var(--spring) forwards;
+    }
+
+    @keyframes draw-check {
+      to { stroke-dashoffset: 0; }
     }
 
     .btn-gh {
       background: var(--bg);
       color: var(--text);
       border: 1px solid var(--border);
-      padding: 8px 12px;
+      padding: var(--space-2) var(--space-3);
     }
 
     .btn-gh:hover { border-color: var(--accent); color: var(--accent); }
-
+    .btn-gh:active { transform: scale(0.94); }
     .btn-gh svg { width: 16px; height: 16px; }
 
-    /* Empty state */
     .empty-state {
       grid-column: 1 / -1;
       text-align: center;
-      padding: 64px 24px;
+      padding: var(--space-7) var(--space-5);
       color: var(--muted);
       font-size: 0.9375rem;
     }
 
-    /* Scroll sentinel */
     .scroll-sentinel {
       height: 1px;
       width: 100%;
       pointer-events: none;
     }
 
-    /* Contact */
     .contact-section {
-      padding: 48px 0 64px;
+      padding: var(--space-7) 0 var(--space-7);
       border-top: 1px solid var(--border);
       text-align: center;
     }
@@ -403,14 +559,14 @@
       font-family: var(--font-mono);
       font-size: 1.125rem;
       font-weight: 600;
-      margin-bottom: 32px;
+      margin-bottom: var(--space-6);
       color: var(--text);
     }
 
     .contact-links {
       display: flex;
       justify-content: center;
-      gap: 24px;
+      gap: var(--space-5);
       flex-wrap: wrap;
     }
 
@@ -418,7 +574,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: var(--space-3);
       text-decoration: none;
       color: var(--text);
       min-width: 80px;
@@ -432,14 +588,14 @@
       justify-content: center;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+      border-radius: var(--radius-md);
+      transition: transform 280ms var(--spring), border-color 200ms var(--ease-out), box-shadow 280ms var(--ease-out);
     }
 
     .contact-link:hover .contact-icon {
-      transform: translateY(-2px);
-      border-color: var(--accent);
-      box-shadow: 0 4px 16px var(--shadow);
+      transform: translateY(-3px);
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-medium);
     }
 
     .contact-link:focus-visible .contact-icon {
@@ -455,11 +611,10 @@
       color: var(--muted);
     }
 
-    /* Scroll to top */
     .scroll-top {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
+      bottom: var(--space-5);
+      right: var(--space-5);
       width: 48px;
       height: 48px;
       border-radius: 50%;
@@ -473,19 +628,21 @@
       z-index: 100;
       opacity: 0;
       visibility: hidden;
-      transform: translateY(8px);
-      transition: opacity 200ms ease, visibility 200ms ease, transform 200ms ease;
-      box-shadow: 0 4px 16px rgba(109, 91, 255, 0.4);
+      transform: translateY(12px) scale(0.85);
+      transition: opacity 280ms var(--ease-out), visibility 280ms var(--ease-out), transform 320ms var(--spring), box-shadow 280ms var(--ease-out);
+      box-shadow: var(--shadow-medium);
     }
 
     .scroll-top.visible {
       opacity: 1;
       visibility: visible;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
 
-    .scroll-top:hover { transform: scale(1.08); }
-    .scroll-top.visible:hover { transform: scale(1.08); }
+    .scroll-top:hover {
+      transform: translateY(-2px) scale(1.06);
+      box-shadow: var(--shadow-elevated);
+    }
 
     .scroll-top:focus-visible {
       outline: 2px solid #ffffff;
@@ -498,36 +655,182 @@
       .scroll-top {
         width: 40px;
         height: 40px;
-        bottom: 16px;
-        right: 16px;
+        bottom: var(--space-4);
+        right: var(--space-4);
       }
       .scroll-top svg { width: 18px; height: 18px; }
+    }
+
+    /* Intro modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+      background: rgba(12, 12, 16, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 280ms var(--ease-out), visibility 280ms var(--ease-out);
+    }
+
+    [data-theme="light"] .modal-overlay {
+      background: rgba(29, 29, 31, 0.4);
+    }
+
+    .modal-overlay.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 480px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      box-shadow: var(--shadow-elevated);
+      transform: scale(0.92);
+      opacity: 0;
+      transition: transform 400ms var(--spring), opacity 300ms var(--ease-out);
+    }
+
+    .modal-overlay.is-open .modal {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .modal-title {
+      font-family: var(--font-sans);
+      font-size: 1.375rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      color: var(--text);
+      margin-bottom: var(--space-4);
+    }
+
+    .modal-body {
+      font-size: 0.9375rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: var(--space-5);
+    }
+
+    .modal-body p + p { margin-top: var(--space-3); }
+
+    .modal-steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-6);
+      padding: var(--space-4);
+      background: var(--surface2);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    .modal-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      flex: 1;
+      min-width: 0;
+    }
+
+    .step-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--accent);
+    }
+
+    .step-icon svg { width: 18px; height: 18px; }
+
+    .step-num {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      font-weight: 600;
+      color: var(--dim);
+    }
+
+    .step-arrow {
+      color: var(--dim);
+      flex-shrink: 0;
+      margin-top: -16px;
+    }
+
+    .step-arrow svg { width: 16px; height: 16px; }
+
+    .modal-cta {
+      width: 100%;
+      padding: var(--space-3) var(--space-5);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background-color 200ms var(--ease-out), transform 200ms var(--spring);
+    }
+
+    .modal-cta:hover { background: var(--accent-hover); }
+    .modal-cta:active { transform: scale(0.97); }
+    .modal-cta:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 375px) {
+      .modal { padding: var(--space-5); }
+      .modal-steps { gap: var(--space-1); padding: var(--space-3); }
+      .step-icon { width: 36px; height: 36px; }
+      .step-arrow { display: none; }
+      .modal-step { flex-direction: row; justify-content: flex-start; width: 100%; }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header class="site-header">
-      <h1 class="logo">skill <span>/</span> dict</h1>
+      <div class="header-brand">
+        <h1 class="logo">skill <span>/</span> dict</h1>
+        <button type="button" class="how-it-works" id="how-it-works">How it works</button>
+      </div>
       <div class="header-actions">
         <div class="search-wrap">
           <input type="search" class="search-input" id="search" placeholder="Search skills..." aria-label="Search skills">
         </div>
         <button class="theme-toggle" id="theme-toggle" aria-label="Switch to light mode" aria-pressed="false">
-          <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-          </svg>
-          <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
-            <circle cx="12" cy="12" r="5"/>
-            <line x1="12" y1="1" x2="12" y2="3"/>
-            <line x1="12" y1="21" x2="12" y2="23"/>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            <line x1="1" y1="12" x2="3" y2="12"/>
-            <line x1="21" y1="12" x2="23" y2="12"/>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-          </svg>
+          <span class="theme-icon-wrap">
+            <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+            <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          </span>
         </button>
       </div>
     </header>
@@ -540,7 +843,19 @@
         <span><strong id="stat-used">0</strong> total used</span>
       </div>
 
-      <div class="tabs" role="tablist" aria-label="Skill categories" id="tabs"></div>
+      <div class="filter-section">
+        <span class="filter-label" id="role-filter-label">Filter by role</span>
+        <div class="pill-bar" id="role-tabs" role="tablist" aria-labelledby="role-filter-label">
+          <div class="pill-indicator" id="role-indicator" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <span class="filter-label" id="cat-filter-label">Category</span>
+        <div class="pill-bar" id="tabs" role="tablist" aria-labelledby="cat-filter-label">
+          <div class="pill-indicator" id="cat-indicator" aria-hidden="true"></div>
+        </div>
+      </div>
 
       <div class="skill-grid" id="skill-grid" role="list"></div>
     </main>
@@ -577,15 +892,48 @@
     </footer>
   </div>
 
+  <div class="modal-overlay" id="intro-modal" role="dialog" aria-modal="true" aria-labelledby="intro-title" aria-hidden="true">
+    <div class="modal">
+      <h2 class="modal-title" id="intro-title">Get better results from AI in one copy and paste</h2>
+      <div class="modal-body">
+        <p>This is a library of ready-made instructions that help tools like ChatGPT, Claude, and others give you much better answers.</p>
+        <p>You do not need to know how to code. Pick something that fits your work, copy it, and paste it into whatever AI tool you already use.</p>
+      </div>
+      <div class="modal-steps" aria-hidden="true">
+        <div class="modal-step">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <span class="step-num">1</span>
+        </div>
+        <span class="step-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        <div class="modal-step">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </div>
+          <span class="step-num">2</span>
+        </div>
+        <span class="step-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        <div class="modal-step">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+          </div>
+          <span class="step-num">3</span>
+        </div>
+      </div>
+      <button type="button" class="modal-cta" id="intro-dismiss">Got it, let's go</button>
+    </div>
+  </div>
+
   <button class="scroll-top" id="scroll-top" aria-label="Scroll to top">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <polyline points="18 15 12 9 6 15"/>
     </svg>
   </button>
-
   <script>
-  const SKILLS = [
-    { id:'design-taste-frontend', cat:'visual', name:'design-taste-frontend',
+const SKILLS = [
+    { id:'design-taste-frontend', cat:'visual',
+      roles:["designers", "marketers", "founders"], name:'design-taste-frontend',
       oneliner:'Default anti-slop frontend. Premium layout, typography, motion, spacing.',
       when:'Any new UI build. Use this first unless you have a specific aesthetic.',
       tags:['all apps','greenfield','default'],
@@ -593,7 +941,8 @@
       prompt:'follow the design-taste-frontend skill for this: [describe your UI]',
       gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/design-taste-frontend' },
 
-    { id:'gpt-taste', cat:'visual', name:'gpt-taste',
+    { id:'gpt-taste', cat:'visual',
+      roles:["designers", "marketers", "programmers"], name:'gpt-taste',
       oneliner:'Stricter taste variant for GPT and Codex. Stronger motion and layout variance.',
       when:'Working in ChatGPT or Codex and output looks generic or flat.',
       tags:['ChatGPT','Codex','motion'],
@@ -601,7 +950,8 @@
       prompt:'follow the gpt-taste skill for this: [describe your UI]',
       gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/gpt-taste' },
 
-    { id:'minimalist-ui', cat:'visual', name:'minimalist-ui',
+    { id:'minimalist-ui', cat:'visual',
+      roles:["designers", "marketers", "founders"], name:'minimalist-ui',
       oneliner:'Editorial minimalism — restrained color, sharp hierarchy. Notion/Linear feel.',
       when:'Dashboard, SaaS product, or anything needing a clean focused look.',
       tags:['all apps','minimalist','SaaS'],
@@ -609,7 +959,8 @@
       prompt:'follow the minimalist-ui skill for this: [describe your UI]',
       gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/minimalist-ui' },
 
-    { id:'industrial-brutalist-ui', cat:'visual', name:'industrial-brutalist-ui',
+    { id:'industrial-brutalist-ui', cat:'visual',
+      roles:["designers", "marketers", "event-managers"], name:'industrial-brutalist-ui',
       oneliner:'Swiss typography, raw grid structure, sharp contrast. High visual impact.',
       when:'Bold landing page, portfolio, or anything that needs edge and presence.',
       tags:['all apps','brutalist','bold'],
@@ -617,7 +968,8 @@
       prompt:'follow the industrial-brutalist-ui skill for this: [describe your UI]',
       gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/industrial-brutalist-ui' },
 
-    { id:'stitch-design-taste', cat:'visual', name:'stitch-design-taste',
+    { id:'stitch-design-taste', cat:'visual',
+      roles:["designers", "programmers"], name:'stitch-design-taste',
       oneliner:'Google Stitch-compatible design rules. Outputs a DESIGN.md alongside code.',
       when:'Building inside Antigravity or Stitch and need structured design token export.',
       tags:['Antigravity','Stitch','DESIGN.md'],
@@ -625,7 +977,8 @@
       prompt:'follow the stitch-design-taste skill for this: [describe your UI]',
       gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/stitch-design-taste' },
 
-    { id:'brandkit', cat:'image', name:'brandkit',
+    { id:'brandkit', cat:'image',
+      roles:["designers", "marketers", "founders"], name:'brandkit',
       oneliner:'Brand boards — logo directions, color palettes, typography, identity.',
       when:'Starting a new brand and need identity references before handing to a coder.',
       tags:['ChatGPT Images','branding','identity'],
@@ -633,7 +986,8 @@
       prompt:'use the brandkit skill. Generate brand identity boards for [describe brand].',
       gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/brandkit' },
 
-    { id:'imagegen-frontend-web', cat:'image', name:'imagegen-frontend-web',
+    { id:'imagegen-frontend-web', cat:'image',
+      roles:["designers", "marketers"], name:'imagegen-frontend-web',
       oneliner:'Premium web reference images — strong art direction, anti-slop.',
       when:'Need high-quality visual comps for a website before handing to a coding agent.',
       tags:['ChatGPT Images','web','reference'],
@@ -641,7 +995,8 @@
       prompt:'use the imagegen-frontend-web skill. Generate website references for [describe].',
       gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/imagegen-frontend-web' },
 
-    { id:'imagegen-frontend-mobile', cat:'image', name:'imagegen-frontend-mobile',
+    { id:'imagegen-frontend-mobile', cat:'image',
+      roles:["designers", "marketers", "event-managers"], name:'imagegen-frontend-mobile',
       oneliner:'Premium mobile screens and flows — clean hierarchy, multi-screen consistency.',
       when:'Need mobile app mockups or flow references before coding.',
       tags:['ChatGPT Images','mobile','flows'],
@@ -649,7 +1004,8 @@
       prompt:'use the imagegen-frontend-mobile skill. Generate mobile screens for [describe].',
       gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/imagegen-frontend-mobile' },
 
-    { id:'high-end-visual-design', cat:'image', name:'high-end-visual-design',
+    { id:'high-end-visual-design', cat:'image',
+      roles:["designers", "marketers", "event-managers"], name:'high-end-visual-design',
       oneliner:'High-end editorial references — luxury, premium spacing, anti-generic.',
       when:'Need reference frames for luxury or high-production-value visual output.',
       tags:['ChatGPT Images','premium','editorial'],
@@ -657,7 +1013,8 @@
       prompt:'use the high-end-visual-design skill. Generate references for [describe].',
       gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/high-end-visual-design' },
 
-    { id:'frontend-ui-engineering', cat:'frontend', name:'frontend-ui-engineering',
+    { id:'frontend-ui-engineering', cat:'frontend',
+      roles:["programmers", "founders"], name:'frontend-ui-engineering',
       oneliner:'Component architecture, design systems, responsive, WCAG 2.1 AA.',
       when:'Building or modifying any user-facing interface. Architecture not aesthetics.',
       tags:['all apps','architecture','accessibility'],
@@ -665,7 +1022,8 @@
       prompt:'follow the frontend-ui-engineering skill for this: [describe component or feature]',
       gh:'https://github.com/addyosmani/agent-skills' },
 
-    { id:'vercel-react-best-practices', cat:'frontend', name:'vercel-react-best-practices',
+    { id:'vercel-react-best-practices', cat:'frontend',
+      roles:["programmers", "founders"], name:'vercel-react-best-practices',
       oneliner:'62 rules across 8 categories: bundle, SSR, re-renders, waterfall elimination.',
       when:'Any React or Next.js project. Catches perf patterns agents typically miss.',
       tags:['React','Next.js','performance','SSR'],
@@ -673,7 +1031,8 @@
       prompt:'follow the vercel-react-best-practices skill for this: [describe feature]',
       gh:'https://github.com/vercel-labs/agent-skills' },
 
-    { id:'web-quality-audit', cat:'frontend', name:'web-quality-audit',
+    { id:'web-quality-audit', cat:'frontend',
+      roles:["programmers", "founders"], name:'web-quality-audit',
       oneliner:'100+ rules: Lighthouse, Core Web Vitals, WCAG 2.2, SEO in one pass.',
       when:'Before shipping. Full quality check on performance, accessibility, SEO.',
       tags:['all apps','audit','Lighthouse','SEO'],
@@ -681,7 +1040,8 @@
       prompt:'follow the web-quality-audit skill. Audit this project: [paste relevant files]',
       gh:'https://github.com/addyosmani/agent-skills' },
 
-    { id:'supabase', cat:'backend', name:'supabase',
+    { id:'supabase', cat:'backend',
+      roles:["programmers", "founders"], name:'supabase',
       oneliner:'Full Supabase stack — DB, auth, storage, realtime, edge functions.',
       when:'Any Supabase project: schema, RLS, auth flow, storage, realtime features.',
       tags:['all apps','Supabase','Postgres','auth'],
@@ -690,6 +1050,7 @@
       gh:'https://github.com/supabase/agent-skills' },
 
     { id:'supabase-postgres-best-practices', cat:'backend',
+      roles:["programmers", "founders"],
       name:'supabase-postgres-best-practices',
       oneliner:'Schema design, RLS policies, indexing, query optimization.',
       when:'Writing migrations, configuring Row Level Security, or fixing slow queries.',
@@ -698,7 +1059,8 @@
       prompt:'follow the supabase-postgres-best-practices skill for this: [describe issue]',
       gh:'https://github.com/supabase/agent-skills' },
 
-    { id:'context-fundamentals', cat:'context', name:'context-fundamentals',
+    { id:'context-fundamentals', cat:'context',
+      roles:["programmers", "founders"], name:'context-fundamentals',
       oneliner:'Treats context as a finite attention budget. Maximize signal, minimize waste.',
       when:'Agent is losing track, repeating itself, or context window filling up.',
       tags:['all apps','token budget','attention'],
@@ -706,7 +1068,8 @@
       prompt:'follow the context-fundamentals skill. Optimize context for: [describe task]',
       gh:'https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering' },
 
-    { id:'context-compression', cat:'context', name:'context-compression',
+    { id:'context-compression', cat:'context',
+      roles:["programmers", "founders"], name:'context-compression',
       oneliner:'Compaction, observation masking, prefix caching, strategic partitioning.',
       when:'Session near token limit. Agent needs to compress without losing state.',
       tags:['all apps','compression','memory'],
@@ -714,7 +1077,8 @@
       prompt:'follow the context-compression skill. Compress context while preserving: [list]',
       gh:'https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering' },
 
-    { id:'image-to-code', cat:'workflow', name:'image-to-code',
+    { id:'image-to-code', cat:'workflow',
+      roles:["designers", "programmers"], name:'image-to-code',
       oneliner:'Full pipeline: generate images → analyze → implement frontend code.',
       when:'Starting from a visual comp or screenshot. Agent builds UI from the image.',
       tags:['all apps','pipeline','image→code'],
@@ -722,7 +1086,8 @@
       prompt:'follow the image-to-code skill: generate images, then analyze, then code. Task: [describe]',
       gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/image-to-code' },
 
-    { id:'redesign-existing-projects', cat:'workflow', name:'redesign-existing-projects',
+    { id:'redesign-existing-projects', cat:'workflow',
+      roles:["designers", "programmers", "founders"], name:'redesign-existing-projects',
       oneliner:'Visual audit and redesign of existing codebase. Refactors not greenfield.',
       when:'Existing UI looks bad or inconsistent. Agent reviews and rewrites styling.',
       tags:['all apps','refactor','audit'],
@@ -730,7 +1095,8 @@
       prompt:'follow the redesign-existing-projects skill. Audit and redesign: [describe]',
       gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/redesign-existing-projects' },
 
-    { id:'full-output-enforcement', cat:'workflow', name:'full-output-enforcement',
+    { id:'full-output-enforcement', cat:'workflow',
+      roles:["marketers", "designers", "event-managers", "copywriters", "programmers", "founders"], name:'full-output-enforcement',
       oneliner:'Forces complete untruncated code. Kills placeholders and // TODO patterns.',
       when:'Agent keeps truncating output, writing // TODO, or stopping mid-component.',
       tags:['all apps','no-truncation','enforcement'],
@@ -738,7 +1104,8 @@
       prompt:'follow the full-output-enforcement skill. Output the complete implementation of: [describe]',
       gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/full-output-enforcement' },
 
-    { id:'vercel-deploy-claimable', cat:'workflow', name:'vercel-deploy-claimable',
+    { id:'vercel-deploy-claimable', cat:'workflow',
+      roles:["programmers", "founders"], name:'vercel-deploy-claimable',
       oneliner:'Deploy to Vercel instantly from any AI chat. Returns preview + claim URL.',
       when:'Ready to ship. Works from Claude Desktop, claude.ai, or any connected agent.',
       tags:['all apps','deploy','Vercel'],
@@ -746,7 +1113,8 @@
       prompt:'follow the vercel-deploy-claimable skill. Deploy this project to Vercel.',
       gh:'https://github.com/vercel-labs/agent-skills' },
 
-    { id:'remotion-render', cat:'workflow', name:'remotion-render',
+    { id:'remotion-render', cat:'workflow',
+      roles:["programmers", "designers", "marketers"], name:'remotion-render',
       oneliner:'Render videos from React/Remotion component code via inference.sh. Pass TSX code, get MP4.',
       when:'You have Remotion TSX and need an MP4 rendered without setting up a local pipeline.',
       tags:['Remotion','video','render'],
@@ -754,7 +1122,8 @@
       prompt:'follow the remotion-render skill for this: [describe your Remotion component]',
       gh:'https://github.com/halt-catch-fire/skills' },
 
-    { id:'find-skills', cat:'workflow', name:'find-skills',
+    { id:'find-skills', cat:'workflow',
+      roles:["marketers", "designers", "event-managers", "copywriters", "programmers", "founders"], name:'find-skills',
       oneliner:'Discover and install agent skills when users ask how to do X or need a capability match.',
       when:'User asks "how do I do X", "find a skill for X", or wants to discover available skills.',
       tags:['all apps','discovery','skills.sh'],
@@ -762,7 +1131,8 @@
       prompt:'follow the find-skills skill for this: [describe what capability you need]',
       gh:'https://github.com/vercel-labs/skills' },
 
-    { id:'viral-tiktok-content', cat:'workflow', name:'viral-tiktok-content',
+    { id:'viral-tiktok-content', cat:'workflow',
+      roles:["marketers", "copywriters", "event-managers"], name:'viral-tiktok-content',
       oneliner:'Write TikTok scripts and hooks shaped for how the FYP actually ranks content.',
       when:'Need a TikTok hook, script, or video idea optimized for FYP distribution.',
       tags:['TikTok','content','social'],
@@ -770,7 +1140,8 @@
       prompt:'use the viral-tiktok-content skill for this: [describe your TikTok topic]',
       gh:'https://github.com/vyralcontent/content-skills' },
 
-    { id:'grill-me', cat:'workflow', name:'grill-me',
+    { id:'grill-me', cat:'workflow',
+      roles:["founders", "programmers"], name:'grill-me',
       oneliner:'A relentless interview to sharpen a plan or design.',
       when:'You have a plan or design that needs stress-testing before you build.',
       tags:['all apps','planning','interview'],
@@ -778,7 +1149,8 @@
       prompt:'follow the grill-me skill for this: [describe your plan or design]',
       gh:'https://github.com/mattpocock/skills' },
 
-    { id:'grill-with-docs', cat:'workflow', name:'grill-with-docs',
+    { id:'grill-with-docs', cat:'workflow',
+      roles:["founders", "programmers"], name:'grill-with-docs',
       oneliner:'A relentless interview to sharpen a plan or design, which also creates docs as we go.',
       when:'Stress-testing a plan and want ADRs or glossary docs produced during the session.',
       tags:['all apps','planning','ADR'],
@@ -786,7 +1158,8 @@
       prompt:'follow the grill-with-docs skill for this: [describe your plan or design]',
       gh:'https://github.com/mattpocock/skills' },
 
-    { id:'lipsync', cat:'image', name:'lipsync',
+    { id:'lipsync', cat:'image',
+      roles:["marketers", "event-managers", "copywriters"], name:'lipsync',
       oneliner:'Lip-sync a face to an audio track on RunComfy via the runcomfy CLI.',
       when:'Need to sync a portrait or avatar face to a specific audio track.',
       tags:['RunComfy','video','avatar'],
@@ -794,7 +1167,8 @@
       prompt:'use the lipsync skill for this: [describe portrait and audio]',
       gh:'https://github.com/agentspace-so/runcomfy-agent-skills' },
 
-    { id:'improve-codebase-architecture', cat:'frontend', name:'improve-codebase-architecture',
+    { id:'improve-codebase-architecture', cat:'frontend',
+      roles:["programmers", "founders"], name:'improve-codebase-architecture',
       oneliner:'Scan a codebase for deepening opportunities, present a visual HTML report, then grill through your pick.',
       when:'Codebase needs architectural improvements and you want a structured audit before refactoring.',
       tags:['all apps','architecture','audit'],
@@ -802,7 +1176,8 @@
       prompt:'follow the improve-codebase-architecture skill for this: [describe codebase]',
       gh:'https://github.com/mattpocock/skills' },
 
-    { id:'tdd', cat:'workflow', name:'tdd',
+    { id:'tdd', cat:'workflow',
+      roles:["programmers"], name:'tdd',
       oneliner:'Test-driven development for building features or fixing bugs test-first, red-green-refactor.',
       when:'Building features or fixing bugs with tests written first, or user mentions red-green-refactor.',
       tags:['all apps','testing','TDD'],
@@ -810,7 +1185,8 @@
       prompt:'follow the tdd skill for this: [describe feature or bug]',
       gh:'https://github.com/mattpocock/skills' },
 
-    { id:'kling-3-0', cat:'image', name:'kling-3-0',
+    { id:'kling-3-0', cat:'image',
+      roles:["marketers", "event-managers", "designers"], name:'kling-3-0',
       oneliner:'Kling 3.0 multi-shot video generation on RunComfy with native audio-visual sync.',
       when:'Need multi-shot AI video generation with Kling 3.0 on RunComfy.',
       tags:['RunComfy','video','Kling'],
@@ -818,7 +1194,8 @@
       prompt:'use the kling-3-0 skill for this: [describe your video]',
       gh:'https://github.com/agentspace-so/runcomfy-agent-skills' },
 
-    { id:'grilling', cat:'workflow', name:'grilling',
+    { id:'grilling', cat:'workflow',
+      roles:["founders", "programmers"], name:'grilling',
       oneliner:'Interview the user relentlessly about a plan or design to stress-test before building.',
       when:'User wants to stress-test a plan before building or uses any grill trigger phrase.',
       tags:['all apps','planning','interview'],
@@ -826,7 +1203,8 @@
       prompt:'follow the grilling skill for this: [describe your plan or design]',
       gh:'https://github.com/mattpocock/skills' },
 
-    { id:'happyhorse-1-0', cat:'image', name:'happyhorse-1-0',
+    { id:'happyhorse-1-0', cat:'image',
+      roles:["marketers", "event-managers", "copywriters"], name:'happyhorse-1-0',
       oneliner:'Generate text-to-video with HappyHorse 1.0 on RunComfy, native 1080p output.',
       when:'Need high-quality text-to-video generation with HappyHorse 1.0 on RunComfy.',
       tags:['RunComfy','video','text-to-video'],
@@ -834,7 +1212,8 @@
       prompt:'use the happyhorse-1-0 skill for this: [describe your video]',
       gh:'https://github.com/doany-ai/skills' },
 
-    { id:'teach', cat:'workflow', name:'teach',
+    { id:'teach', cat:'workflow',
+      roles:["marketers", "copywriters", "founders", "event-managers"], name:'teach',
       oneliner:'Teach the user a new skill or concept within this workspace.',
       when:'User wants to learn a concept or skill and needs structured teaching in the current project.',
       tags:['all apps','learning','onboarding'],
@@ -842,7 +1221,8 @@
       prompt:'follow the teach skill for this: [describe what to learn]',
       gh:'https://github.com/mattpocock/skills' },
 
-    { id:'image-to-video-doany', cat:'image', name:'image-to-video',
+    { id:'image-to-video-doany', cat:'image',
+      roles:["marketers", "event-managers", "designers"], name:'image-to-video',
       oneliner:'Animate any still image on RunComfy, smart router to the right i2v model.',
       when:'Need to animate a still image on RunComfy and want automatic model routing.',
       tags:['RunComfy','image','video'],
@@ -850,7 +1230,8 @@
       prompt:'use the image-to-video skill for this: [describe image and motion]',
       gh:'https://github.com/doany-ai/skills' },
 
-    { id:'nano-banana-2', cat:'image', name:'nano-banana-2',
+    { id:'nano-banana-2', cat:'image',
+      roles:["designers", "marketers"], name:'nano-banana-2',
       oneliner:'Generate images with Google Nano Banana 2 on RunComfy with documented prompting patterns.',
       when:'Need flash-tier text-to-image generation with Nano Banana 2 on RunComfy.',
       tags:['RunComfy','image','Gemini'],
@@ -858,7 +1239,8 @@
       prompt:'use the nano-banana-2 skill for this: [describe your image]',
       gh:'https://github.com/runcomfy-com/skills' },
 
-    { id:'relight', cat:'image', name:'relight',
+    { id:'relight', cat:'image',
+      roles:["designers", "marketers", "event-managers"], name:'relight',
       oneliner:'Relight a still image: change lighting setup, color temperature, direction, or mood on RunComfy.',
       when:'Need to change lighting or mood of a still image without reshooting.',
       tags:['RunComfy','image','relight'],
@@ -866,7 +1248,8 @@
       prompt:'use the relight skill for this: [describe image and lighting goal]',
       gh:'https://github.com/runcomfy-com/skills' },
 
-    { id:'agentspace', cat:'workflow', name:'agentspace',
+    { id:'agentspace', cat:'workflow',
+      roles:["programmers", "founders"], name:'agentspace',
       oneliner:'See what your AI agent is doing from anywhere. One command turns the folder into a live view.',
       when:'Need remote visibility into agent logs, code, outputs, and artifacts while the agent runs.',
       tags:['all apps','monitoring','agents'],
@@ -874,7 +1257,8 @@
       prompt:'follow the agentspace skill for this: [describe your agent session]',
       gh:'https://github.com/agentspace-so/skills' },
 
-    { id:'video-outpainting', cat:'image', name:'video-outpainting',
+    { id:'video-outpainting', cat:'image',
+      roles:["marketers", "event-managers", "designers"], name:'video-outpainting',
       oneliner:'Extend the spatial canvas of a video or change aspect ratio on RunComfy.',
       when:'Need to outpainting-expand a video frame or convert between 9:16 and 16:9.',
       tags:['RunComfy','video','outpainting'],
@@ -882,7 +1266,8 @@
       prompt:'use the video-outpainting skill for this: [describe video and target aspect]',
       gh:'https://github.com/runcomfy-com/skills' },
 
-    { id:'video-extend', cat:'image', name:'video-extend',
+    { id:'video-extend', cat:'image',
+      roles:["marketers", "event-managers"], name:'video-extend',
       oneliner:'Extend or continue an existing video clip on RunComfy via the runcomfy CLI.',
       when:'Need to lengthen or continue an existing video clip seamlessly.',
       tags:['RunComfy','video','extend'],
@@ -890,7 +1275,8 @@
       prompt:'use the video-extend skill for this: [describe clip and extension goal]',
       gh:'https://github.com/runcomfy-com/skills' },
 
-    { id:'image-to-video-runcomfy', cat:'image', name:'image-to-video',
+    { id:'image-to-video-runcomfy', cat:'image',
+      roles:["marketers", "event-managers", "designers"], name:'image-to-video',
       oneliner:'Animate any still image on RunComfy, smart router to the right i2v model in the catalog.',
       when:'Need i2v animation via runcomfy-com/skills with automatic model selection.',
       tags:['RunComfy','image','video'],
@@ -898,13 +1284,23 @@
       prompt:'use the image-to-video skill for this: [describe image and motion]',
       gh:'https://github.com/runcomfy-com/skills' },
 
-    { id:'ai-image-generation', cat:'image', name:'ai-image-generation',
+    { id:'ai-image-generation', cat:'image',
+      roles:["designers", "marketers", "event-managers"], name:'ai-image-generation',
       oneliner:'Generate and edit images on RunComfy via smart router across the full image-model catalog.',
       when:'Need text-to-image or image editing across FLUX, GPT Image, and other RunComfy models.',
       tags:['RunComfy','image','generation'],
       source:'doany-ai/skills',
       prompt:'use the ai-image-generation skill for this: [describe your image]',
       gh:'https://github.com/doany-ai/skills' },
+  ];
+  const ROLES = [
+    { id: 'all', label: 'All Roles' },
+    { id: 'marketers', label: 'Marketers' },
+    { id: 'designers', label: 'Designers' },
+    { id: 'event-managers', label: 'Event Managers' },
+    { id: 'copywriters', label: 'Copywriters' },
+    { id: 'programmers', label: 'Programmers' },
+    { id: 'founders', label: 'Founders / Operators' },
   ];
 
   const CATEGORIES = [
@@ -917,18 +1313,21 @@
     { id: 'workflow', label: 'Workflow' },
   ];
 
-  const CAT_COLORS = {
-    visual: '#af52de',
-    image: '#ff2d55',
-    frontend: '#0071e3',
-    backend: '#34c759',
-    context: '#ff9f0a',
-    workflow: '#ff3b30',
+  const CAT_VAR = {
+    visual: '--cat-visual',
+    image: '--cat-image',
+    frontend: '--cat-frontend',
+    backend: '--cat-backend',
+    context: '--cat-context',
+    workflow: '--cat-workflow',
   };
 
   let activeCategory = 'all';
+  let activeRole = 'all';
   let searchQuery = '';
   let usage = getUsage();
+  let isInitialRender = true;
+  let filterTimer = null;
 
   function getUsage() {
     try {
@@ -945,13 +1344,6 @@
     try {
       localStorage.setItem('sd_usage', JSON.stringify(data));
     } catch (e) { /* ignore */ }
-  }
-
-  function incrementUsage(id) {
-    usage[id] = (usage[id] || 0) + 1;
-    saveUsage(usage);
-    updateStats();
-    renderGrid();
   }
 
   function getTotalUsed(data) {
@@ -973,11 +1365,16 @@
   }
 
   function setTheme(theme) {
+    var html = document.documentElement;
+    html.classList.add('theme-transition');
     document.documentElement.setAttribute('data-theme', theme);
     try {
       localStorage.setItem('theme_preference', theme);
     } catch (e) { /* ignore */ }
     updateThemeToggle(theme);
+    setTimeout(function () {
+      html.classList.remove('theme-transition');
+    }, 300);
   }
 
   function updateThemeToggle(theme) {
@@ -997,10 +1394,17 @@
     }
   }
 
+  function getCatColor(cat) {
+    var v = CAT_VAR[cat];
+    if (!v) return 'var(--accent)';
+    return 'var(' + v + ')';
+  }
+
   function filterSkills() {
     var q = searchQuery.toLowerCase().trim();
     return SKILLS.filter(function (skill) {
       if (activeCategory !== 'all' && skill.cat !== activeCategory) return false;
+      if (activeRole !== 'all' && (!skill.roles || skill.roles.indexOf(activeRole) === -1)) return false;
       if (!q) return true;
       var haystack = [
         skill.name,
@@ -1018,33 +1422,145 @@
     return div.innerHTML;
   }
 
-  function renderTabs() {
-    var tabsEl = document.getElementById('tabs');
-    tabsEl.innerHTML = CATEGORIES.map(function (cat, i) {
-      return '<button class="tab" role="tab" id="tab-' + cat.id + '" aria-selected="' + (activeCategory === cat.id ? 'true' : 'false') + '" aria-controls="skill-grid" tabindex="' + (activeCategory === cat.id ? '0' : '-1') + '" data-cat="' + cat.id + '">' + escapeHtml(cat.label) + '</button>';
+  function moveIndicator(barId, indicatorId, activeId, dataAttr) {
+    var bar = document.getElementById(barId);
+    var indicator = document.getElementById(indicatorId);
+    var active = bar.querySelector('[' + dataAttr + '="' + activeId + '"]');
+    if (!active || !indicator) return;
+    var barRect = bar.getBoundingClientRect();
+    var tabRect = active.getBoundingClientRect();
+    indicator.style.width = tabRect.width + 'px';
+    indicator.style.transform = 'translateX(' + (tabRect.left - barRect.left) + 'px)';
+  }
+
+  function renderPillBar(config) {
+    var bar = document.getElementById(config.barId);
+    var indicator = document.getElementById(config.indicatorId);
+    var items = config.items;
+    var active = config.getActive();
+    var dataAttr = config.dataAttr;
+
+    var buttons = items.map(function (item) {
+      var selected = active === item.id;
+      return '<button class="pill" role="tab" id="' + config.prefix + '-' + item.id + '" aria-selected="' + (selected ? 'true' : 'false') + '" tabindex="' + (selected ? '0' : '-1') + '" ' + dataAttr + '="' + item.id + '">' + escapeHtml(item.label) + '</button>';
     }).join('');
 
-    tabsEl.querySelectorAll('.tab').forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        activeCategory = tab.getAttribute('data-cat');
-        renderTabs();
-        renderGrid();
+    bar.innerHTML = '';
+    bar.appendChild(indicator);
+    bar.insertAdjacentHTML('beforeend', buttons);
+
+    bar.querySelectorAll('.pill').forEach(function (pill) {
+      pill.addEventListener('click', function () {
+        config.onSelect(pill.getAttribute(dataAttr));
       });
-      tab.addEventListener('keydown', function (e) {
-        var tabs = Array.prototype.slice.call(tabsEl.querySelectorAll('.tab'));
-        var idx = tabs.indexOf(tab);
+      pill.addEventListener('keydown', function (e) {
+        var pills = Array.prototype.slice.call(bar.querySelectorAll('.pill'));
+        var idx = pills.indexOf(pill);
         if (e.key === 'ArrowRight') {
           e.preventDefault();
-          tabs[(idx + 1) % tabs.length].focus();
+          pills[(idx + 1) % pills.length].focus();
         } else if (e.key === 'ArrowLeft') {
           e.preventDefault();
-          tabs[(idx - 1 + tabs.length) % tabs.length].focus();
+          pills[(idx - 1 + pills.length) % pills.length].focus();
         } else if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          activeCategory = tab.getAttribute('data-cat');
-          renderTabs();
-          renderGrid();
+          config.onSelect(pill.getAttribute(dataAttr));
         }
+      });
+    });
+
+    requestAnimationFrame(function () {
+      moveIndicator(config.barId, config.indicatorId, active, dataAttr);
+    });
+  }
+
+  function renderRoleTabs() {
+    renderPillBar({
+      barId: 'role-tabs',
+      indicatorId: 'role-indicator',
+      prefix: 'role-tab',
+      items: ROLES,
+      dataAttr: 'data-role',
+      getActive: function () { return activeRole; },
+      onSelect: function (id) {
+        activeRole = id;
+        renderRoleTabs();
+        renderGrid();
+      },
+    });
+  }
+
+  function renderTabs() {
+    renderPillBar({
+      barId: 'tabs',
+      indicatorId: 'cat-indicator',
+      prefix: 'tab',
+      items: CATEGORIES,
+      dataAttr: 'data-cat',
+      getActive: function () { return activeCategory; },
+      onSelect: function (id) {
+        activeCategory = id;
+        renderTabs();
+        renderGrid();
+      },
+    });
+  }
+
+  function buildCardHtml(skill, index) {
+    var count = usage[skill.id] || 0;
+    var catColor = getCatColor(skill.cat);
+    var usageHtml = count > 0
+      ? '<span class="usage-badge">used ' + count + 'x</span>'
+      : '';
+
+    var tagsHtml = skill.tags.map(function (tag) {
+      return '<span class="tag">' + escapeHtml(tag) + '</span>';
+    }).join('');
+
+    var enterClass = isInitialRender ? ' is-entering' : '';
+    var delay = isInitialRender ? Math.min(index * 30, 300) : 0;
+    var style = '--cat-color:' + catColor + ';';
+    if (delay) style += 'transition-delay:' + delay + 'ms;';
+
+    return '<article class="skill-card' + enterClass + '" role="listitem" data-id="' + skill.id + '" style="' + style + '">' +
+      '<div class="card-top">' +
+        '<div class="skill-name-row">' +
+          '<span class="cat-dot" aria-hidden="true"></span>' +
+          '<h2 class="skill-name">' + escapeHtml(skill.name) + '</h2>' +
+        '</div>' +
+        usageHtml +
+      '</div>' +
+      '<p class="skill-oneliner">' + escapeHtml(skill.oneliner) + '</p>' +
+      '<div class="skill-when"><strong>Use when</strong>' + escapeHtml(skill.when) + '</div>' +
+      '<div class="tags">' + tagsHtml + '</div>' +
+      '<div class="card-actions">' +
+        '<button class="btn btn-copy" data-id="' + skill.id + '" aria-label="Copy prompt for ' + escapeHtml(skill.name) + '">' +
+          '<span class="btn-label">Copy Prompt</span>' +
+          '<svg class="btn-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="btn-check-path" d="M20 6L9 17l-5-5"/></svg>' +
+        '</button>' +
+        '<a class="btn btn-gh" href="' + escapeHtml(skill.gh) + '" target="_blank" rel="noopener noreferrer" aria-label="View ' + escapeHtml(skill.name) + ' on GitHub">' +
+          '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>' +
+        '</a>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function bindCopyButtons(root) {
+    root.querySelectorAll('.btn-copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        var skill = SKILLS.find(function (s) { return s.id === id; });
+        if (skill) copyPrompt(btn, skill.prompt, id);
+      });
+    });
+  }
+
+  function animateCardsIn(grid) {
+    var cards = grid.querySelectorAll('.skill-card.is-entering');
+    requestAnimationFrame(function () {
+      cards.forEach(function (card) {
+        card.classList.remove('is-entering');
+        card.classList.add('is-visible');
       });
     });
   }
@@ -1052,47 +1568,56 @@
   function renderGrid() {
     var grid = document.getElementById('skill-grid');
     var filtered = filterSkills();
+    var filteredIds = filtered.map(function (s) { return s.id; });
+    var existing = Array.prototype.slice.call(grid.querySelectorAll('.skill-card'));
+
+    if (existing.length && !isInitialRender) {
+      var hasAnimating = false;
+      existing.forEach(function (card) {
+        var id = card.getAttribute('data-id');
+        if (filteredIds.indexOf(id) === -1) {
+          hasAnimating = true;
+          card.classList.add('is-hiding');
+        }
+      });
+
+      if (hasAnimating) {
+        clearTimeout(filterTimer);
+        filterTimer = setTimeout(function () {
+          paintGrid(filtered);
+        }, 220);
+        return;
+      }
+    }
+
+    paintGrid(filtered);
+  }
+
+  function paintGrid(filtered) {
+    var grid = document.getElementById('skill-grid');
 
     if (filtered.length === 0) {
-      grid.innerHTML = '<div class="empty-state" role="status">No skills match your search.</div>';
+      grid.innerHTML = '<div class="empty-state" role="status">No skills match your filters.</div>';
+      isInitialRender = false;
       return;
     }
 
-    grid.innerHTML = filtered.map(function (skill) {
-      var count = usage[skill.id] || 0;
-      var catColor = CAT_COLORS[skill.cat] || 'var(--accent)';
-      var usageHtml = count > 0
-        ? '<span class="usage-badge">used ' + count + 'x</span>'
-        : '';
-
-      var tagsHtml = skill.tags.map(function (tag) {
-        return '<span class="tag">' + escapeHtml(tag) + '</span>';
-      }).join('');
-
-      return '<article class="skill-card" role="listitem" style="--cat-color:' + catColor + '">' +
-        '<div class="card-top">' +
-          '<h2 class="skill-name">' + escapeHtml(skill.name) + '</h2>' +
-          usageHtml +
-        '</div>' +
-        '<p class="skill-oneliner">' + escapeHtml(skill.oneliner) + '</p>' +
-        '<div class="skill-when"><strong>Use when</strong>' + escapeHtml(skill.when) + '</div>' +
-        '<div class="tags">' + tagsHtml + '</div>' +
-        '<div class="card-actions">' +
-          '<button class="btn btn-copy" data-id="' + skill.id + '">Copy Prompt</button>' +
-          '<a class="btn btn-gh" href="' + escapeHtml(skill.gh) + '" target="_blank" rel="noopener noreferrer" aria-label="View ' + escapeHtml(skill.name) + ' on GitHub">' +
-            '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>' +
-          '</a>' +
-        '</div>' +
-      '</article>';
+    grid.innerHTML = filtered.map(function (skill, i) {
+      return buildCardHtml(skill, i);
     }).join('');
 
-    grid.querySelectorAll('.btn-copy').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var id = btn.getAttribute('data-id');
-        var prompt = SKILLS.find(function (s) { return s.id === id; }).prompt;
-        copyPrompt(btn, prompt, id);
+    bindCopyButtons(grid);
+
+    if (isInitialRender) {
+      animateCardsIn(grid);
+      isInitialRender = false;
+    } else {
+      grid.querySelectorAll('.skill-card').forEach(function (card, i) {
+        card.classList.add('is-entering');
+        card.style.transitionDelay = Math.min(i * 20, 200) + 'ms';
       });
-    });
+      animateCardsIn(grid);
+    }
   }
 
   function copyPrompt(btn, prompt, id) {
@@ -1111,10 +1636,8 @@
         span.textContent = 'used ' + usage[id] + 'x';
         top.appendChild(span);
       }
-      btn.textContent = 'Copied';
       btn.classList.add('copied');
       setTimeout(function () {
-        btn.textContent = 'Copy Prompt';
         btn.classList.remove('copied');
       }, 2000);
     }
@@ -1169,6 +1692,59 @@
     });
   }
 
+  function initIntroModal() {
+    var overlay = document.getElementById('intro-modal');
+    var dismiss = document.getElementById('intro-dismiss');
+    var howLink = document.getElementById('how-it-works');
+    var lastFocus = null;
+
+    function openModal() {
+      lastFocus = document.activeElement;
+      overlay.classList.add('is-open');
+      overlay.setAttribute('aria-hidden', 'false');
+      dismiss.focus();
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(persist) {
+      overlay.classList.remove('is-open');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (persist) {
+        try { localStorage.setItem('sd_has_seen_intro', '1'); } catch (e) { /* ignore */ }
+      }
+      if (lastFocus) lastFocus.focus();
+    }
+
+    dismiss.addEventListener('click', function () { closeModal(true); });
+    howLink.addEventListener('click', openModal);
+
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeModal(false);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('is-open')) {
+        closeModal(false);
+      }
+    });
+
+    try {
+      if (!localStorage.getItem('sd_has_seen_intro')) {
+        setTimeout(openModal, 400);
+      }
+    } catch (e) {
+      setTimeout(openModal, 400);
+    }
+  }
+
+  function initResizeIndicators() {
+    window.addEventListener('resize', function () {
+      moveIndicator('role-tabs', 'role-indicator', activeRole, 'data-role');
+      moveIndicator('tabs', 'cat-indicator', activeCategory, 'data-cat');
+    });
+  }
+
   document.getElementById('search').addEventListener('input', function (e) {
     searchQuery = e.target.value;
     renderGrid();
@@ -1180,10 +1756,14 @@
   });
 
   updateThemeToggle(getTheme());
+  renderRoleTabs();
   renderTabs();
   updateStats();
   renderGrid();
   initScrollTop();
+  initIntroModal();
+  initResizeIndicators();
+
   </script>
 </body>
 </html>
