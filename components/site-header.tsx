@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTheme } from "@/components/theme-provider";
 import { SignInButton } from "@/components/sign-in-button";
+import { AdminNavButton } from "@/components/admin/admin-nav-button";
 
 export function SiteHeader({
   search,
@@ -35,6 +36,7 @@ export function SiteHeader({
           />
         </div>
         <SignInButton />
+        <AdminNavButton />
         <button
           className="theme-toggle"
           onClick={toggle}

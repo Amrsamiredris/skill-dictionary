@@ -38,3 +38,11 @@ export type UserSkillStat = {
   installs_yes: number;
   installs_no: number;
 };
+
+export type ContactMessage = {
+  id: string;
+  user_id: string | null;
+  message: string;
+  skill_id: string | null;
+  created_at: string;
+};
