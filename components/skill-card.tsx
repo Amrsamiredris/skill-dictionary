@@ -11,6 +11,12 @@ import {
 import { InstallPrompt, shouldShowInstallPrompt } from "@/components/install-prompt";
 import { SkillFeedback } from "@/components/skill-feedback";
 import type { FeedbackAgg, SkillStats } from "@/lib/types";
+import {
+  MOTION,
+  staggerDelay,
+  usePrefersReducedMotion,
+  useReveal,
+} from "@/lib/motion";
 
 function getCatColor(cat: string): string {
   const v = CAT_VAR[cat];
@@ -21,16 +27,23 @@ function getCatColor(cat: string): string {
 export function SkillCard({
   skill,
   index,
-  isEntering,
+  isHiding = false,
+  animateIn = false,
+  staggerMode = "initial",
   stats,
   feedback,
 }: {
   skill: Skill;
   index: number;
-  isEntering?: boolean;
+  isHiding?: boolean;
+  animateIn?: boolean;
+  staggerMode?: "initial" | "filter";
   stats?: SkillStats;
   feedback?: FeedbackAgg;
 }) {
+  const reducedMotion = usePrefersReducedMotion();
+  const shouldAnimate = animateIn && !reducedMotion && !isHiding;
+  const revealed = useReveal(shouldAnimate, [skill.id, shouldAnimate]);
   const [localCount, setLocalCount] = useState(0);
   const [copied, setCopied] = useState(false);
   const [showInstall, setShowInstall] = useState(false);
@@ -78,8 +91,21 @@ export function SkillCard({
     trackEvent(skill.id, "github_click");
   };
 
-  const delay = isEntering ? Math.min(index * 30, 300) : 0;
+  const delay = shouldAnimate && !revealed
+    ? staggerDelay(
+        index,
+        staggerMode === "filter" ? MOTION.filterStagger : MOTION.enterStagger,
+        staggerMode === "filter"
+          ? MOTION.filterStaggerMax
+          : MOTION.enterStaggerMax,
+      )
+    : 0;
   const catColor = getCatColor(skill.cat);
+  const cardClass = isHiding
+    ? "skill-card is-hiding"
+    : revealed
+      ? "skill-card is-visible"
+      : "skill-card is-entering";
 
   const globalMeta: string[] = [];
   if (stats && stats.copies > 0) globalMeta.push(`${stats.copies} copies`);
@@ -88,7 +114,7 @@ export function SkillCard({
 
   return (
     <article
-      className={`skill-card${isEntering ? " is-entering" : " is-visible"}`}
+      className={cardClass}
       role="listitem"
       data-id={skill.id}
       style={

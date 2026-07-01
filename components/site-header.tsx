@@ -14,7 +14,7 @@ export function SiteHeader({
   const { theme, toggle } = useTheme();
 
   return (
-    <header className="site-header">
+    <header className="site-header page-reveal">
       <div className="header-brand">
         <h1 className="logo">
           <Link href="/" style={{ color: "inherit", textDecoration: "none" }}>

@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MOTION, useOverlayState } from "@/lib/motion";
 
 export function IntroModal() {
   const [open, setOpen] = useState(false);
+  const { mounted, active } = useOverlayState(open, MOTION.modal);
 
   useEffect(() => {
     const openHandler = () => setOpen(true);
@@ -11,14 +13,14 @@ export function IntroModal() {
 
     try {
       if (!localStorage.getItem("sd_has_seen_intro")) {
-        const t = setTimeout(() => setOpen(true), 400);
+        const t = setTimeout(() => setOpen(true), 500);
         return () => {
           clearTimeout(t);
           window.removeEventListener("open-intro-modal", openHandler);
         };
       }
     } catch {
-      const t = setTimeout(() => setOpen(true), 400);
+      const t = setTimeout(() => setOpen(true), 500);
       return () => {
         clearTimeout(t);
         window.removeEventListener("open-intro-modal", openHandler);
@@ -39,11 +41,11 @@ export function IntroModal() {
     }
   };
 
-  if (!open) return null;
+  if (!mounted) return null;
 
   return (
     <div
-      className="modal-overlay is-open"
+      className={`modal-overlay${active ? " is-open" : ""}`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="intro-title"

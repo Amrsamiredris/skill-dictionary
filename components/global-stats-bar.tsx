@@ -4,10 +4,12 @@ import type { GlobalTotals } from "@/lib/types";
 import { SKILLS } from "@/lib/skills";
 import { getLocalUsage } from "@/lib/session";
 import { useEffect, useState } from "react";
+import { useReveal } from "@/lib/motion";
 
 export function GlobalStatsBar() {
   const [localUsed, setLocalUsed] = useState(0);
   const [totals, setTotals] = useState<GlobalTotals | null>(null);
+  const revealed = useReveal(true);
 
   useEffect(() => {
     const usage = getLocalUsage();
@@ -31,7 +33,10 @@ export function GlobalStatsBar() {
       : null;
 
   return (
-    <div className="stats-bar" aria-live="polite">
+    <div
+      className={`stats-bar page-reveal${revealed ? " is-visible" : ""}`}
+      aria-live="polite"
+    >
       <span>
         <strong>{SKILLS.length}</strong> skills
       </span>

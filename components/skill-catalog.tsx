@@ -10,16 +10,30 @@ import {
 import { SkillCard } from "@/components/skill-card";
 import { PillBar } from "@/components/pill-bar";
 import type { FeedbackAgg, SkillStats } from "@/lib/types";
+import { MOTION } from "@/lib/motion";
+
+const SKILL_BY_ID = new Map(SKILLS.map((s) => [s.id, s]));
 
 export function SkillCatalog({ searchQuery = "" }: { searchQuery?: string }) {
   const [activeCategory, setActiveCategory] = useState("all");
   const [activeRole, setActiveRole] = useState("all");
-  const [isInitialRender, setIsInitialRender] = useState(true);
   const [statsMap, setStatsMap] = useState<Record<string, SkillStats>>({});
   const [feedbackMap, setFeedbackMap] = useState<Record<string, FeedbackAgg>>({});
   const filterTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [visibleIds, setVisibleIds] = useState<string[]>([]);
-  const [hiding, setHiding] = useState(false);
+  const isInitialRender = useRef(true);
+  const displayIdsRef = useRef<string[]>(SKILLS.map((s) => s.id));
+
+  const [displayIds, setDisplayIds] = useState<string[]>(() =>
+    SKILLS.map((s) => s.id),
+  );
+  const [hidingIds, setHidingIds] = useState<Set<string>>(() => new Set());
+  const [animatingIds, setAnimatingIds] = useState<Set<string>>(
+    () => new Set(SKILLS.map((s) => s.id)),
+  );
+  const [staggerMode, setStaggerMode] = useState<"initial" | "filter">(
+    "initial",
+  );
+  const [emptyVisible, setEmptyVisible] = useState(false);
 
   useEffect(() => {
     fetch("/api/stats")
@@ -66,33 +80,65 @@ export function SkillCatalog({ searchQuery = "" }: { searchQuery?: string }) {
   const filteredIds = filtered.map((s) => s.id);
 
   useEffect(() => {
-    if (isInitialRender) {
-      setVisibleIds(filteredIds);
-      setIsInitialRender(false);
-      return;
-    }
+    const prevIds = displayIdsRef.current;
+    const removing = prevIds.filter((id) => !filteredIds.includes(id));
 
-    const prevIds = visibleIds;
-    const needsHide = prevIds.some((id) => !filteredIds.includes(id));
-
-    if (needsHide) {
-      setHiding(true);
+    if (removing.length > 0 && !isInitialRender.current) {
+      setHidingIds(new Set(removing));
+      setAnimatingIds(new Set());
       if (filterTimer.current) clearTimeout(filterTimer.current);
       filterTimer.current = setTimeout(() => {
-        setVisibleIds(filteredIds);
-        setHiding(false);
-      }, 220);
+        const added = filteredIds.filter((id) => !prevIds.includes(id));
+        setDisplayIds(filteredIds);
+        displayIdsRef.current = filteredIds;
+        setHidingIds(new Set());
+        setStaggerMode("filter");
+        setAnimatingIds(new Set(added));
+      }, MOTION.hide);
     } else {
-      setVisibleIds(filteredIds);
+      if (filterTimer.current) clearTimeout(filterTimer.current);
+      setHidingIds(new Set());
+
+      const added = filteredIds.filter((id) => !prevIds.includes(id));
+      if (isInitialRender.current) {
+        setStaggerMode("initial");
+        setAnimatingIds(new Set(filteredIds));
+      } else if (added.length > 0) {
+        setStaggerMode("filter");
+        setAnimatingIds(new Set(added));
+      } else {
+        setAnimatingIds(new Set());
+      }
+
+      setDisplayIds(filteredIds);
+      displayIdsRef.current = filteredIds;
+      isInitialRender.current = false;
     }
+
+    return () => {
+      if (filterTimer.current) clearTimeout(filterTimer.current);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCategory, activeRole, searchQuery]);
 
-  const displaySkills = filtered;
+  const displaySkills = displayIds
+    .map((id) => SKILL_BY_ID.get(id))
+    .filter((s): s is Skill => s !== undefined);
+
+  useEffect(() => {
+    if (displaySkills.length === 0) {
+      setEmptyVisible(false);
+      const frame = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setEmptyVisible(true));
+      });
+      return () => cancelAnimationFrame(frame);
+    }
+    setEmptyVisible(false);
+  }, [displaySkills.length, activeCategory, activeRole, searchQuery]);
 
   return (
     <>
-      <div className="filter-section">
+      <div className="filter-section page-reveal" style={{ "--reveal-delay": "60ms" } as React.CSSProperties}>
         <span className="filter-label" id="role-filter-label">
           Filter by role
         </span>
@@ -105,7 +151,7 @@ export function SkillCatalog({ searchQuery = "" }: { searchQuery?: string }) {
         />
       </div>
 
-      <div className="filter-section">
+      <div className="filter-section page-reveal" style={{ "--reveal-delay": "120ms" } as React.CSSProperties}>
         <span className="filter-label" id="cat-filter-label">
           Category
         </span>
@@ -120,7 +166,10 @@ export function SkillCatalog({ searchQuery = "" }: { searchQuery?: string }) {
 
       <div className="skill-grid" role="list">
         {displaySkills.length === 0 ? (
-          <div className="empty-state" role="status">
+          <div
+            className={`empty-state${emptyVisible ? " is-visible" : ""}`}
+            role="status"
+          >
             No skills match your filters.
           </div>
         ) : (
@@ -129,7 +178,9 @@ export function SkillCatalog({ searchQuery = "" }: { searchQuery?: string }) {
               key={skill.id}
               skill={skill}
               index={i}
-              isEntering={!hiding}
+              isHiding={hidingIds.has(skill.id)}
+              animateIn={animatingIds.has(skill.id)}
+              staggerMode={staggerMode}
               stats={statsMap[skill.id]}
               feedback={feedbackMap[skill.id]}
             />
@@ -139,4 +190,3 @@ export function SkillCatalog({ searchQuery = "" }: { searchQuery?: string }) {
     </>
   );
 }
-
