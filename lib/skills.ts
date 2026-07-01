@@ -1241,6 +1241,974 @@ export const SKILLS: Skill[] = [
     "source": "elevenlabs/skills",
     "prompt": "use the text-to-speech skill for this: [describe your script and voice needs]",
     "gh": "https://github.com/elevenlabs/skills"
+  },
+  {
+    "id": "cold-email",
+    "cat": "workflow",
+    "roles": [
+      "marketers",
+      "copywriters",
+      "founders"
+    ],
+    "name": "cold-email",
+    "oneliner": "B2B cold emails and follow-up sequences built for replies, not template spam.",
+    "when": "Writing outbound email, follow-ups, or breakup messages to prospects.",
+    "tags": [
+      "email",
+      "outreach",
+      "B2B"
+    ],
+    "source": "coreyhaines31/marketingskills",
+    "prompt": "use the cold-email skill for this: [describe your prospect and offer]",
+    "gh": "https://github.com/coreyhaines31/marketingskills"
+  },
+  {
+    "id": "sales-enablement",
+    "cat": "workflow",
+    "roles": [
+      "marketers",
+      "founders",
+      "copywriters"
+    ],
+    "name": "sales-enablement",
+    "oneliner": "Battle cards, objection handling, and sales collateral that help reps close deals.",
+    "when": "Equipping sales with messaging, competitive positioning, or demo scripts.",
+    "tags": [
+      "sales",
+      "enablement",
+      "positioning"
+    ],
+    "source": "coreyhaines31/marketingskills",
+    "prompt": "use the sales-enablement skill for this: [describe your product and sales challenge]",
+    "gh": "https://github.com/coreyhaines31/marketingskills"
+  },
+  {
+    "id": "analytics-tracking",
+    "cat": "workflow",
+    "roles": [
+      "marketers",
+      "founders",
+      "programmers"
+    ],
+    "name": "analytics-tracking",
+    "oneliner": "Plan and implement event tracking, UTM conventions, and conversion measurement.",
+    "when": "Setting up analytics, defining events, or auditing tracking coverage.",
+    "tags": [
+      "analytics",
+      "tracking",
+      "measurement"
+    ],
+    "source": "coreyhaines31/marketingskills",
+    "prompt": "use the analytics-tracking skill for this: [describe your funnel and tracking goals]",
+    "gh": "https://github.com/coreyhaines31/marketingskills"
+  },
+  {
+    "id": "emails",
+    "cat": "workflow",
+    "roles": [
+      "marketers",
+      "copywriters",
+      "event-managers"
+    ],
+    "name": "emails",
+    "oneliner": "One-off marketing emails — announcements, newsletters, and promotional sends.",
+    "when": "Drafting a single marketing email rather than a full automated sequence.",
+    "tags": [
+      "email",
+      "newsletter",
+      "copy"
+    ],
+    "source": "coreyhaines31/marketingskills",
+    "prompt": "use the emails skill for this: [describe your email goal and audience]",
+    "gh": "https://github.com/coreyhaines31/marketingskills"
+  },
+  {
+    "id": "page-cro",
+    "cat": "workflow",
+    "roles": [
+      "marketers",
+      "founders",
+      "designers"
+    ],
+    "name": "page-cro",
+    "oneliner": "Conversion analysis across value prop, headlines, CTAs, trust signals, and friction.",
+    "when": "Improving homepage, landing, pricing, or feature page conversion rates.",
+    "tags": [
+      "CRO",
+      "conversion",
+      "landing"
+    ],
+    "source": "coreyhaines31/marketingskills",
+    "prompt": "use the page-cro skill for this: [describe your page and conversion goal]",
+    "gh": "https://github.com/coreyhaines31/marketingskills"
+  },
+  {
+    "id": "paid-ads",
+    "cat": "workflow",
+    "roles": [
+      "marketers",
+      "founders"
+    ],
+    "name": "paid-ads",
+    "oneliner": "Paid ad strategy and copy for Google, Meta, LinkedIn, and other performance channels.",
+    "when": "Planning or writing paid campaigns with audience targeting and creative angles.",
+    "tags": [
+      "ads",
+      "PPC",
+      "paid"
+    ],
+    "source": "coreyhaines31/marketingskills",
+    "prompt": "use the paid-ads skill for this: [describe your product, budget, and channel]",
+    "gh": "https://github.com/coreyhaines31/marketingskills"
+  },
+  {
+    "id": "launch-strategy",
+    "cat": "workflow",
+    "roles": [
+      "marketers",
+      "founders",
+      "event-managers"
+    ],
+    "name": "launch-strategy",
+    "oneliner": "Product launch playbooks covering timing, channels, messaging, and momentum tactics.",
+    "when": "Planning a product, feature, or campaign launch and need a coordinated rollout.",
+    "tags": [
+      "launch",
+      "GTM",
+      "strategy"
+    ],
+    "source": "coreyhaines31/marketingskills",
+    "prompt": "use the launch-strategy skill for this: [describe what you are launching]",
+    "gh": "https://github.com/coreyhaines31/marketingskills"
+  },
+  {
+    "id": "referral-program",
+    "cat": "workflow",
+    "roles": [
+      "marketers",
+      "founders"
+    ],
+    "name": "referral-program",
+    "oneliner": "Design referral and word-of-mouth programs with incentives, loops, and viral mechanics.",
+    "when": "Building or optimizing a referral program to drive organic growth.",
+    "tags": [
+      "referral",
+      "growth",
+      "viral"
+    ],
+    "source": "coreyhaines31/marketingskills",
+    "prompt": "use the referral-program skill for this: [describe your product and growth goals]",
+    "gh": "https://github.com/coreyhaines31/marketingskills"
+  },
+  {
+    "id": "onboarding-cro",
+    "cat": "workflow",
+    "roles": [
+      "marketers",
+      "founders",
+      "designers"
+    ],
+    "name": "onboarding-cro",
+    "oneliner": "Optimize user onboarding flows for activation, time-to-value, and retention.",
+    "when": "Improving signup-to-activation conversion or reducing onboarding drop-off.",
+    "tags": [
+      "onboarding",
+      "activation",
+      "CRO"
+    ],
+    "source": "coreyhaines31/marketingskills",
+    "prompt": "use the onboarding-cro skill for this: [describe your onboarding flow]",
+    "gh": "https://github.com/coreyhaines31/marketingskills"
+  },
+  {
+    "id": "viral-instagram-reels",
+    "cat": "workflow",
+    "roles": [
+      "marketers",
+      "copywriters",
+      "event-managers"
+    ],
+    "name": "viral-instagram-reels",
+    "oneliner": "Instagram Reels scripts and hooks tuned for reach, saves, and shares.",
+    "when": "Creating Instagram Reels content optimized for discovery and engagement.",
+    "tags": [
+      "Instagram",
+      "Reels",
+      "social"
+    ],
+    "source": "vyralcontent/content-skills",
+    "prompt": "use the viral-instagram-reels skill for this: [describe your Reels topic]",
+    "gh": "https://github.com/vyralcontent/content-skills"
+  },
+  {
+    "id": "blog-writing-guide",
+    "cat": "workflow",
+    "roles": [
+      "copywriters",
+      "marketers"
+    ],
+    "name": "blog-writing-guide",
+    "oneliner": "Technical blog writing with structure, voice, and developer-audience clarity.",
+    "when": "Drafting or editing engineering or product blog posts for a technical audience.",
+    "tags": [
+      "blog",
+      "writing",
+      "technical"
+    ],
+    "source": "getsentry/skills",
+    "prompt": "use the blog-writing-guide skill for this: [describe your blog topic]",
+    "gh": "https://github.com/getsentry/skills"
+  },
+  {
+    "id": "remotion-best-practices",
+    "cat": "frontend",
+    "roles": [
+      "programmers",
+      "marketers",
+      "designers"
+    ],
+    "name": "remotion-best-practices",
+    "oneliner": "Remotion video-in-React patterns for composition, animation, and rendering.",
+    "when": "Building or refining Remotion video components and render pipelines.",
+    "tags": [
+      "Remotion",
+      "video",
+      "React"
+    ],
+    "source": "remotion-dev/skills",
+    "prompt": "follow the remotion-best-practices skill for this: [describe your video component]",
+    "gh": "https://github.com/remotion-dev/skills"
+  },
+  {
+    "id": "video-edit",
+    "cat": "image",
+    "roles": [
+      "marketers",
+      "event-managers",
+      "designers"
+    ],
+    "name": "video-edit",
+    "oneliner": "Intent-routed video editing on RunComfy — restyle, motion transfer, or outfit swaps.",
+    "when": "Editing existing video clips for restyling, motion control, or background changes.",
+    "tags": [
+      "RunComfy",
+      "video",
+      "edit"
+    ],
+    "source": "agentspace-so/runcomfy-agent-skills",
+    "prompt": "use the video-edit skill for this: [describe your video and edit goal]",
+    "gh": "https://github.com/agentspace-so/runcomfy-agent-skills"
+  },
+  {
+    "id": "elevenlabs-music-generation",
+    "cat": "workflow",
+    "roles": [
+      "marketers",
+      "event-managers",
+      "designers"
+    ],
+    "name": "elevenlabs-music-generation",
+    "oneliner": "Generate background music and soundtracks via ElevenLabs on RunComfy.",
+    "when": "Need royalty-free music for videos, ads, or events without manual composition.",
+    "tags": [
+      "audio",
+      "music",
+      "ElevenLabs"
+    ],
+    "source": "runcomfy-com/skills",
+    "prompt": "use the elevenlabs-music-generation skill for this: [describe mood and duration]",
+    "gh": "https://github.com/runcomfy-com/skills"
+  },
+  {
+    "id": "ai-music",
+    "cat": "workflow",
+    "roles": [
+      "marketers",
+      "event-managers"
+    ],
+    "name": "ai-music",
+    "oneliner": "AI music generation on RunComfy with model routing across the audio catalog.",
+    "when": "Creating custom music tracks for content, events, or video soundtracks.",
+    "tags": [
+      "audio",
+      "music",
+      "RunComfy"
+    ],
+    "source": "doany-ai/skills",
+    "prompt": "use the ai-music skill for this: [describe your music needs]",
+    "gh": "https://github.com/doany-ai/skills"
+  },
+  {
+    "id": "image-edit",
+    "cat": "image",
+    "roles": [
+      "designers",
+      "marketers",
+      "event-managers"
+    ],
+    "name": "image-edit",
+    "oneliner": "Smart image editing on RunComfy — inpainting, outpainting, and model-routed edits.",
+    "when": "Editing still images for product shots, backgrounds, or creative adjustments.",
+    "tags": [
+      "RunComfy",
+      "image",
+      "edit"
+    ],
+    "source": "doany-ai/skills",
+    "prompt": "use the image-edit skill for this: [describe your image and edit goal]",
+    "gh": "https://github.com/doany-ai/skills"
+  },
+  {
+    "id": "ai-avatar-video",
+    "cat": "image",
+    "roles": [
+      "marketers",
+      "event-managers",
+      "copywriters"
+    ],
+    "name": "ai-avatar-video",
+    "oneliner": "Talking-head avatar videos from a portrait and script on RunComfy.",
+    "when": "Creating presenter or spokesperson videos without filming.",
+    "tags": [
+      "RunComfy",
+      "avatar",
+      "video"
+    ],
+    "source": "agentspace-so/runcomfy-agent-skills",
+    "prompt": "use the ai-avatar-video skill for this: [describe portrait and script]",
+    "gh": "https://github.com/agentspace-so/runcomfy-agent-skills"
+  },
+  {
+    "id": "seedance-v2",
+    "cat": "image",
+    "roles": [
+      "marketers",
+      "event-managers",
+      "designers"
+    ],
+    "name": "seedance-v2",
+    "oneliner": "Seedance 2.0 multi-shot video generation with cinematic motion on RunComfy.",
+    "when": "Need multi-shot AI video with Seedance 2.0 for ads, social, or event content.",
+    "tags": [
+      "RunComfy",
+      "video",
+      "Seedance"
+    ],
+    "source": "agentspace-so/runcomfy-agent-skills",
+    "prompt": "use the seedance-v2 skill for this: [describe your video concept]",
+    "gh": "https://github.com/agentspace-so/runcomfy-agent-skills"
+  },
+  {
+    "id": "image-inpainting",
+    "cat": "image",
+    "roles": [
+      "designers",
+      "marketers"
+    ],
+    "name": "image-inpainting",
+    "oneliner": "Remove or replace objects in still images via RunComfy inpainting models.",
+    "when": "Need to erase distractions, swap objects, or fill masked regions in photos.",
+    "tags": [
+      "RunComfy",
+      "image",
+      "inpainting"
+    ],
+    "source": "runcomfy-com/skills",
+    "prompt": "use the image-inpainting skill for this: [describe image and what to change]",
+    "gh": "https://github.com/runcomfy-com/skills"
+  },
+  {
+    "id": "flux-kontext",
+    "cat": "image",
+    "roles": [
+      "designers",
+      "marketers"
+    ],
+    "name": "flux-kontext",
+    "oneliner": "Context-aware image editing with FLUX Kontext on RunComfy for precise local changes.",
+    "when": "Making targeted edits to images while preserving surrounding context and style.",
+    "tags": [
+      "RunComfy",
+      "FLUX",
+      "edit"
+    ],
+    "source": "doany-ai/skills",
+    "prompt": "use the flux-kontext skill for this: [describe your image edit]",
+    "gh": "https://github.com/doany-ai/skills"
+  },
+  {
+    "id": "shadcn",
+    "cat": "frontend",
+    "roles": [
+      "programmers",
+      "designers"
+    ],
+    "name": "shadcn",
+    "oneliner": "Add, search, fix, and compose shadcn/ui components with project-aware CLI rules.",
+    "when": "Working with shadcn/ui — adding components, forms, overlays, or design tokens.",
+    "tags": [
+      "shadcn",
+      "components",
+      "React"
+    ],
+    "source": "shadcn/ui",
+    "prompt": "follow the shadcn skill for this: [describe your UI component need]",
+    "gh": "https://github.com/shadcn/ui"
+  },
+  {
+    "id": "ui-ux-pro-max",
+    "cat": "visual",
+    "roles": [
+      "designers",
+      "programmers",
+      "marketers"
+    ],
+    "name": "ui-ux-pro-max",
+    "oneliner": "Design intelligence — 50+ styles, palettes, font pairings, and UX rules across 10 stacks.",
+    "when": "Choosing design direction, building pages, or reviewing UI for accessibility and polish.",
+    "tags": [
+      "UI",
+      "UX",
+      "design-system"
+    ],
+    "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+    "prompt": "follow the ui-ux-pro-max skill for this: [describe your UI task]",
+    "gh": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill"
+  },
+  {
+    "id": "frontend-design",
+    "cat": "visual",
+    "roles": [
+      "designers",
+      "programmers",
+      "marketers"
+    ],
+    "name": "frontend-design",
+    "oneliner": "Distinctive production-grade interfaces that reject generic AI aesthetics.",
+    "when": "Building memorable web UI with intentional typography, color, motion, and layout.",
+    "tags": [
+      "design",
+      "frontend",
+      "aesthetics"
+    ],
+    "source": "anthropics/skills",
+    "prompt": "follow the frontend-design skill for this: [describe your interface]",
+    "gh": "https://github.com/anthropics/skills"
+  },
+  {
+    "id": "web-design-guidelines",
+    "cat": "frontend",
+    "roles": [
+      "designers",
+      "programmers"
+    ],
+    "name": "web-design-guidelines",
+    "oneliner": "Vercel Web Interface Guidelines — spacing, typography, interaction, and accessibility.",
+    "when": "Reviewing or building web UI against Vercel's interface quality standards.",
+    "tags": [
+      "guidelines",
+      "accessibility",
+      "Vercel"
+    ],
+    "source": "vercel-labs/agent-skills",
+    "prompt": "follow the web-design-guidelines skill for this: [describe your UI]",
+    "gh": "https://github.com/vercel-labs/agent-skills"
+  },
+  {
+    "id": "vercel-composition-patterns",
+    "cat": "frontend",
+    "roles": [
+      "programmers"
+    ],
+    "name": "vercel-composition-patterns",
+    "oneliner": "React composition patterns — compound components, render props, and scalable APIs.",
+    "when": "Refactoring components for flexibility, reuse, and cleaner prop surfaces.",
+    "tags": [
+      "React",
+      "composition",
+      "patterns"
+    ],
+    "source": "vercel-labs/agent-skills",
+    "prompt": "follow the vercel-composition-patterns skill for this: [describe your component]",
+    "gh": "https://github.com/vercel-labs/agent-skills"
+  },
+  {
+    "id": "extract-design-system",
+    "cat": "visual",
+    "roles": [
+      "designers",
+      "programmers"
+    ],
+    "name": "extract-design-system",
+    "oneliner": "Extract design tokens, colors, typography, and patterns from existing sites or screenshots.",
+    "when": "Reverse-engineering a visual style into reusable tokens and component rules.",
+    "tags": [
+      "design-system",
+      "tokens",
+      "extract"
+    ],
+    "source": "arvindrk/extract-design-system",
+    "prompt": "follow the extract-design-system skill for this: [describe your reference]",
+    "gh": "https://github.com/arvindrk/extract-design-system"
+  },
+  {
+    "id": "playwright-cli",
+    "cat": "workflow",
+    "roles": [
+      "programmers"
+    ],
+    "name": "playwright-cli",
+    "oneliner": "Browser automation via Playwright CLI — navigate, click, fill, screenshot, and test.",
+    "when": "Automating browser interactions, E2E flows, or visual verification from the terminal.",
+    "tags": [
+      "Playwright",
+      "testing",
+      "automation"
+    ],
+    "source": "microsoft/playwright-cli",
+    "prompt": "follow the playwright-cli skill for this: [describe your browser automation task]",
+    "gh": "https://github.com/microsoft/playwright-cli"
+  },
+  {
+    "id": "webapp-testing",
+    "cat": "workflow",
+    "roles": [
+      "programmers"
+    ],
+    "name": "webapp-testing",
+    "oneliner": "Web app testing patterns — unit, integration, and end-to-end for React apps.",
+    "when": "Writing or improving tests for frontend applications.",
+    "tags": [
+      "testing",
+      "React",
+      "E2E"
+    ],
+    "source": "anthropics/skills",
+    "prompt": "follow the webapp-testing skill for this: [describe what to test]",
+    "gh": "https://github.com/anthropics/skills"
+  },
+  {
+    "id": "mcp-builder",
+    "cat": "backend",
+    "roles": [
+      "programmers",
+      "founders"
+    ],
+    "name": "mcp-builder",
+    "oneliner": "Build MCP servers that connect agents to external APIs and tools.",
+    "when": "Creating a new Model Context Protocol server for custom integrations.",
+    "tags": [
+      "MCP",
+      "API",
+      "integration"
+    ],
+    "source": "anthropics/skills",
+    "prompt": "follow the mcp-builder skill for this: [describe your integration]",
+    "gh": "https://github.com/anthropics/skills"
+  },
+  {
+    "id": "accessibility",
+    "cat": "frontend",
+    "roles": [
+      "designers",
+      "programmers"
+    ],
+    "name": "accessibility",
+    "oneliner": "WCAG-focused accessibility audit and remediation for web interfaces.",
+    "when": "Fixing or preventing a11y issues — keyboard nav, ARIA, contrast, screen readers.",
+    "tags": [
+      "a11y",
+      "WCAG",
+      "audit"
+    ],
+    "source": "addyosmani/web-quality-skills",
+    "prompt": "follow the accessibility skill for this: [describe your UI to audit]",
+    "gh": "https://github.com/addyosmani/web-quality-skills"
+  },
+  {
+    "id": "tailwind-design-system",
+    "cat": "frontend",
+    "roles": [
+      "designers",
+      "programmers"
+    ],
+    "name": "tailwind-design-system",
+    "oneliner": "Tailwind design system implementation — tokens, variants, and component patterns.",
+    "when": "Building a cohesive Tailwind-based component library or design token layer.",
+    "tags": [
+      "Tailwind",
+      "design-system",
+      "components"
+    ],
+    "source": "wshobson/agents",
+    "prompt": "follow the tailwind-design-system skill for this: [describe your design system]",
+    "gh": "https://github.com/wshobson/agents"
+  },
+  {
+    "id": "writing-plans",
+    "cat": "workflow",
+    "roles": [
+      "founders",
+      "programmers"
+    ],
+    "name": "writing-plans",
+    "oneliner": "Bite-sized implementation plans with TDD steps, file paths, and exact commands.",
+    "when": "Breaking a spec into an executable multi-step plan before coding.",
+    "tags": [
+      "planning",
+      "TDD",
+      "implementation"
+    ],
+    "source": "obra/superpowers",
+    "prompt": "follow the writing-plans skill for this: [describe the feature to plan]",
+    "gh": "https://github.com/obra/superpowers"
+  },
+  {
+    "id": "systematic-debugging",
+    "cat": "workflow",
+    "roles": [
+      "programmers"
+    ],
+    "name": "systematic-debugging",
+    "oneliner": "Structured debugging workflow — reproduce, isolate, hypothesize, verify, fix.",
+    "when": "Stuck on a bug and need a methodical approach instead of random changes.",
+    "tags": [
+      "debugging",
+      "bugs",
+      "workflow"
+    ],
+    "source": "obra/superpowers",
+    "prompt": "follow the systematic-debugging skill for this: [describe the bug]",
+    "gh": "https://github.com/obra/superpowers"
+  },
+  {
+    "id": "writing-great-skills",
+    "cat": "workflow",
+    "roles": [
+      "programmers",
+      "founders"
+    ],
+    "name": "writing-great-skills",
+    "oneliner": "Author high-quality agent skills with clear triggers, structure, and examples.",
+    "when": "Creating or improving a SKILL.md for your own agent skill package.",
+    "tags": [
+      "skills",
+      "authoring",
+      "meta"
+    ],
+    "source": "mattpocock/skills",
+    "prompt": "follow the writing-great-skills skill for this: [describe the skill to write]",
+    "gh": "https://github.com/mattpocock/skills"
+  },
+  {
+    "id": "personal-productivity",
+    "cat": "workflow",
+    "roles": [
+      "founders",
+      "event-managers",
+      "marketers"
+    ],
+    "name": "personal-productivity",
+    "oneliner": "Personal productivity frameworks from Lenny's Newsletter for prioritization and focus.",
+    "when": "Improving how you manage time, priorities, or personal workflow as an operator.",
+    "tags": [
+      "productivity",
+      "focus",
+      "priorities"
+    ],
+    "source": "refoundai/lenny-skills",
+    "prompt": "use the personal-productivity skill for this: [describe your productivity challenge]",
+    "gh": "https://github.com/refoundai/lenny-skills"
+  },
+  {
+    "id": "draft-outreach",
+    "cat": "workflow",
+    "roles": [
+      "marketers",
+      "founders",
+      "copywriters"
+    ],
+    "name": "draft-outreach",
+    "oneliner": "Draft personalized outreach messages for sales, partnerships, and networking.",
+    "when": "Writing cold LinkedIn messages, partnership pitches, or networking outreach.",
+    "tags": [
+      "outreach",
+      "networking",
+      "sales"
+    ],
+    "source": "anthropics/knowledge-work-plugins",
+    "prompt": "use the draft-outreach skill for this: [describe your outreach goal]",
+    "gh": "https://github.com/anthropics/knowledge-work-plugins"
+  },
+  {
+    "id": "changelog-automation",
+    "cat": "workflow",
+    "roles": [
+      "programmers",
+      "founders",
+      "marketers"
+    ],
+    "name": "changelog-automation",
+    "oneliner": "Generate changelogs from commits, PRs, or release notes automatically.",
+    "when": "Preparing a release changelog or keeping release notes up to date.",
+    "tags": [
+      "changelog",
+      "release",
+      "automation"
+    ],
+    "source": "wshobson/agents",
+    "prompt": "follow the changelog-automation skill for this: [describe your release]",
+    "gh": "https://github.com/wshobson/agents"
+  },
+  {
+    "id": "notion-api",
+    "cat": "workflow",
+    "roles": [
+      "founders",
+      "event-managers",
+      "marketers"
+    ],
+    "name": "notion-api",
+    "oneliner": "Integrate with Notion API — pages, databases, blocks, and workspace automation.",
+    "when": "Reading or writing Notion content programmatically from an agent workflow.",
+    "tags": [
+      "Notion",
+      "API",
+      "automation"
+    ],
+    "source": "intellectronica/agent-skills",
+    "prompt": "follow the notion-api skill for this: [describe your Notion task]",
+    "gh": "https://github.com/intellectronica/agent-skills"
+  },
+  {
+    "id": "linear-cli",
+    "cat": "workflow",
+    "roles": [
+      "founders",
+      "programmers"
+    ],
+    "name": "linear-cli",
+    "oneliner": "Manage Linear issues, projects, and cycles from the command line.",
+    "when": "Creating, updating, or querying Linear tickets without leaving the terminal.",
+    "tags": [
+      "Linear",
+      "issues",
+      "project-management"
+    ],
+    "source": "schpet/linear-cli",
+    "prompt": "follow the linear-cli skill for this: [describe your Linear task]",
+    "gh": "https://github.com/schpet/linear-cli"
+  },
+  {
+    "id": "data-analysis",
+    "cat": "workflow",
+    "roles": [
+      "founders",
+      "marketers",
+      "event-managers"
+    ],
+    "name": "data-analysis",
+    "oneliner": "Analyze spreadsheets, run stats, generate insights, and build charts.",
+    "when": "Exploring data in Excel or CSV files and need formulas, analysis, or visualizations.",
+    "tags": [
+      "data",
+      "spreadsheet",
+      "analytics"
+    ],
+    "source": "claude-office-skills/skills",
+    "prompt": "use the data-analysis skill for this: [describe your data and question]",
+    "gh": "https://github.com/claude-office-skills/skills"
+  },
+  {
+    "id": "seo-geo",
+    "cat": "workflow",
+    "roles": [
+      "marketers",
+      "copywriters",
+      "founders"
+    ],
+    "name": "seo-geo",
+    "oneliner": "SEO plus generative engine optimization for AI search and local visibility.",
+    "when": "Optimizing for both traditional search and AI-generated answer citations.",
+    "tags": [
+      "SEO",
+      "GEO",
+      "AI search"
+    ],
+    "source": "resciencelab/opc-skills",
+    "prompt": "use the seo-geo skill for this: [describe your site and target queries]",
+    "gh": "https://github.com/resciencelab/opc-skills"
+  },
+  {
+    "id": "investor-outreach",
+    "cat": "workflow",
+    "roles": [
+      "founders"
+    ],
+    "name": "investor-outreach",
+    "oneliner": "Investor outreach emails, intros, and follow-ups for fundraising rounds.",
+    "when": "Reaching out to VCs or angels and need pitch-adjacent messaging.",
+    "tags": [
+      "fundraising",
+      "investors",
+      "outreach"
+    ],
+    "source": "affaan-m/everything-claude-code",
+    "prompt": "use the investor-outreach skill for this: [describe your startup and round]",
+    "gh": "https://github.com/affaan-m/everything-claude-code"
+  },
+  {
+    "id": "agent-browser",
+    "cat": "workflow",
+    "roles": [
+      "programmers",
+      "founders"
+    ],
+    "name": "agent-browser",
+    "oneliner": "Full browser automation — navigate, click, fill forms, extract data, screenshot.",
+    "when": "Agent needs to interact with live web pages for testing or data extraction.",
+    "tags": [
+      "browser",
+      "automation",
+      "testing"
+    ],
+    "source": "vercel-labs/agent-browser",
+    "prompt": "follow the agent-browser skill for this: [describe your browser task]",
+    "gh": "https://github.com/vercel-labs/agent-browser"
+  },
+  {
+    "id": "diagnosing-bugs",
+    "cat": "workflow",
+    "roles": [
+      "programmers"
+    ],
+    "name": "diagnosing-bugs",
+    "oneliner": "Structured bug diagnosis — gather evidence, form hypotheses, and narrow root cause.",
+    "when": "Investigating a reported bug before attempting a fix.",
+    "tags": [
+      "bugs",
+      "debugging",
+      "diagnosis"
+    ],
+    "source": "mattpocock/skills",
+    "prompt": "follow the diagnosing-bugs skill for this: [describe the bug report]",
+    "gh": "https://github.com/mattpocock/skills"
+  },
+  {
+    "id": "copywriting-hooks",
+    "cat": "workflow",
+    "roles": [
+      "copywriters",
+      "marketers"
+    ],
+    "name": "copywriting-hooks",
+    "oneliner": "Attention-grabbing hooks for headlines, ads, and social openers.",
+    "when": "Need strong opening lines for content, ads, or landing page headlines.",
+    "tags": [
+      "hooks",
+      "headlines",
+      "copy"
+    ],
+    "source": "samber/cc-skills",
+    "prompt": "use the copywriting-hooks skill for this: [describe your content and audience]",
+    "gh": "https://github.com/samber/cc-skills"
+  },
+  {
+    "id": "newsletter-generation",
+    "cat": "workflow",
+    "roles": [
+      "marketers",
+      "copywriters",
+      "founders"
+    ],
+    "name": "newsletter-generation",
+    "oneliner": "Generate newsletter editions from topics, research, and editorial structure.",
+    "when": "Drafting a recurring newsletter issue with sections and consistent voice.",
+    "tags": [
+      "newsletter",
+      "content",
+      "email"
+    ],
+    "source": "bytedance/deer-flow",
+    "prompt": "use the newsletter-generation skill for this: [describe your newsletter topic]",
+    "gh": "https://github.com/bytedance/deer-flow"
+  },
+  {
+    "id": "wan-2-7",
+    "cat": "image",
+    "roles": [
+      "marketers",
+      "event-managers",
+      "designers"
+    ],
+    "name": "wan-2-7",
+    "oneliner": "Wan 2.7 text-to-video and video editing on RunComfy with motion control.",
+    "when": "Generating or editing video with Wan 2.7 models on RunComfy.",
+    "tags": [
+      "RunComfy",
+      "video",
+      "Wan"
+    ],
+    "source": "agentspace-so/runcomfy-agent-skills",
+    "prompt": "use the wan-2-7 skill for this: [describe your video]",
+    "gh": "https://github.com/agentspace-so/runcomfy-agent-skills"
+  },
+  {
+    "id": "controlnet-pose",
+    "cat": "image",
+    "roles": [
+      "designers",
+      "marketers",
+      "event-managers"
+    ],
+    "name": "controlnet-pose",
+    "oneliner": "Pose-guided image generation with ControlNet on RunComfy for consistent figures.",
+    "when": "Need character or model poses controlled precisely in generated images.",
+    "tags": [
+      "RunComfy",
+      "ControlNet",
+      "pose"
+    ],
+    "source": "agentspace-so/runcomfy-agent-skills",
+    "prompt": "use the controlnet-pose skill for this: [describe pose and scene]",
+    "gh": "https://github.com/agentspace-so/runcomfy-agent-skills"
+  },
+  {
+    "id": "review",
+    "cat": "workflow",
+    "roles": [
+      "programmers",
+      "founders"
+    ],
+    "name": "review",
+    "oneliner": "Structured code review with actionable feedback on quality and architecture.",
+    "when": "Reviewing a PR or codebase change before merge.",
+    "tags": [
+      "review",
+      "PR",
+      "quality"
+    ],
+    "source": "mattpocock/skills",
+    "prompt": "follow the review skill for this: [describe what to review]",
+    "gh": "https://github.com/mattpocock/skills"
+  },
+  {
+    "id": "implement",
+    "cat": "workflow",
+    "roles": [
+      "programmers"
+    ],
+    "name": "implement",
+    "oneliner": "Disciplined feature implementation from a spec with verification at each step.",
+    "when": "Executing an approved plan or spec with structured implementation discipline.",
+    "tags": [
+      "implementation",
+      "spec",
+      "workflow"
+    ],
+    "source": "mattpocock/skills",
+    "prompt": "follow the implement skill for this: [describe the feature to build]",
+    "gh": "https://github.com/mattpocock/skills"
   }
 ];
 
