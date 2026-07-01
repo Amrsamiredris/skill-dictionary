@@ -4,13 +4,15 @@ type MetricsScope = {
   projectIds: string[];
 };
 
+type Granularity = { days: number } | { hours: number };
+
 type QueryBody = {
   scope: MetricsScope;
   metric: string;
   aggregation: string;
   startTime: string;
   endTime: string;
-  granularity: string;
+  granularity: Granularity;
   groupBy?: string[];
   limit?: number;
 };
@@ -98,7 +100,7 @@ export async function getVercelAnalytics(): Promise<VercelAnalyticsSnapshot> {
     scope: s,
     startTime,
     endTime,
-    granularity: "1d",
+    granularity: { days: 1 } as Granularity,
   };
 
   const [pageviews, visitors, byDay, pages, countries, devices, referrers] =
@@ -117,7 +119,6 @@ export async function getVercelAnalytics(): Promise<VercelAnalyticsSnapshot> {
         ...base,
         metric: "vercel.analytics_pageview.count",
         aggregation: "sum",
-        granularity: "1d",
       }),
       queryMetric({
         ...base,
