@@ -1,12 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import type { AdminDashboardData } from "@/lib/admin-data";
+import type { AdminDashboardData, SkillEvent } from "@/lib/admin-data";
 import type { VercelAnalyticsSnapshot } from "@/lib/vercel-metrics";
 import { SKILLS } from "@/lib/skills";
+import {
+  DonutChart,
+  MetricTrend,
+  TimeSeriesChart,
+} from "@/components/admin/admin-charts";
 
-type Tab = "overview" | "skills" | "activity" | "users" | "messages" | "traffic";
+type Tab =
+  | "overview"
+  | "trends"
+  | "skills"
+  | "events"
+  | "inbox"
+  | "users"
+  | "traffic";
+
+type SortKey =
+  | "name"
+  | "category"
+  | "copies"
+  | "github_clicks"
+  | "installs_yes"
+  | "installs_no"
+  | "likes"
+  | "dislikes"
+  | "likePct";
 
 export function AdminDashboard({
   data,
@@ -17,6 +40,11 @@ export function AdminDashboard({
 }) {
   const [tab, setTab] = useState<Tab>("overview");
   const [skillSearch, setSkillSearch] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("copies");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [chartMode, setChartMode] = useState<"daily" | "weekly">("daily");
+  const [eventFilter, setEventFilter] = useState("all");
+  const [eventSearch, setEventSearch] = useState("");
 
   const totals = data.totals;
   const likePct =
@@ -24,18 +52,59 @@ export function AdminDashboard({
       ? Math.round((totals.likes / (totals.likes + totals.dislikes)) * 100)
       : null;
 
-  const filteredSkills = data.skills.filter((s) => {
-    const q = skillSearch.toLowerCase();
-    if (!q) return true;
-    return (
-      s.name.toLowerCase().includes(q) ||
-      s.category.toLowerCase().includes(q) ||
-      s.skill_id.toLowerCase().includes(q)
-    );
-  });
+  const chartData =
+    chartMode === "daily" ? data.dailyEvents : data.weeklyEvents;
 
-  const maxDaily = Math.max(...data.dailyEvents.map((d) => d.total), 1);
-  const maxVercelDay = Math.max(...vercel.pageviewsByDay.map((d) => d.count), 1);
+  const recentDaily = data.dailyEvents;
+  const last7 = recentDaily.slice(-7);
+  const prev7 = recentDaily.slice(-14, -7);
+  const sumWeek = (days: typeof last7, key: keyof (typeof last7)[0]) =>
+    days.reduce((s, d) => s + (Number(d[key]) || 0), 0);
+
+  const filteredSkills = useMemo(() => {
+    const q = skillSearch.toLowerCase();
+    let rows = data.skills.filter((s) => {
+      if (!q) return true;
+      return (
+        s.name.toLowerCase().includes(q) ||
+        s.category.toLowerCase().includes(q) ||
+        s.skill_id.toLowerCase().includes(q)
+      );
+    });
+    rows = [...rows].sort((a, b) => {
+      const av = a[sortKey] ?? (sortKey === "name" || sortKey === "category" ? "" : 0);
+      const bv = b[sortKey] ?? (sortKey === "name" || sortKey === "category" ? "" : 0);
+      if (typeof av === "string" && typeof bv === "string") {
+        return sortDir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
+      }
+      return sortDir === "asc"
+        ? Number(av) - Number(bv)
+        : Number(bv) - Number(av);
+    });
+    return rows;
+  }, [data.skills, skillSearch, sortKey, sortDir]);
+
+  const filteredEvents = useMemo(() => {
+    const q = eventSearch.toLowerCase();
+    return data.allEvents.filter((e) => {
+      if (eventFilter !== "all" && e.event_type !== eventFilter) return false;
+      if (!q) return true;
+      return (
+        e.skill_name.toLowerCase().includes(q) ||
+        e.skill_id.toLowerCase().includes(q) ||
+        e.event_type.toLowerCase().includes(q) ||
+        (e.session_id ?? "").toLowerCase().includes(q)
+      );
+    });
+  }, [data.allEvents, eventFilter, eventSearch]);
+
+  function toggleSort(key: SortKey) {
+    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else {
+      setSortKey(key);
+      setSortDir("desc");
+    }
+  }
 
   return (
     <div className="admin-shell">
@@ -60,10 +129,11 @@ export function AdminDashboard({
         {(
           [
             ["overview", "Overview"],
-            ["skills", "All skills"],
-            ["activity", "Activity"],
-            ["users", "Users"],
-            ["messages", "Messages"],
+            ["trends", "Trends"],
+            ["skills", `All skills (${SKILLS.length})`],
+            ["events", `Event log (${data.allEvents.length})`],
+            ["inbox", `Inbox (${data.contactMessages.length})`],
+            ["users", `Users (${data.profiles.length})`],
             ["traffic", "Vercel traffic"],
           ] as const
         ).map(([id, label]) => (
@@ -93,27 +163,44 @@ export function AdminDashboard({
               value={`${totals?.likes ?? 0} / ${totals?.dislikes ?? 0}`}
             />
             <Kpi label="Overall liked" value={likePct !== null ? `${likePct}%` : "—"} />
-            <Kpi label="Registered users" value={String(data.profiles.length)} />
+            <Kpi label="Total events" value={String(data.authBreakdown.totalEvents)} />
+            <Kpi label="Unique sessions" value={String(data.authBreakdown.uniqueSessions)} />
+            <Kpi
+              label="Signed-in users"
+              value={String(data.authBreakdown.uniqueSignedInUsers)}
+            />
             <Kpi label="Pageviews (7d)" value={String(vercel.pageviews7d)} />
-            <Kpi label="Visitors (7d)" value={String(vercel.visitors7d)} />
-            <Kpi label="Recent sessions" value={String(data.uniqueSessions)} />
           </div>
 
           <div className="admin-split">
             <section className="admin-card">
-              <h2>Skill events — last 30 days</h2>
-              <BarChart
-                items={data.dailyEvents.map((d) => ({
-                  label: d.day.slice(5),
-                  value: d.total,
-                  max: maxDaily,
-                }))}
+              <div className="admin-card-header">
+                <h2>Anonymous vs signed-in</h2>
+              </div>
+              <DonutChart
+                segments={[
+                  {
+                    label: "Anonymous",
+                    value: data.authBreakdown.anonymousEvents,
+                    color: "var(--muted)",
+                  },
+                  {
+                    label: "Signed in",
+                    value: data.authBreakdown.signedInEvents,
+                    color: "var(--accent)",
+                  },
+                ]}
               />
+              <div className="admin-auth-stats">
+                <span>{data.authBreakdown.anonymousPct}% anonymous</span>
+                <span>{data.authBreakdown.signedInPct}% signed in</span>
+                <span>{data.authBreakdown.uniqueSessions} unique sessions</span>
+              </div>
             </section>
             <section className="admin-card">
-              <h2>Event breakdown (recent)</h2>
+              <h2>All-time event types</h2>
               <ul className="admin-breakdown">
-                {Object.entries(data.eventBreakdown).map(([type, count]) => (
+                {Object.entries(data.globalEventBreakdown).map(([type, count]) => (
                   <li key={type}>
                     <span>{formatEvent(type)}</span>
                     <strong>{count}</strong>
@@ -123,35 +210,117 @@ export function AdminDashboard({
             </section>
           </div>
 
+          <section className="admin-card">
+            <div className="admin-card-header">
+              <h2>Event trends</h2>
+              <div className="admin-toggle-group">
+                <button
+                  type="button"
+                  className={`admin-toggle${chartMode === "daily" ? " active" : ""}`}
+                  onClick={() => setChartMode("daily")}
+                >
+                  Daily
+                </button>
+                <button
+                  type="button"
+                  className={`admin-toggle${chartMode === "weekly" ? " active" : ""}`}
+                  onClick={() => setChartMode("weekly")}
+                >
+                  Weekly
+                </button>
+              </div>
+            </div>
+            <TimeSeriesChart data={chartData} mode={chartMode} metric="stacked" />
+          </section>
+
+          <section className="admin-card">
+            <h2>Week-over-week (last 7 vs prior 7 days)</h2>
+            <div className="admin-trend-grid">
+              <MetricTrend
+                label="Copies"
+                current={sumWeek(last7, "copy")}
+                previous={sumWeek(prev7, "copy")}
+              />
+              <MetricTrend
+                label="GitHub"
+                current={sumWeek(last7, "github_click")}
+                previous={sumWeek(prev7, "github_click")}
+              />
+              <MetricTrend
+                label="Install yes"
+                current={sumWeek(last7, "install_yes")}
+                previous={sumWeek(prev7, "install_yes")}
+              />
+              <MetricTrend
+                label="Total events"
+                current={sumWeek(last7, "total")}
+                previous={sumWeek(prev7, "total")}
+              />
+            </div>
+          </section>
+        </div>
+      )}
+
+      {tab === "trends" && (
+        <div className="admin-panel">
+          <div className="admin-toolbar">
+            <span className="admin-muted">Last 90 days</span>
+            <div className="admin-toggle-group">
+              <button
+                type="button"
+                className={`admin-toggle${chartMode === "daily" ? " active" : ""}`}
+                onClick={() => setChartMode("daily")}
+              >
+                Daily
+              </button>
+              <button
+                type="button"
+                className={`admin-toggle${chartMode === "weekly" ? " active" : ""}`}
+                onClick={() => setChartMode("weekly")}
+              >
+                Weekly
+              </button>
+            </div>
+          </div>
           <div className="admin-split">
             <section className="admin-card">
-              <h2>Top copied skills</h2>
-              <MiniTable
-                headers={["Skill", "Copies", "GitHub", "Liked"]}
-                rows={data.skills.slice(0, 8).map((s) => [
-                  s.name,
-                  String(s.copies),
-                  String(s.github_clicks),
-                  s.likePct !== null ? `${s.likePct}%` : "—",
-                ])}
-              />
+              <h2>Total events</h2>
+              <TimeSeriesChart data={chartData} mode={chartMode} metric="total" />
             </section>
             <section className="admin-card">
-              <h2>Lowest rated (3+ votes)</h2>
-              <MiniTable
-                headers={["Skill", "Liked", "Votes"]}
-                rows={data.skills
-                  .filter((s) => s.likes + s.dislikes >= 3)
-                  .sort((a, b) => (a.likePct ?? 100) - (b.likePct ?? 100))
-                  .slice(0, 8)
-                  .map((s) => [
-                    s.name,
-                    s.likePct !== null ? `${s.likePct}%` : "—",
-                    String(s.likes + s.dislikes),
-                  ])}
-              />
+              <h2>By type (stacked)</h2>
+              <TimeSeriesChart data={chartData} mode={chartMode} metric="stacked" />
             </section>
           </div>
+          <section className="admin-card">
+            <h2>Daily breakdown table</h2>
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Copies</th>
+                    <th>GitHub</th>
+                    <th>Install Y</th>
+                    <th>Install N</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...data.dailyEvents].reverse().map((d) => (
+                    <tr key={d.day}>
+                      <td>{d.day}</td>
+                      <td>{d.copy}</td>
+                      <td>{d.github_click}</td>
+                      <td>{d.install_yes}</td>
+                      <td>{d.install_no}</td>
+                      <td><strong>{d.total}</strong></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
         </div>
       )}
 
@@ -165,27 +334,32 @@ export function AdminDashboard({
               value={skillSearch}
               onChange={(e) => setSkillSearch(e.target.value)}
             />
-            <span className="admin-muted">{filteredSkills.length} skills</span>
+            <span className="admin-muted">
+              Showing {filteredSkills.length} of {SKILLS.length} skills
+            </span>
           </div>
           <div className="admin-table-wrap">
             <table className="admin-table admin-table-wide">
               <thead>
                 <tr>
-                  <th>Skill</th>
-                  <th>Category</th>
-                  <th>Copies</th>
-                  <th>GitHub</th>
-                  <th>Install Y</th>
-                  <th>Install N</th>
-                  <th>👍</th>
-                  <th>👎</th>
-                  <th>Liked</th>
+                  <SortTh label="Skill" sortKey="name" current={sortKey} dir={sortDir} onSort={toggleSort} />
+                  <SortTh label="Category" sortKey="category" current={sortKey} dir={sortDir} onSort={toggleSort} />
+                  <SortTh label="Copies" sortKey="copies" current={sortKey} dir={sortDir} onSort={toggleSort} />
+                  <SortTh label="GitHub" sortKey="github_clicks" current={sortKey} dir={sortDir} onSort={toggleSort} />
+                  <SortTh label="Install Y" sortKey="installs_yes" current={sortKey} dir={sortDir} onSort={toggleSort} />
+                  <SortTh label="Install N" sortKey="installs_no" current={sortKey} dir={sortDir} onSort={toggleSort} />
+                  <SortTh label="👍" sortKey="likes" current={sortKey} dir={sortDir} onSort={toggleSort} />
+                  <SortTh label="👎" sortKey="dislikes" current={sortKey} dir={sortDir} onSort={toggleSort} />
+                  <SortTh label="Liked %" sortKey="likePct" current={sortKey} dir={sortDir} onSort={toggleSort} />
                 </tr>
               </thead>
               <tbody>
                 {filteredSkills.map((s) => (
-                  <tr key={s.skill_id}>
-                    <td>{s.name}</td>
+                  <tr key={s.skill_id} className={s.copies === 0 ? "admin-row-dim" : ""}>
+                    <td>
+                      <span className="admin-skill-name">{s.name}</span>
+                      <span className="admin-skill-id">{s.skill_id}</span>
+                    </td>
                     <td>{s.category}</td>
                     <td>{s.copies}</td>
                     <td>{s.github_clicks}</td>
@@ -202,35 +376,55 @@ export function AdminDashboard({
         </div>
       )}
 
-      {tab === "activity" && (
-        <div className="admin-panel admin-split">
+      {tab === "events" && (
+        <div className="admin-panel">
+          <div className="admin-toolbar">
+            <input
+              type="search"
+              className="admin-search"
+              placeholder="Search skill, session…"
+              value={eventSearch}
+              onChange={(e) => setEventSearch(e.target.value)}
+            />
+            <select
+              className="admin-select"
+              value={eventFilter}
+              onChange={(e) => setEventFilter(e.target.value)}
+            >
+              <option value="all">All events</option>
+              <option value="copy">Copy</option>
+              <option value="github_click">GitHub click</option>
+              <option value="install_yes">Install yes</option>
+              <option value="install_no">Install no</option>
+            </select>
+            <span className="admin-muted">
+              {filteredEvents.length} of {data.allEvents.length} events
+            </span>
+          </div>
           <section className="admin-card">
-            <h2>Recent events</h2>
-            <div className="admin-table-wrap">
-              <table className="admin-table">
+            <h2>Raw event log</h2>
+            <div className="admin-table-wrap admin-table-tall">
+              <table className="admin-table admin-table-wide">
                 <thead>
                   <tr>
-                    <th>Time</th>
+                    <th>Timestamp</th>
                     <th>Event</th>
                     <th>Skill</th>
-                    <th>User</th>
+                    <th>Auth</th>
+                    <th>Session ID</th>
+                    <th>User ID</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {data.recentEvents.map((e) => (
-                    <tr key={e.id}>
-                      <td>{formatTime(e.created_at)}</td>
-                      <td>{formatEvent(e.event_type)}</td>
-                      <td>{e.skill_id}</td>
-                      <td>{e.user_id ? "signed in" : "anon"}</td>
-                    </tr>
+                  {filteredEvents.map((e) => (
+                    <EventRow key={e.id} event={e} />
                   ))}
                 </tbody>
               </table>
             </div>
           </section>
           <section className="admin-card">
-            <h2>Recent feedback</h2>
+            <h2>Recent feedback votes</h2>
             <div className="admin-table-wrap">
               <table className="admin-table">
                 <thead>
@@ -238,14 +432,18 @@ export function AdminDashboard({
                     <th>Time</th>
                     <th>Skill</th>
                     <th>Vote</th>
+                    <th>Auth</th>
+                    <th>Session</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.feedbackRows.map((f) => (
                     <tr key={f.id}>
                       <td>{formatTime(f.created_at)}</td>
-                      <td>{f.skill_id}</td>
+                      <td>{f.skill_name}</td>
                       <td>{f.vote === 1 ? "👍" : "👎"}</td>
+                      <td>{f.user_id ? "signed in" : "anon"}</td>
+                      <td className="admin-mono">{truncate(f.session_id, 12)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -255,31 +453,73 @@ export function AdminDashboard({
         </div>
       )}
 
+      {tab === "inbox" && (
+        <div className="admin-panel">
+          <section className="admin-card">
+            <h2>Contact inbox ({data.contactMessages.length})</h2>
+            {data.contactMessages.length === 0 ? (
+              <p className="admin-muted">No messages yet.</p>
+            ) : (
+              <ul className="admin-inbox">
+                {data.contactMessages.map((m) => (
+                  <li key={m.id} className="admin-inbox-item">
+                    <div className="admin-inbox-header">
+                      <div>
+                        <strong>
+                          {m.username ? `@${m.username}` : "Anonymous user"}
+                        </strong>
+                        <time>{formatTime(m.created_at)}</time>
+                      </div>
+                      {m.user_id && (
+                        <span className="admin-mono admin-inbox-id">
+                          {m.user_id.slice(0, 8)}…
+                        </span>
+                      )}
+                    </div>
+                    <p className="admin-inbox-body">{m.message}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
+      )}
+
       {tab === "users" && (
         <div className="admin-panel">
           <section className="admin-card">
-            <h2>Registered profiles ({data.profiles.length})</h2>
+            <h2>Registered users ({data.usersWithStats.length})</h2>
             <div className="admin-table-wrap">
-              <table className="admin-table">
+              <table className="admin-table admin-table-wide">
                 <thead>
                   <tr>
                     <th>Username</th>
                     <th>Public</th>
                     <th>Joined</th>
+                    <th>Copies</th>
+                    <th>GitHub</th>
+                    <th>Installs</th>
                     <th>Profile</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {data.profiles.map((p) => (
-                    <tr key={p.id}>
-                      <td>@{p.username}</td>
-                      <td>{p.is_public ? "Yes" : "No"}</td>
-                      <td>{formatDate(p.created_at)}</td>
+                  {data.usersWithStats.map((u) => (
+                    <tr key={u.id}>
+                      <td>@{u.username}</td>
                       <td>
-                        {p.is_public ? (
-                          <a href={`/u/${p.username}`} className="admin-link">
-                            /u/{p.username}
-                          </a>
+                        <span className={`admin-badge${u.is_public ? " public" : ""}`}>
+                          {u.is_public ? "Public" : "Private"}
+                        </span>
+                      </td>
+                      <td>{formatDate(u.created_at)}</td>
+                      <td>{u.totalCopies}</td>
+                      <td>{u.totalGithub}</td>
+                      <td>{u.totalInstalls}</td>
+                      <td>
+                        {u.is_public ? (
+                          <Link href={`/u/${u.username}`} className="admin-link">
+                            /u/{u.username}
+                          </Link>
                         ) : (
                           "—"
                         )}
@@ -293,29 +533,6 @@ export function AdminDashboard({
         </div>
       )}
 
-      {tab === "messages" && (
-        <div className="admin-panel">
-          <section className="admin-card">
-            <h2>Contact messages ({data.contactMessages.length})</h2>
-            {data.contactMessages.length === 0 ? (
-              <p className="admin-muted">No messages yet.</p>
-            ) : (
-              <ul className="admin-messages">
-                {data.contactMessages.map((m) => (
-                  <li key={m.id} className="admin-message">
-                    <div className="admin-message-meta">
-                      <time>{formatTime(m.created_at)}</time>
-                      {m.user_id && <span>user {m.user_id.slice(0, 8)}…</span>}
-                    </div>
-                    <p>{m.message}</p>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        </div>
-      )}
-
       {tab === "traffic" && (
         <div className="admin-panel">
           {!vercel.configured ? (
@@ -323,8 +540,7 @@ export function AdminDashboard({
               <h2>Vercel Analytics not configured</h2>
               <p>
                 Add <code>VERCEL_ACCESS_TOKEN</code>, <code>VERCEL_TEAM_ID</code>,
-                and <code>VERCEL_PROJECT_ID</code> to your Vercel env vars to
-                pull live traffic data.
+                and <code>VERCEL_PROJECT_ID</code> to your Vercel env vars.
               </p>
             </section>
           ) : (
@@ -335,12 +551,17 @@ export function AdminDashboard({
               </div>
               <section className="admin-card">
                 <h2>Pageviews by day</h2>
-                <BarChart
-                  items={vercel.pageviewsByDay.map((d) => ({
-                    label: d.day.slice(5),
-                    value: d.count,
-                    max: maxVercelDay,
+                <TimeSeriesChart
+                  data={vercel.pageviewsByDay.map((d) => ({
+                    day: d.day,
+                    copy: 0,
+                    github_click: 0,
+                    install_yes: 0,
+                    install_no: 0,
+                    total: d.count,
                   }))}
+                  mode="daily"
+                  metric="total"
                 />
               </section>
               <div className="admin-split">
@@ -354,6 +575,57 @@ export function AdminDashboard({
         </div>
       )}
     </div>
+  );
+}
+
+function EventRow({ event }: { event: SkillEvent }) {
+  return (
+    <tr>
+      <td>{formatTime(event.created_at)}</td>
+      <td>
+        <span className={`admin-event-pill ${event.event_type}`}>
+          {formatEvent(event.event_type)}
+        </span>
+      </td>
+      <td>
+        <span>{event.skill_name}</span>
+        <span className="admin-skill-id">{event.skill_id}</span>
+      </td>
+      <td>
+        <span className={`admin-badge${event.user_id ? " signed-in" : ""}`}>
+          {event.user_id ? "Signed in" : "Anonymous"}
+        </span>
+      </td>
+      <td className="admin-mono">{truncate(event.session_id ?? "—", 14)}</td>
+      <td className="admin-mono">
+        {event.user_id ? truncate(event.user_id, 10) : "—"}
+      </td>
+    </tr>
+  );
+}
+
+function SortTh({
+  label,
+  sortKey,
+  current,
+  dir,
+  onSort,
+}: {
+  label: string;
+  sortKey: SortKey;
+  current: SortKey;
+  dir: "asc" | "desc";
+  onSort: (k: SortKey) => void;
+}) {
+  return (
+    <th>
+      <button type="button" className="admin-sort-btn" onClick={() => onSort(sortKey)}>
+        {label}
+        {current === sortKey && (
+          <span aria-hidden="true">{dir === "asc" ? " ↑" : " ↓"}</span>
+        )}
+      </button>
+    </th>
   );
 }
 
@@ -371,61 +643,6 @@ function Kpi({
       <div className="admin-kpi-value">{value}</div>
       <div className="admin-kpi-label">{label}</div>
     </div>
-  );
-}
-
-function BarChart({
-  items,
-}: {
-  items: Array<{ label: string; value: number; max: number }>;
-}) {
-  if (items.length === 0) {
-    return <p className="admin-muted">No data yet.</p>;
-  }
-  return (
-    <div className="admin-bars">
-      {items.map((item) => (
-        <div key={item.label} className="admin-bar-row">
-          <span className="admin-bar-label">{item.label}</span>
-          <div className="admin-bar-track">
-            <div
-              className="admin-bar-fill"
-              style={{ width: `${(item.value / item.max) * 100}%` }}
-            />
-          </div>
-          <span className="admin-bar-value">{item.value}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function MiniTable({
-  headers,
-  rows,
-}: {
-  headers: string[];
-  rows: string[][];
-}) {
-  return (
-    <table className="admin-table">
-      <thead>
-        <tr>
-          {headers.map((h) => (
-            <th key={h}>{h}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row, i) => (
-          <tr key={i}>
-            {row.map((cell, j) => (
-              <td key={j}>{cell}</td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
   );
 }
 
@@ -462,6 +679,11 @@ function RankList({
   );
 }
 
+function truncate(s: string, n: number): string {
+  if (s.length <= n) return s;
+  return s.slice(0, n) + "…";
+}
+
 function formatEvent(type: string): string {
   return type.replace(/_/g, " ");
 }
@@ -472,6 +694,7 @@ function formatTime(iso: string): string {
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    second: "2-digit",
   });
 }
 

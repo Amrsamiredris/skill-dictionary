@@ -6,6 +6,7 @@ import { getFeedbackAgg, getGlobalTotals, getSkillStats } from "@/lib/stats-serv
 export type SkillEvent = {
   id: string;
   skill_id: string;
+  skill_name: string;
   event_type: string;
   user_id: string | null;
   session_id: string | null;
@@ -15,6 +16,7 @@ export type SkillEvent = {
 export type SkillFeedbackRow = {
   id: string;
   skill_id: string;
+  skill_name: string;
   vote: number;
   session_id: string;
   user_id: string | null;
@@ -24,6 +26,7 @@ export type SkillFeedbackRow = {
 export type ContactMessage = {
   id: string;
   user_id: string | null;
+  username: string | null;
   message: string;
   skill_id: string | null;
   created_at: string;
@@ -31,6 +34,16 @@ export type ContactMessage = {
 
 export type DailyEventCount = {
   day: string;
+  copy: number;
+  github_click: number;
+  install_yes: number;
+  install_no: number;
+  total: number;
+};
+
+export type WeeklyEventCount = {
+  week: string;
+  weekLabel: string;
   copy: number;
   github_click: number;
   install_yes: number;
@@ -46,21 +59,38 @@ export type EnrichedSkillRow = SkillStats & {
   likePct: number | null;
 };
 
+export type AuthBreakdown = {
+  totalEvents: number;
+  anonymousEvents: number;
+  signedInEvents: number;
+  anonymousPct: number;
+  signedInPct: number;
+  uniqueSessions: number;
+  uniqueSignedInUsers: number;
+};
+
+export type UserWithStats = Profile & {
+  totalCopies: number;
+  totalGithub: number;
+  totalInstalls: number;
+};
+
 export type AdminDashboardData = {
   totals: GlobalTotals | null;
   skills: EnrichedSkillRow[];
-  recentEvents: SkillEvent[];
+  allEvents: SkillEvent[];
   dailyEvents: DailyEventCount[];
+  weeklyEvents: WeeklyEventCount[];
   profiles: Profile[];
+  usersWithStats: UserWithStats[];
   contactMessages: ContactMessage[];
   feedbackRows: SkillFeedbackRow[];
-  eventBreakdown: Record<string, number>;
-  uniqueSessions: number;
-  signedInEvents: number;
+  globalEventBreakdown: Record<string, number>;
+  authBreakdown: AuthBreakdown;
   vercelConfigured: boolean;
 };
 
-export async function getRecentEvents(limit = 150): Promise<SkillEvent[]> {
+export async function getAllEvents(limit = 500): Promise<SkillEvent[]> {
   const admin = createAdminClient();
   if (!admin) return [];
 
@@ -71,10 +101,13 @@ export async function getRecentEvents(limit = 150): Promise<SkillEvent[]> {
     .limit(limit);
 
   if (error || !data) return [];
-  return data as SkillEvent[];
+  return (data as Omit<SkillEvent, "skill_name">[]).map((e) => ({
+    ...e,
+    skill_name: getSkillById(e.skill_id)?.name ?? e.skill_id,
+  }));
 }
 
-export async function getFeedbackRows(limit = 100): Promise<SkillFeedbackRow[]> {
+export async function getFeedbackRows(limit = 200): Promise<SkillFeedbackRow[]> {
   const admin = createAdminClient();
   if (!admin) return [];
 
@@ -85,12 +118,20 @@ export async function getFeedbackRows(limit = 100): Promise<SkillFeedbackRow[]> 
     .limit(limit);
 
   if (error || !data) return [];
-  return data as SkillFeedbackRow[];
+  return (data as Omit<SkillFeedbackRow, "skill_name">[]).map((f) => ({
+    ...f,
+    skill_name: getSkillById(f.skill_id)?.name ?? f.skill_id,
+  }));
 }
 
-export async function getContactMessages(limit = 50): Promise<ContactMessage[]> {
+export async function getContactMessages(
+  profiles: Profile[],
+  limit = 100,
+): Promise<ContactMessage[]> {
   const admin = createAdminClient();
   if (!admin) return [];
+
+  const profileMap = new Map(profiles.map((p) => [p.id, p.username]));
 
   const { data, error } = await admin
     .from("contact_messages")
@@ -99,7 +140,10 @@ export async function getContactMessages(limit = 50): Promise<ContactMessage[]> 
     .limit(limit);
 
   if (error || !data) return [];
-  return data as ContactMessage[];
+  return (data as ContactMessage[]).map((m) => ({
+    ...m,
+    username: m.user_id ? profileMap.get(m.user_id) ?? null : null,
+  }));
 }
 
 export async function getProfiles(): Promise<Profile[]> {
@@ -115,7 +159,70 @@ export async function getProfiles(): Promise<Profile[]> {
   return data as Profile[];
 }
 
-export async function getDailyEventCounts(days = 30): Promise<DailyEventCount[]> {
+export async function getAuthBreakdown(): Promise<AuthBreakdown> {
+  const admin = createAdminClient();
+  const empty: AuthBreakdown = {
+    totalEvents: 0,
+    anonymousEvents: 0,
+    signedInEvents: 0,
+    anonymousPct: 0,
+    signedInPct: 0,
+    uniqueSessions: 0,
+    uniqueSignedInUsers: 0,
+  };
+  if (!admin) return empty;
+
+  const { data, error } = await admin
+    .from("skill_events")
+    .select("user_id, session_id");
+
+  if (error || !data) return empty;
+
+  const sessions = new Set<string>();
+  const users = new Set<string>();
+  let signedIn = 0;
+
+  for (const row of data) {
+    if (row.user_id) {
+      signedIn += 1;
+      users.add(row.user_id);
+    }
+    if (row.session_id) sessions.add(row.session_id);
+  }
+
+  const total = data.length;
+  const anonymous = total - signedIn;
+
+  return {
+    totalEvents: total,
+    anonymousEvents: anonymous,
+    signedInEvents: signedIn,
+    anonymousPct: total > 0 ? Math.round((anonymous / total) * 100) : 0,
+    signedInPct: total > 0 ? Math.round((signedIn / total) * 100) : 0,
+    uniqueSessions: sessions.size,
+    uniqueSignedInUsers: users.size,
+  };
+}
+
+export async function getGlobalEventBreakdown(): Promise<Record<string, number>> {
+  const admin = createAdminClient();
+  if (!admin) return {};
+
+  const { data, error } = await admin
+    .from("skill_events")
+    .select("event_type");
+
+  if (error || !data) return {};
+
+  const breakdown: Record<string, number> = {};
+  for (const row of data) {
+    const t = String(row.event_type);
+    breakdown[t] = (breakdown[t] ?? 0) + 1;
+  }
+  return breakdown;
+}
+
+export async function getDailyEventCounts(days = 90): Promise<DailyEventCount[]> {
   const admin = createAdminClient();
   if (!admin) return [];
 
@@ -153,6 +260,78 @@ export async function getDailyEventCounts(days = 30): Promise<DailyEventCount[]>
   return [...byDay.values()].sort((a, b) => a.day.localeCompare(b.day));
 }
 
+export function aggregateWeekly(daily: DailyEventCount[]): WeeklyEventCount[] {
+  const byWeek = new Map<string, WeeklyEventCount>();
+
+  for (const d of daily) {
+    const date = new Date(d.day + "T00:00:00Z");
+    const day = date.getUTCDay();
+    const diff = date.getUTCDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(date);
+    monday.setUTCDate(diff);
+    const week = monday.toISOString().slice(0, 10);
+    const weekLabel = `Wk ${monday.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
+
+    const entry = byWeek.get(week) ?? {
+      week,
+      weekLabel,
+      copy: 0,
+      github_click: 0,
+      install_yes: 0,
+      install_no: 0,
+      total: 0,
+    };
+    entry.copy += d.copy;
+    entry.github_click += d.github_click;
+    entry.install_yes += d.install_yes;
+    entry.install_no += d.install_no;
+    entry.total += d.total;
+    byWeek.set(week, entry);
+  }
+
+  return [...byWeek.values()].sort((a, b) => a.week.localeCompare(b.week));
+}
+
+async function getUsersWithStats(profiles: Profile[]): Promise<UserWithStats[]> {
+  const admin = createAdminClient();
+  if (!admin) {
+    return profiles.map((p) => ({
+      ...p,
+      totalCopies: 0,
+      totalGithub: 0,
+      totalInstalls: 0,
+    }));
+  }
+
+  const { data } = await admin
+    .from("user_skill_stats")
+    .select("user_id, copies, github_clicks, installs_yes");
+
+  const statsByUser = new Map<
+    string,
+    { copies: number; github: number; installs: number }
+  >();
+
+  for (const row of data ?? []) {
+    const uid = String(row.user_id);
+    const cur = statsByUser.get(uid) ?? { copies: 0, github: 0, installs: 0 };
+    cur.copies += Number(row.copies ?? 0);
+    cur.github += Number(row.github_clicks ?? 0);
+    cur.installs += Number(row.installs_yes ?? 0);
+    statsByUser.set(uid, cur);
+  }
+
+  return profiles.map((p) => {
+    const s = statsByUser.get(p.id) ?? { copies: 0, github: 0, installs: 0 };
+    return {
+      ...p,
+      totalCopies: s.copies,
+      totalGithub: s.github,
+      totalInstalls: s.installs,
+    };
+  });
+}
+
 function enrichSkills(
   skillStats: SkillStats[],
   feedback: FeedbackAgg[],
@@ -180,39 +359,36 @@ function enrichSkills(
       dislikes,
       likePct: total > 0 ? Math.round((likes / total) * 100) : null,
     };
-  }).sort((a, b) => b.copies - a.copies);
+  });
 }
 
 export async function getAdminDashboardData(): Promise<AdminDashboardData> {
+  const profiles = await getProfiles();
+
   const [
     totals,
     skillStats,
     feedback,
-    recentEvents,
+    allEvents,
     dailyEvents,
-    profiles,
     contactMessages,
     feedbackRows,
+    globalEventBreakdown,
+    authBreakdown,
   ] = await Promise.all([
     getGlobalTotals(),
     getSkillStats(),
     getFeedbackAgg(),
-    getRecentEvents(),
-    getDailyEventCounts(),
-    getProfiles(),
-    getContactMessages(),
+    getAllEvents(500),
+    getDailyEventCounts(90),
+    getContactMessages(profiles),
     getFeedbackRows(),
+    getGlobalEventBreakdown(),
+    getAuthBreakdown(),
   ]);
 
-  const eventBreakdown: Record<string, number> = {};
-  let signedInEvents = 0;
-  const sessions = new Set<string>();
-
-  for (const e of recentEvents) {
-    eventBreakdown[e.event_type] = (eventBreakdown[e.event_type] ?? 0) + 1;
-    if (e.user_id) signedInEvents += 1;
-    if (e.session_id) sessions.add(e.session_id);
-  }
+  const weeklyEvents = aggregateWeekly(dailyEvents);
+  const usersWithStats = await getUsersWithStats(profiles);
 
   const vercelConfigured = Boolean(
     process.env.VERCEL_ACCESS_TOKEN &&
@@ -222,18 +398,16 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
 
   return {
     totals,
-    skills: enrichSkills(skillStats, feedback),
-    recentEvents: recentEvents.map((e) => ({
-      ...e,
-      skill_id: getSkillById(e.skill_id)?.name ?? e.skill_id,
-    })),
+    skills: enrichSkills(skillStats, feedback).sort((a, b) => b.copies - a.copies),
+    allEvents,
     dailyEvents,
+    weeklyEvents,
     profiles,
+    usersWithStats,
     contactMessages,
     feedbackRows,
-    eventBreakdown,
-    uniqueSessions: sessions.size,
-    signedInEvents,
+    globalEventBreakdown,
+    authBreakdown,
     vercelConfigured,
   };
 }
