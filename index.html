@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Skill Dictionary</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#09090b;--surface:#111116;--surface2:#16161e;--border:#1c1c28;--border2:#252535;
+    --text:#dddde8;--muted:#52526a;--dim:#888899;
+    --purple:#6d5bff;--green:#3dd68c;--amber:#f59e0b;--red:#f87171;--blue:#38bdf8;--pink:#e879f9;
+  }
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;min-height:100vh}
+
+  /* HEADER */
+  .header{padding:18px 24px 0;position:sticky;top:0;background:var(--bg);z-index:50;border-bottom:1px solid var(--border)}
+  .header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px}
+  .logo{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;letter-spacing:.3px;flex-shrink:0}
+  .logo span{color:var(--muted)}
+  .stats{display:flex;gap:16px;flex-shrink:0}
+  .stat{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
+  .stat b{color:var(--text)}
+
+  /* SEARCH */
+  .search-wrap{position:relative;flex:1;max-width:420px}
+  .search-wrap input{
+    width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:6px;
+    color:var(--text);padding:8px 12px 8px 32px;font-size:13px;
+    font-family:'IBM Plex Mono',monospace;outline:none;transition:border-color .15s
+  }
+  .search-wrap input:focus{border-color:var(--purple)}
+  .search-wrap input::placeholder{color:var(--muted)}
+  .si{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+
+  /* TABS */
+  .tabs{display:flex;gap:1px;overflow-x:auto;padding-bottom:0;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{
+    background:none;border:none;border-bottom:2px solid transparent;
+    color:var(--muted);padding:6px 12px 10px;font-size:11px;
+    font-family:'IBM Plex Mono',monospace;cursor:pointer;letter-spacing:.3px;
+    white-space:nowrap;transition:color .15s,border-color .15s;flex-shrink:0
+  }
+  .tab.active{color:var(--text);border-bottom-color:var(--purple)}
+  .tab:hover:not(.active){color:#9999b8}
+
+  /* GRID */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px;padding:18px 24px 40px}
+
+  /* CARD */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color .2s;display:flex;flex-direction:column}
+  .card:hover{border-color:var(--border2)}
+  .stripe{height:2px}
+
+  .card-body{padding:12px 14px 10px;flex:1}
+  .card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px}
+  .card-name{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;line-height:1.3;word-break:break-all}
+  .badge{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;white-space:nowrap;flex-shrink:0}
+  .badge.used{color:var(--green);border-color:#1a3a2a;background:#0d2018}
+
+  .oneliner{font-size:11px;color:var(--dim);line-height:1.5;margin-bottom:6px}
+  .when{font-size:10px;color:var(--muted);border-left:2px solid var(--border2);padding-left:7px;margin-bottom:8px;line-height:1.5}
+
+  .tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+  .tag{font-size:9px;font-family:'IBM Plex Mono',monospace;background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:4px;padding:1px 6px;letter-spacing:.2px}
+
+  /* SOURCE */
+  .source{font-size:9px;font-family:'IBM Plex Mono',monospace;color:var(--muted);margin-bottom:8px;opacity:.6}
+
+  /* FOOTER */
+  .card-foot{padding:0 14px 12px;display:flex;gap:6px}
+  .btn-copy{flex:1;background:var(--surface2);border:1px solid var(--border2);color:var(--dim);border-radius:5px;padding:7px 0;font-size:11px;font-family:'IBM Plex Mono',monospace;cursor:pointer;font-weight:500;letter-spacing:.3px;transition:all .2s}
+  .btn-copy:hover{background:#1c1c2e;color:var(--text)}
+  .btn-copy.copied{background:#0d2018;border-color:#1a4030;color:var(--green)}
+  .btn-gh{background:none;border:1px solid var(--border);color:var(--muted);border-radius:5px;padding:7px 9px;font-size:11px;cursor:pointer;text-decoration:none;display:flex;align-items:center;transition:all .15s}
+  .btn-gh:hover{border-color:var(--border2);color:var(--text)}
+
+  .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:60px 0;font-family:'IBM Plex Mono',monospace;font-size:12px}
+
+  .tabs-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .sort-wrap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
+  .sort-wrap select{background:var(--surface);border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:4px}
+  .header-actions{display:flex;gap:8px}
+  .btn-mini{background:var(--surface2);border:1px solid var(--border2);color:var(--dim);border-radius:6px;padding:7px 8px;font-size:11px;font-family:'IBM Plex Mono',monospace;cursor:pointer}
+  .k-hint{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--muted);border:1px solid var(--border2);padding:2px 4px;border-radius:4px}
+  .pins{display:none;gap:8px;padding:10px 24px 0;overflow:auto}.pins.show{display:flex}
+  .pin-pill{background:var(--surface2);border:1px solid var(--border2);padding:6px 9px;border-radius:999px;color:var(--dim);font-size:11px;font-family:'IBM Plex Mono',monospace;cursor:pointer}
+  .pin-btn,.share-btn{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:4px;padding:2px 6px;font-size:10px;cursor:pointer}
+  .overlay,.modal{position:fixed;inset:0;background:rgba(9,9,11,.88);display:none;align-items:center;justify-content:center;z-index:120;opacity:0;transform:scale(.98);transition:all .14s}
+  .overlay.show,.modal.show{display:flex;opacity:1;transform:scale(1)}
+  .palette{width:min(900px,92vw);background:var(--surface);border:1px solid var(--border2);border-radius:10px;overflow:hidden}
+  .palette input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border2);padding:12px;color:var(--text);font-family:'IBM Plex Mono',monospace}
+  .result{padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer}.result.active{background:var(--surface2)}
+  .note-link,.note-view{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--dim);cursor:pointer;margin-bottom:8px;display:inline-block}
+  .note-area{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:7px;font-size:11px;margin-bottom:8px}
+  .list .list-row{display:grid}
+  .list-row{display:none;grid-template-columns:8px 180px 1fr 120px 40px;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--border);padding:10px;border-radius:8px;margin-bottom:8px}
+  .dot{width:8px;height:8px;border-radius:50%}
+  .modal-body{width:min(680px,95vw);background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:12px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.form-grid .full{grid-column:1/-1}
+  .form-grid input,.form-grid select,.form-grid textarea{background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:11px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <div class="logo">skill<span>/</span>dict</div>
+    <div class="search-wrap">
+      <span class="si">⌕</span><span class="k-hint">⌘K</span>
+      <input id="search" placeholder="search skills, use cases, tags..." autofocus/>
+    </div>
+    <div class="header-actions"><button class="btn-mini" id="viewToggle">▦</button><button class="btn-mini" id="addSkill">+ Add skill</button></div><div class="stats">
+      <div class="stat" id="s1"><b>19</b> skills</div>
+      <div class="stat" id="s2"><b>0</b> used</div>
+      <div class="stat" id="s3">top: <b>—</b></div>
+    </div>
+  </div>
+  <div class="tabs-row"><div class="tabs" id="tabs"></div><div class="sort-wrap">sort: <select id="sortSelect"><option value="default">default</option><option value="most-used">most used</option><option value="recent">recent</option></select></div></div>
+</div>
+<div class="pins" id="pins"></div><div class="grid" id="grid"></div><div class="overlay" id="paletteOverlay"><div class="palette"><input id="paletteInput" placeholder="search any skill..."/><div id="paletteResults"></div></div></div><div class="modal" id="skillModal"><div class="modal-body"><div class="form-grid"><input id="f_name" placeholder="Skill name"><select id="f_cat"><option>visual</option><option>image</option><option>frontend</option><option>backend</option><option>context</option><option>workflow</option></select><input class="full" id="f_oneliner" placeholder="One-liner"><input class="full" id="f_when" placeholder="Use when"><input class="full" id="f_tags" placeholder="Tags comma-separated"><input id="f_source" placeholder="Source repo"><input id="f_gh" placeholder="GitHub link"><textarea class="full" id="f_prompt" placeholder="Activation prompt"></textarea></div><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px"><button class="btn-mini" id="cancelModal">Cancel</button><button class="btn-mini" id="saveModal">Save</button></div></div></div>
+
+<script>
+const INSTALL_MAP={"Leonxlnx/taste-skill":"npx skills add Leonxlnx/taste-skill --skill {skill-id}","addyosmani/agent-skills":"npx skills add addyosmani/agent-skills --skill {skill-id}","vercel-labs/agent-skills":"npx skills add vercel-labs/agent-skills --skill {skill-id}","supabase/agent-skills":"npx skills add supabase/agent-skills --skill {skill-id}","muratcankoylan/Agent-Skills-for-Context-Engineering":"npx skills add muratcankoylan/Agent-Skills-for-Context-Engineering --skill {skill-id}"};
+const SKILLS = [
+  // ── VISUAL STYLE ────────────────────────────────────────────────────────
+  {
+    id:'design-taste-frontend',cat:'visual',
+    name:'design-taste-frontend',
+    oneliner:'Default anti-slop frontend. Premium layout, typography, motion, spacing.',
+    when:'Any new UI build. Use this first unless you already have a specific aesthetic.',
+    tags:['all apps','greenfield','default'],
+    source:'Leonxlnx/taste-skill',
+    prompt:'follow the design-taste-frontend skill for this: [describe your UI]',
+    gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/design-taste-frontend'
+  },
+  {
+    id:'gpt-taste',cat:'visual',
+    name:'gpt-taste',
+    oneliner:'Stricter taste variant for GPT / Codex. Stronger motion and layout variance.',
+    when:'Working in ChatGPT or Codex and the output looks generic or flat.',
+    tags:['ChatGPT','Codex','motion'],
+    source:'Leonxlnx/taste-skill',
+    prompt:'follow the gpt-taste skill for this: [describe your UI]',
+    gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/gpt-taste'
+  },
+  {
+    id:'minimalist-ui',cat:'visual',
+    name:'minimalist-ui',
+    oneliner:'Editorial minimalism — restrained color, sharp hierarchy. Notion/Linear feel.',
+    when:'Dashboard, SaaS product, or anything needing a clean focused look.',
+    tags:['all apps','minimalist','SaaS'],
+    source:'Leonxlnx/taste-skill',
+    prompt:'follow the minimalist-ui skill for this: [describe your UI]',
+    gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/minimalist-ui'
+  },
+  {
+    id:'industrial-brutalist-ui',cat:'visual',
+    name:'industrial-brutalist-ui',
+    oneliner:'Swiss typography, raw grid structure, sharp contrast. High visual impact.',
+    when:'Bold landing page, portfolio, or anything that needs edge and presence.',
+    tags:['all apps','brutalist','bold'],
+    source:'Leonxlnx/taste-skill',
+    prompt:'follow the industrial-brutalist-ui skill for this: [describe your UI]',
+    gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/industrial-brutalist-ui'
+  },
+  {
+    id:'stitch-design-taste',cat:'visual',
+    name:'stitch-design-taste',
+    oneliner:'Google Stitch-compatible design rules. Outputs a DESIGN.md alongside code.',
+    when:'Building inside Antigravity / Stitch and need structured design token export.',
+    tags:['Antigravity','Stitch','DESIGN.md'],
+    source:'Leonxlnx/taste-skill',
+    prompt:'follow the stitch-design-taste skill for this: [describe your UI]',
+    gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/stitch-design-taste'
+  },
+  // ── IMAGE GEN ────────────────────────────────────────────────────────────
+  {
+    id:'brandkit',cat:'image',
+    name:'brandkit',
+    oneliner:'Brand boards — logo directions, color palettes, typography, identity.',
+    when:'Starting a new brand or product and need identity references for a coding agent.',
+    tags:['ChatGPT Images','branding','identity'],
+    source:'Leonxlnx/taste-skill',
+    prompt:'use the brandkit skill. Generate brand identity boards for [describe brand]. Cover: logo directions, palette, typography, product applications.',
+    gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/brandkit'
+  },
+  {
+    id:'imagegen-frontend-web',cat:'image',
+    name:'imagegen-frontend-web',
+    oneliner:'Premium web reference images — strong art direction, anti-slop.',
+    when:'Need high-quality visual comps for a website before handing to a coding agent.',
+    tags:['ChatGPT Images','web','reference'],
+    source:'Leonxlnx/taste-skill',
+    prompt:'use the imagegen-frontend-web skill. Generate website reference images for [describe site]. Focus on [section/layout/style].',
+    gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/imagegen-frontend-web'
+  },
+  {
+    id:'imagegen-frontend-mobile',cat:'image',
+    name:'imagegen-frontend-mobile',
+    oneliner:'Premium mobile screens and flows — clean hierarchy, multi-screen consistency.',
+    when:'Need mobile app mockups or flow references before coding.',
+    tags:['ChatGPT Images','mobile','flows'],
+    source:'Leonxlnx/taste-skill',
+    prompt:'use the imagegen-frontend-mobile skill. Generate mobile screens for [describe app/flow]. Screens needed: [list screens].',
+    gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/imagegen-frontend-mobile'
+  },
+  {
+    id:'high-end-visual-design',cat:'image',
+    name:'high-end-visual-design',
+    oneliner:'High-end editorial references — luxury, premium spacing, anti-generic.',
+    when:'Need reference frames for luxury, editorial, or high-production-value output.',
+    tags:['ChatGPT Images','premium','editorial'],
+    source:'Leonxlnx/taste-skill',
+    prompt:'use the high-end-visual-design skill. Generate high-end references for [describe project]. Aesthetic: [describe].',
+    gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/high-end-visual-design'
+  },
+  // ── FRONTEND QUALITY ─────────────────────────────────────────────────────
+  {
+    id:'frontend-ui-engineering',cat:'frontend',
+    name:'frontend-ui-engineering',
+    oneliner:'Component architecture, design systems, responsive, WCAG 2.1 AA. Auto-triggers on UI work.',
+    when:'Building or modifying any user-facing interface. Handles architecture, not just aesthetics.',
+    tags:['all apps','architecture','accessibility'],
+    source:'addyosmani/agent-skills',
+    prompt:'follow the frontend-ui-engineering skill for this: [describe component or feature]',
+    gh:'https://github.com/addyosmani/agent-skills'
+  },
+  {
+    id:'vercel-react-best-practices',cat:'frontend',
+    name:'vercel-react-best-practices',
+    oneliner:'62 rules across 8 categories: bundle, SSR, re-renders, waterfall elimination.',
+    when:'Any React or Next.js project. Catches perf patterns agents typically miss.',
+    tags:['React','Next.js','performance','SSR'],
+    source:'vercel-labs/agent-skills',
+    prompt:'follow the vercel-react-best-practices skill for this: [describe feature or component]',
+    gh:'https://github.com/vercel-labs/agent-skills'
+  },
+  {
+    id:'web-quality-audit',cat:'frontend',
+    name:'web-quality-audit',
+    oneliner:'100+ rules: Lighthouse, Core Web Vitals, WCAG 2.2, SEO, best practices in one pass.',
+    when:'Before shipping. Full quality check on performance, accessibility, and SEO.',
+    tags:['all apps','audit','Lighthouse','SEO'],
+    source:'addyosmani/agent-skills',
+    prompt:'follow the web-quality-audit skill. Audit this project: [describe or paste relevant files]',
+    gh:'https://github.com/addyosmani/agent-skills'
+  },
+  // ── BACKEND ──────────────────────────────────────────────────────────────
+  {
+    id:'supabase',cat:'backend',
+    name:'supabase',
+    oneliner:'Full Supabase stack — DB, auth, storage, realtime, edge functions.',
+    when:'Any Supabase project: schema, RLS, auth flow, storage, or realtime features.',
+    tags:['all apps','Supabase','Postgres','auth'],
+    source:'supabase/agent-skills',
+    prompt:'follow the supabase skill for this: [describe what you need — schema / auth / storage / realtime]',
+    gh:'https://github.com/supabase/agent-skills'
+  },
+  {
+    id:'supabase-postgres-best-practices',cat:'backend',
+    name:'supabase-postgres-best-practices',
+    oneliner:'Schema design, RLS policies, indexing, query optimization for Supabase/Postgres.',
+    when:'Writing migrations, configuring Row Level Security, or fixing slow queries.',
+    tags:['Supabase','Postgres','RLS','migrations'],
+    source:'supabase/agent-skills',
+    prompt:'follow the supabase-postgres-best-practices skill for this: [describe schema / query / RLS issue]',
+    gh:'https://github.com/supabase/agent-skills'
+  },
+  // ── CONTEXT / TOKENS ─────────────────────────────────────────────────────
+  {
+    id:'context-fundamentals',cat:'context',
+    name:'context-fundamentals',
+    oneliner:'Treats context as a finite attention budget. Maximize signal, minimize token waste.',
+    when:'Agent is losing track, repeating itself, or context window is filling up on long tasks.',
+    tags:['all apps','token budget','attention'],
+    source:'muratcankoylan/Agent-Skills-for-Context-Engineering',
+    prompt:'follow the context-fundamentals skill. Optimize context for this task: [describe task and current context issues]',
+    gh:'https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering'
+  },
+  {
+    id:'context-compression',cat:'context',
+    name:'context-compression',
+    oneliner:'Compaction, observation masking, prefix caching, strategic partitioning.',
+    when:'Session near token limit. Agent needs to compress memory without losing key state.',
+    tags:['all apps','compression','memory'],
+    source:'muratcankoylan/Agent-Skills-for-Context-Engineering',
+    prompt:'follow the context-compression skill. Compress the current session context while preserving: [list what must be kept]',
+    gh:'https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering'
+  },
+  // ── WORKFLOW ─────────────────────────────────────────────────────────────
+  {
+    id:'image-to-code',cat:'workflow',
+    name:'image-to-code',
+    oneliner:'Full pipeline: generate images → analyze → implement frontend code.',
+    when:'Starting from a visual comp or screenshot. Agent builds UI from the image.',
+    tags:['all apps','pipeline','image→code'],
+    source:'Leonxlnx/taste-skill',
+    prompt:'follow the image-to-code skill: generate images, then analyze, then code. Task: [describe UI to build]',
+    gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/image-to-code'
+  },
+  {
+    id:'redesign-existing-projects',cat:'workflow',
+    name:'redesign-existing-projects',
+    oneliner:'Visual audit and redesign of an existing codebase. For refactors, not greenfield.',
+    when:'Existing UI looks bad or inconsistent. Agent reviews and rewrites styling.',
+    tags:['all apps','refactor','audit'],
+    source:'Leonxlnx/taste-skill',
+    prompt:'follow the redesign-existing-projects skill. Audit and redesign the UI of [describe project]. Improve: [layout / typography / color / spacing]',
+    gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/redesign-existing-projects'
+  },
+  {
+    id:'full-output-enforcement',cat:'workflow',
+    name:'full-output-enforcement',
+    oneliner:'Forces complete, untruncated code. Kills placeholders and "...rest here" patterns.',
+    when:'Agent keeps truncating output, writing // TODO, or stopping mid-component.',
+    tags:['all apps','no-truncation','enforcement'],
+    source:'Leonxlnx/taste-skill',
+    prompt:'follow the full-output-enforcement skill. Output the complete implementation of: [describe task]. No placeholders. No skipped sections.',
+    gh:'https://github.com/Leonxlnx/taste-skill/tree/main/skills/full-output-enforcement'
+  },
+  {
+    id:'vercel-deploy-claimable',cat:'workflow',
+    name:'vercel-deploy-claimable',
+    oneliner:'Deploy to Vercel instantly from any AI chat. Returns preview URL + claim URL.',
+    when:'Ready to ship. Works from Claude Desktop, claude.ai, or any connected agent.',
+    tags:['all apps','deploy','Vercel'],
+    source:'vercel-labs/agent-skills',
+    prompt:'follow the vercel-deploy-claimable skill. Deploy this project to Vercel.',
+    gh:'https://github.com/vercel-labs/agent-skills'
+  },
+];
+const customSkills=JSON.parse(localStorage.getItem('sd_custom_skills')||'[]');
+let SKILLS=[...SKILLS,...customSkills];let activeTab='all',q='';let usage=JSON.parse(localStorage.getItem('sd_usage')||'{}');let view=localStorage.getItem('sd_view')||'grid';let sortMode=localStorage.getItem('sd_sort')||'default';let pins=JSON.parse(localStorage.getItem('sd_pins')||'[]');let expandedList={};let editId=null;
+function saveUsage(){localStorage.setItem('sd_usage',JSON.stringify(usage));}
+function allFiltered(){let L=SKILLS.filter(s=>activeTab==='all'||s.cat===activeTab);if(q){const l=q.toLowerCase();L=L.filter(s=>[s.id,s.name,s.oneliner,s.when,...s.tags,s.source].join(' ').toLowerCase().includes(l));}if(sortMode==='most-used')L.sort((a,b)=>(usage[b.id]||0)-(usage[a.id]||0));if(sortMode==='recent')L.sort((a,b)=>(+localStorage.getItem('sd_last_'+b.id)||0)-(+localStorage.getItem('sd_last_'+a.id)||0));return L;}
+function fb(btn,msg,old){btn.textContent=msg;btn.classList.add('copied');setTimeout(()=>{btn.textContent=old;btn.classList.remove('copied')},1400)}
+async function copyPrompt(id){const s=SKILLS.find(x=>x.id===id);await navigator.clipboard.writeText(s.prompt);usage[id]=(usage[id]||0)+1;saveUsage();localStorage.setItem('sd_last_'+id,String(Date.now()));render();}
+window.copy=async id=>{await copyPrompt(id);const btn=document.getElementById('c-'+id);if(btn)fb(btn,'✓ Copied','⌘ Copy prompt');}
+window.copyInstall=async id=>{const s=SKILLS.find(x=>x.id===id),cmd=(INSTALL_MAP[s.source]||'npx skills add '+s.source+' --skill {skill-id}').replace('{skill-id}',id);await navigator.clipboard.writeText(cmd);const btn=document.getElementById('i-'+id);if(btn)fb(btn,'✓ Copied','copy install cmd');}
+window.shareSkill=async id=>{const url=location.href.split('#')[0]+'#skill-'+id;await navigator.clipboard.writeText(url);const btn=document.getElementById('sh-'+id);if(btn)fb(btn,'✓ link copied','⧉');}
+window.togglePin=id=>{pins=pins.includes(id)?pins.filter(x=>x!==id):[...pins,id];localStorage.setItem('sd_pins',JSON.stringify(pins));render();}
+window.openNote=id=>{const el=document.getElementById('n-'+id);if(el)el.style.display='block';}
+window.saveNote=id=>{const t=document.getElementById('ta-'+id).value.slice(0,200);localStorage.setItem('sd_note_'+id,t);render();}
+function render(){document.getElementById('sortSelect').value=sortMode;document.getElementById('grid').classList.toggle('list',view==='list');
+const list=allFiltered();document.getElementById('s1').innerHTML='<b>'+SKILLS.length+'</b> skills';document.getElementById('s2').innerHTML='<b>'+Object.values(usage).filter(v=>v>0).length+'</b> used';
+const top=Object.entries(usage).sort((a,b)=>b[1]-a[1])[0];document.getElementById('s3').innerHTML=top?'top: <b>'+top[0].replaceAll('-',' ')+'</b>':'top: <b>—</b>';
+const p=pins.map(id=>SKILLS.find(s=>s.id===id)).filter(Boolean);const pinsEl=document.getElementById('pins');pinsEl.className='pins'+(p.length?' show':'');pinsEl.innerHTML=p.map(s=>'<button class="pin-pill" onclick="copyPrompt(''+s.id+'')">'+s.name+'</button>').join('');
+renderTabs();const g=document.getElementById('grid');g.innerHTML=list.map(s=>{const note=localStorage.getItem('sd_note_'+s.id)||'';if(view==='list'&&!expandedList[s.id])return '<div class="list-row" id="skill-'+s.id+'"><span class="dot" style="background:'+CAT_COLOR[s.cat]+'"></span><div class="card-name" onclick="expandedList[''+s.id+'']=true;render()">'+s.name+'</div><div class="list-oneline">'+s.oneliner+'</div><button class="btn-copy" onclick="copy(''+s.id+'')">copy</button><a class="btn-gh" href="'+s.gh+'" target="_blank">↗</a></div>';
+return '<div class="card" id="skill-'+s.id+'"><div class="stripe" style="background:'+CAT_COLOR[s.cat]+'"></div><div class="card-body"><div class="card-head"><div class="card-name">'+s.name+'</div><div class="badge'+((usage[s.id]||0)>0?' used':'')+'">'+((usage[s.id]||0)>0?'used '+(usage[s.id])+'×':(s.custom?'custom':'—'))+'</div></div><div class="oneliner">'+s.oneliner+'</div><div class="when">↳ '+s.when+'</div><div class="tags">'+s.tags.map(t=>'<span class="tag">'+t+'</span>').join('')+'</div><div class="source">'+s.source+'</div>'+(note?'<div class="note-view" onclick="openNote(''+s.id+'')">✎ '+note+'</div>':'<div class="note-link" onclick="openNote(''+s.id+'')">add note</div>')+'<div id="n-'+s.id+'" style="display:none"><textarea maxlength="200" id="ta-'+s.id+'" class="note-area" onblur="saveNote(''+s.id+'')">'+note+'</textarea></div></div><div class="card-foot"><button class="btn-copy" id="c-'+s.id+'" onclick="copy(''+s.id+'')">⌘ Copy prompt</button><button class="btn-copy" id="i-'+s.id+'" onclick="copyInstall(''+s.id+'')">copy install cmd</button><button class="pin-btn '+(pins.includes(s.id)?'active':'')+'" onclick="togglePin(''+s.id+'')">📌</button><button class="share-btn btn-copy" id="sh-'+s.id+'" onclick="shareSkill(''+s.id+'')">⧉</button><a class="btn-gh" href="'+s.gh+'" target="_blank">↗</a></div></div>'}).join('');
+const hash=location.hash.match(/^#skill-(.+)$/);if(hash){const el=document.getElementById('skill-'+hash[1]);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('highlight');setTimeout(()=>el.classList.remove('highlight'),1300)}}}
+function renderTabs(){const counts={};CATS.forEach(c=>counts[c.id]=c.id==='all'?SKILLS.length:SKILLS.filter(s=>s.cat===c.id).length);document.getElementById('tabs').innerHTML=CATS.map(c=>'<button class="tab'+(activeTab===c.id?' active':'')+'" data-cat="'+c.id+'">'+c.label+' ('+counts[c.id]+')</button>').join('');document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{activeTab=t.dataset.cat;render()});}
+// command palette
+let paletteI=0;function score(s,v){const t=[s.name,s.oneliner,s.when,s.tags.join(' ')].join(' ').toLowerCase();if(!v)return 1;let p=0;for(const ch of v){const i=t.indexOf(ch);if(i>=0)p++;}return p;}
+function openPalette(){const o=document.getElementById('paletteOverlay');o.classList.add('show');document.getElementById('paletteInput').focus();drawPalette('');}
+function closePalette(){document.getElementById('paletteOverlay').classList.remove('show');}
+function drawPalette(v){const res=SKILLS.map(s=>({s,sc:score(s,v.toLowerCase())})).filter(x=>x.sc>0).sort((a,b)=>b.sc-a.sc).slice(0,30);const r=document.getElementById('paletteResults');r.innerHTML=res.map((x,i)=>'<div class="result '+(i===paletteI?'active':'')+'" data-id="'+x.s.id+'">'+x.s.name+' <span style="color:var(--muted)">— '+x.s.oneliner+'</span></div>').join('');r.querySelectorAll('.result').forEach(el=>el.onclick=()=>{copy(x=el.dataset.id);closePalette()});window._res=res;}
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openPalette()}if(e.key==='Escape')closePalette();if(document.getElementById('paletteOverlay').classList.contains('show')){if(e.key==='ArrowDown'){paletteI=Math.min((window._res?.length||1)-1,paletteI+1);drawPalette(document.getElementById('paletteInput').value)}if(e.key==='ArrowUp'){paletteI=Math.max(0,paletteI-1);drawPalette(document.getElementById('paletteInput').value)}if(e.key==='Enter'&&window._res?.[paletteI]){copy(window._res[paletteI].s.id);closePalette()}}});
+// custom skills modal
+function modal(v){document.getElementById('skillModal').classList.toggle('show',v)}
+document.getElementById('addSkill').onclick=()=>{editId=null;modal(true)};document.getElementById('cancelModal').onclick=()=>modal(false);
+document.getElementById('saveModal').onclick=()=>{const id=(document.getElementById('f_name').value||'custom').toLowerCase().replace(/[^a-z0-9]+/g,'-');const o={id,cat:document.getElementById('f_cat').value,name:document.getElementById('f_name').value,oneliner:document.getElementById('f_oneliner').value,when:document.getElementById('f_when').value,tags:document.getElementById('f_tags').value.split(',').map(x=>x.trim()).filter(Boolean),source:document.getElementById('f_source').value,prompt:document.getElementById('f_prompt').value,gh:document.getElementById('f_gh').value,custom:true};let c=JSON.parse(localStorage.getItem('sd_custom_skills')||'[]').filter(x=>x.id!==o.id);c.push(o);localStorage.setItem('sd_custom_skills',JSON.stringify(c));SKILLS=[...SKILLS.filter(s=>!s.custom),...c];modal(false);render();}
+document.getElementById('search').oninput=e=>{q=e.target.value;render()};document.getElementById('paletteInput').oninput=e=>{paletteI=0;drawPalette(e.target.value)};document.getElementById('sortSelect').onchange=e=>{sortMode=e.target.value;localStorage.setItem('sd_sort',sortMode);render()};document.getElementById('viewToggle').onclick=()=>{view=view==='grid'?'list':'grid';localStorage.setItem('sd_view',view);render()};render();
+</script>
+</body>
+</html>
