@@ -1,3 +1,4 @@
+import { EXTRA_SKILLS } from './dataset';
 export type Skill = {
   id: string;
   cat: string;
@@ -14,7 +15,7 @@ export type Skill = {
 export type Role = { id: string; label: string };
 export type Category = { id: string; label: string };
 
-export const SKILLS: Skill[] = [
+const _BASE_SKILLS: Skill[] = [
   {
     "id": "design-taste-frontend",
     "cat": "visual",
@@ -2243,7 +2244,7 @@ export const ROLES: Role[] = [
   }
 ];
 
-export const CATEGORIES: Category[] = [
+const _BASE_CATEGORIES: Category[] = [
   {
     "id": "all",
     "label": "All"
@@ -2286,3 +2287,15 @@ export const CAT_VAR: Record<string, string> = {
 export function getSkillById(id: string): Skill | undefined {
   return SKILLS.find((s) => s.id === id);
 }
+
+export const SKILLS: Skill[] = [..._BASE_SKILLS, ...EXTRA_SKILLS];
+
+const extraCatIds = new Set(_BASE_CATEGORIES.map(c => c.id));
+const extraCats = [];
+for (const s of EXTRA_SKILLS) {
+  if (!extraCatIds.has(s.cat)) {
+    extraCatIds.add(s.cat);
+    extraCats.push({ id: s.cat, label: s.cat.charAt(0).toUpperCase() + s.cat.slice(1) });
+  }
+}
+export const CATEGORIES = [..._BASE_CATEGORIES, ...extraCats];
