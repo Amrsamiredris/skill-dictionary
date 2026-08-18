@@ -20,13 +20,13 @@ import {
 
 function getCatColor(cat: string): string {
   const v = CAT_VAR[cat];
-  if (v) return `var(${v})`;
+  if (v) return "var(" + v + ")";
   let hash = 0;
   for (let i = 0; i < cat.length; i++) {
     hash = cat.charCodeAt(i) + ((hash << 5) - hash);
   }
   const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
-  return '#' + '00000'.substring(0, 6 - c.length) + c;
+  return "#" + "00000".substring(0, 6 - c.length) + c;
 }
 
 export function SkillCard({
@@ -37,6 +37,9 @@ export function SkillCard({
   staggerMode = "initial",
   stats,
   feedback,
+  onInspect,
+  onToggleStack,
+  isInStack = false,
 }: {
   skill: Skill;
   index: number;
@@ -45,6 +48,9 @@ export function SkillCard({
   staggerMode?: "initial" | "filter";
   stats?: SkillStats;
   feedback?: FeedbackAgg;
+  onInspect?: (skill: Skill) => void;
+  onToggleStack?: (skillId: string) => void;
+  isInStack?: boolean;
 }) {
   const reducedMotion = usePrefersReducedMotion();
   const shouldAnimate = animateIn && !reducedMotion && !isHiding;
@@ -71,8 +77,9 @@ export function SkillCard({
     setTimeout(() => setCopied(false), 2000);
   }, [skill.id]);
 
-  const copyPrompt = useCallback(async () => {
-    const textToCopy = skill.prompt || skill.name;
+  const copyPrompt = useCallback(async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const textToCopy = skill.prompt || ("follow the " + skill.name + " skill for this: [describe task]");
     try {
       await navigator.clipboard.writeText(textToCopy);
       onCopySuccess();
@@ -91,9 +98,10 @@ export function SkillCard({
       }
       document.body.removeChild(ta);
     }
-  }, [skill.prompt, onCopySuccess]);
+  }, [skill.prompt, skill.name, onCopySuccess]);
 
-  const onGithubClick = () => {
+  const onGithubClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     trackEvent(skill.id, "github_click");
   };
 
@@ -114,9 +122,8 @@ export function SkillCard({
       : "skill-card is-entering";
 
   const globalMeta: string[] = [];
-  if (stats && stats.copies > 0) globalMeta.push(`${stats.copies} copies`);
-  if (stats && stats.github_clicks > 0)
-    globalMeta.push(`${stats.github_clicks} GitHub`);
+  if (stats && stats.copies > 0) globalMeta.push(stats.copies + " copies");
+  if (stats && stats.github_clicks > 0) globalMeta.push(stats.github_clicks + " GitHub");
 
   return (
     <article
@@ -126,49 +133,84 @@ export function SkillCard({
       style={
         {
           "--cat-color": catColor,
-          transitionDelay: delay ? `${delay}ms` : undefined,
+          transitionDelay: delay ? delay + "ms" : undefined,
         } as React.CSSProperties
       }
+      onClick={() => onInspect?.(skill)}
     >
       <div className="card-top">
         <div className="skill-name-row">
-          <span className="cat-dot" aria-hidden="true" />
+          <span className="cat-dot" aria-hidden="true" style={{ backgroundColor: catColor }} />
           <h2 className="skill-name">{skill.name}</h2>
         </div>
-        {localCount > 0 && (
-          <span className="usage-badge">used {localCount}x</span>
+        <div className="card-top-badges">
+          {localCount > 0 && (
+            <span className="usage-badge">used {localCount}x</span>
+          )}
+          {onToggleStack && (
+            <button
+              type="button"
+              className={"card-pin-btn " + (isInStack ? "is-pinned" : "")}
+              title={isInStack ? "Remove from stack" : "Add to stack"}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleStack(skill.id);
+              }}
+            >
+              {isInStack ? "★" : "☆"}
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="skill-cat-pill-row">
+        <span className="skill-card-cat-pill" style={{ "--cat-accent": catColor } as React.CSSProperties}>
+          {skill.cat}
+        </span>
+        {skill.source && (
+          <span className="skill-card-source-pill">{skill.source}</span>
         )}
       </div>
-      <p className="skill-oneliner">{skill.oneliner}</p>
+
+      <p className="skill-oneliner">{skill.oneliner || "Comprehensive instructions and automation framework."}</p>
+
       {skill.when && (
         <div className="skill-when">
           <strong>Use when</strong>
           {skill.when}
         </div>
       )}
-      <div className="tags">
-        {skill.tags.map((tag) => (
-          <span key={tag} className="tag">
-            {tag}
-          </span>
-        ))}
-      </div>
+
+      {skill.tags && skill.tags.length > 0 && (
+        <div className="tags">
+          {skill.tags.slice(0, 5).map((tag) => (
+            <span key={tag} className="tag">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
+
       {globalMeta.length > 0 && (
         <p className="global-meta">{globalMeta.join(" · ")}</p>
       )}
-      <SkillFeedback
-        skillId={skill.id}
-        initialLikes={feedback?.likes ?? 0}
-        initialDislikes={feedback?.dislikes ?? 0}
-      />
-      <div className="card-actions">
+
+      <div onClick={(e) => e.stopPropagation()}>
+        <SkillFeedback
+          skillId={skill.id}
+          initialLikes={feedback?.likes ?? 0}
+          initialDislikes={feedback?.dislikes ?? 0}
+        />
+      </div>
+
+      <div className="card-actions" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
-          className={`btn btn-copy${copied ? " copied" : ""}`}
+          className={"btn btn-copy " + (copied ? "copied" : "")}
           onClick={copyPrompt}
-          aria-label={`Copy prompt for ${skill.name}`}
+          aria-label={"Copy prompt for " + skill.name}
         >
-          <span className="btn-label">Copy Prompt</span>
+          <span className="btn-label">{copied ? "Copied!" : "Copy Directive"}</span>
           <svg
             className="btn-check"
             viewBox="0 0 24 24"
@@ -182,13 +224,26 @@ export function SkillCard({
             <path className="btn-check-path" d="M20 6L9 17l-5-5" />
           </svg>
         </button>
+
+        {onInspect && (
+          <button
+            type="button"
+            className="btn btn-inspect"
+            onClick={() => onInspect(skill)}
+            aria-label={"Inspect " + skill.name}
+            title="View full skill parameters and instructions"
+          >
+            Details ↗
+          </button>
+        )}
+
         {skill.gh && (
           <a
             className="btn btn-gh"
             href={skill.gh}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`View ${skill.name} on GitHub`}
+            aria-label={"View " + skill.name + " on GitHub"}
             onClick={onGithubClick}
           >
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -197,6 +252,7 @@ export function SkillCard({
           </a>
         )}
       </div>
+
       {showInstall && (
         <InstallPrompt
           skillId={skill.id}

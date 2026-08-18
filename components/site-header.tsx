@@ -18,22 +18,33 @@ export function SiteHeader({
     <header className="site-header page-reveal">
       <div className="header-brand">
         <h1 className="logo">
-          <Link href="/" style={{ color: "inherit", textDecoration: "none" }}>
-            skill <span>/</span> dict
+          <Link href="/" className="logo-link">
+            <span className="logo-icon">⚡</span>
+            skill<span className="logo-slash">/</span>dict
           </Link>
         </h1>
+        <span className="header-version-badge">v2.4 • 2,150+ Skills</span>
         <HowItWorksButton />
       </div>
       <div className="header-actions">
         <div className="search-wrap">
+          <span className="search-icon">🔍</span>
           <input
             type="search"
             className="search-input"
-            placeholder="Search skills..."
+            placeholder="Search 2,150+ skills (or press ⌘K)..."
             aria-label="Search skills"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
           />
+          <button
+            type="button"
+            className="search-cmd-kbd"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-command-palette"))}
+            title="Open Command Palette (⌘K)"
+          >
+            ⌘K
+          </button>
         </div>
         <SignInButton />
         <AdminNavButton />
@@ -45,6 +56,7 @@ export function SiteHeader({
           }
           aria-pressed={theme === "light"}
           type="button"
+          title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
         >
           <span className="theme-icon-wrap">
             {theme === "dark" ? <MoonIcon /> : <SunIcon />}
@@ -64,7 +76,7 @@ function HowItWorksButton() {
         window.dispatchEvent(new CustomEvent("open-intro-modal"));
       }}
     >
-      How it works
+      💡 Concept & Guide
     </button>
   );
 }
@@ -79,8 +91,8 @@ function MoonIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      width={20}
-      height={20}
+      width={18}
+      height={18}
     >
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
     </svg>
@@ -97,8 +109,8 @@ function SunIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      width={20}
-      height={20}
+      width={18}
+      height={18}
     >
       <circle cx="12" cy="12" r="5" />
       <line x1="12" y1="1" x2="12" y2="3" />
