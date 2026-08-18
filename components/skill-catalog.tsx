@@ -21,19 +21,20 @@ export function SkillCatalog({ searchQuery = "" }: { searchQuery?: string }) {
   const [feedbackMap, setFeedbackMap] = useState<Record<string, FeedbackAgg>>({});
   const filterTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isInitialRender = useRef(true);
-  const displayIdsRef = useRef<string[]>(SKILLS.map((s) => s.id));
+  const displayIdsRef = useRef<string[]>(SKILLS.slice(0, 60).map((s) => s.id));
 
   const [displayIds, setDisplayIds] = useState<string[]>(() =>
-    SKILLS.map((s) => s.id),
+    SKILLS.slice(0, 60).map((s) => s.id),
   );
   const [hidingIds, setHidingIds] = useState<Set<string>>(() => new Set());
   const [animatingIds, setAnimatingIds] = useState<Set<string>>(
-    () => new Set(SKILLS.map((s) => s.id)),
+    () => new Set(SKILLS.slice(0, 60).map((s) => s.id)),
   );
   const [staggerMode, setStaggerMode] = useState<"initial" | "filter">(
     "initial",
   );
   const [emptyVisible, setEmptyVisible] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(60);
 
   useEffect(() => {
     fetch("/api/stats")
@@ -77,7 +78,11 @@ export function SkillCatalog({ searchQuery = "" }: { searchQuery?: string }) {
   }, [activeCategory, activeRole, searchQuery]);
 
   const filtered = filterSkills();
-  const filteredIds = filtered.map((s) => s.id);
+  const filteredIds = filtered.slice(0, visibleCount).map((s) => s.id);
+
+  useEffect(() => {
+    setVisibleCount(60);
+  }, [searchQuery, activeCategory, activeRole]);
 
   useEffect(() => {
     const prevIds = displayIdsRef.current;
@@ -187,6 +192,17 @@ export function SkillCatalog({ searchQuery = "" }: { searchQuery?: string }) {
           ))
         )}
       </div>
+      {filtered.length > visibleCount && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+          <button
+            onClick={() => setVisibleCount(c => c + 60)}
+            className="btn"
+            style={{ padding: '0.75rem 1.5rem', backgroundColor: 'var(--border)', color: 'var(--text)', borderRadius: '8px' }}
+          >
+            Load More Skills ({filtered.length - visibleCount} remaining)
+          </button>
+        </div>
+      )}
     </>
   );
 }
